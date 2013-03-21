@@ -13,7 +13,9 @@ For a list of services and which servers they run on check
 
 == source repositories
 
-Look at [[gitweb|https://gitweb.torproject.org/]] for things under {{{admin/}}}.
+* Look at [[gitweb|https://gitweb.torproject.org/]] for things under {{{admin/}}}.
+* This wiki's content is in the [[/project/help/wiki repository|https://gitweb.torproject.org/project/help/wiki.git]].
+  Feel free to send us patches to improve this resource.
 
 == documentation
 
