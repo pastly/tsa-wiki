@@ -1,0 +1,1 @@
+[[!map pages="tsa/howto/* and ! tsa/howto/*/*"]]

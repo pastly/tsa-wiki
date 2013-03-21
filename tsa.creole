@@ -19,9 +19,9 @@ For a list of services and which servers they run on check
 
 == documentation
 
-*
+* [[doc/testing]]
 
 == internal documentation
 
-* [[doc/testing]]
+* [[howto/retire-a-host]]
 

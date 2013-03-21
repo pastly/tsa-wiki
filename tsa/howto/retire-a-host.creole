@@ -1,0 +1,11 @@
+= Decommissioning a host =
+
+* stop the VM: virsh destroy $host
+* undefine it: virsh undefine $host
+* remove the LVM logical volumes
+* remove it from the tor-virt git
+* remove it from ud-ldap
+* on pauli:
+** puppetca revoke $host.torroject.org
+** puppetca clean $host.torroject.org
+** puppet node clean $host.torproject.org
