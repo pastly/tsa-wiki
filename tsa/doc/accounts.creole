@@ -1,13 +1,63 @@
-= Account creation request =
+= torproject.org Accounts =
 
-To request a new account in the Tor project members database, please [[open a
-new ticket|https://trac.torproject.org/projects/tor/newticket]] with **Tor
-Sysadmin Team** as *Component* and include the following informations:
+The Tor project keeps all user information in a central LDAP database which
+governs access to shell accounts, git (write) access and lets users configure
+their email forwards.
 
+It also stores group memberships which in turn affects which users can log into
+which [[hosts|https://db.torproject.org/machines.cgi]].
+
+== New accounts ==
+
+New accounts have to be sponsored by somebody who already has a torproject.org
+account.  If you need an account created, please find somebody in the project
+who you are working with and ask them to request an account for you.
+
+=== Step 1 ===
+
+The sponsor will collect all required information:
 * name,
-* forwarding email address,
+* initial forwarding email address (the user can change that themselves later),
 * pgp key fingerprint,
 * desired username.
 
-The request should be vetted by arma/andrew/... and somebody/something must
-indicate that their key is in fact their key.
+The sponsor is responsible for verifying the information's accuracy, in
+particular establishing some confidence that the key in question
+actually belongs to the person that he wants to have access.
+
+The user's PGP key should be available from the public keyserver network.
+
+The sponsor will create a ticket in [[trac||https://trac.torproject.org/projects/tor/newticket]]
+in the {{{Tor Sysadmin Team}}} component:
+* The ticket should include a short rationale as to why the account is
+  required,
+* contain all the pieces of information listed above, and
+* should be PGP signed by the sponsor using the PGP key we have on
+  file for them.  Please enclose the pgp clearsigned blob using
+  {{{{{{}}} and {{{}}}}}}.
+
+=== Step n+1 ===
+
+Once the request has been filed it will be reviewed by Roger, Andrew, or Nick
+and either approved or rejected.
+
+If the board indicates their assent, the sysadmin team will then create the
+account as requested.
+
+
+== Getting added to an existing group/Getting access to a specific host ==
+
+Most of the time when people want access to a specific host, what they
+really want is getting added to a particular group -- almost all
+privileges in our infrastructure, such as account on a particular host,
+sudo access to a role account, or write permissions to a specific
+directory, come from group memberships.
+
+If you want to get added to some unix group, you will have to
+find an existing member of that group.  They should then request on
+trac -- ideally in a PGP signed message (as above in the new account
+creation section) -- that you be added to their group.
+
+Should the group be orphaned or have no remaining active members, the
+same set of people who can approve new account requests can request
+you be added.
