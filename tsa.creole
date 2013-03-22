@@ -1,3 +1,5 @@
+[[!meta  title="Torproject Sysadmin Team"]]
+
 = Torproject Sysadmin Team =
 
 The Torproject System Debian Administration Team is the team that keeps
