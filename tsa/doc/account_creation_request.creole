@@ -1,0 +1,13 @@
+= Account creation request =
+
+To request a new account in the Tor project members database, please [[open a
+new ticket|https://trac.torproject.org/projects/tor/newticket]] with **Tor
+Sysadmin Team** as *Component* and include the following informations:
+
+* name,
+* forwarding email address,
+* pgp key fingerprint,
+* desired username.
+
+The request should be vetted by arma/andrew/... and somebody/something must
+indicate that their key is in fact their key.
