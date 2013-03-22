@@ -21,7 +21,7 @@ For a list of services and which servers they run on check
 
 == documentation
 
-* [[doc/account_creation_request.creole]]
+* [[git, shell, ldap, etc accounts|doc/accounts]]
 
 == internal documentation
 
