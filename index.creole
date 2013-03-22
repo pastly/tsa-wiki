@@ -4,5 +4,5 @@ This is a place that has some information and documentation useful for
 tor contributors/helpers/developers/etc.  There is no end-user targeted
 documentation here -- if you were looking for that, sorry.
 
-* [[support stuff|support]]
+* [[known support issues|support]]
 * [[torproject.org infrastructure/sysadmin related things|tsa]]
