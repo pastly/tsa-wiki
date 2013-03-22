@@ -1,6 +1,8 @@
-= Stuff =
+= help.torproject.org =
 
-* **2013-03-18** another test
-* **2013-03-13** more testing
-* **2013-03-11** test
+This is a place that has some information and documentation useful for
+tor contributors/helpers/developers/etc.  There is no end-user targeted
+documentation here -- if you were looking for that, sorry.
 
+* [[support stuff|support]]
+* [[torproject.org infrastructure/sysadmin related things|tsa]]
