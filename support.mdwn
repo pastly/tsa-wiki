@@ -1,3 +1,4 @@
 ## Support news 
 
+* **2013-03-26** China blocks obfs2 bridges, users need obfs3 ([#8591](https://trac.torproject.org/projects/tor/ticket/8591))
 * **2013-03-22** Unable to edit torrc from within Vidalia ([#6147](https://trac.torproject.org/projects/tor/ticket/6147))
