@@ -1,0 +1,126 @@
+[[!meta title="Build and upload Debian packages"]]
+
+Builds can be performed on
+[dixie.torproject.org](https://db.torproject.org/machines.cgi?host=dixie).
+
+Uploads must be go to
+[palmeri.torproject.org](https://db.torproject.org/machines.cgi?host=dixie).
+
+Preliminary setup
+=================
+
+In `~/.ssh/config`:
+
+    Host dixie.torproject.org
+            ProxyCommand ssh -4 perdulce.torproject.org -W %h:%p
+
+In `~/.dput.cf`:
+
+    [tor]
+    login = *
+    fqdn = palmeri.torproject.org
+    method = scp
+    incoming = /srv/deb.torproject.org/incoming
+
+Currently available distributions
+=================================
+
+ * Debian:
+   - `lenny-backport`
+   - `experimental-lenny-backport`
+   - `squeeze-backport`
+   - `experimental-squeeze-backport`
+   - `wheezy-backport`
+   - `experimental-wheezy-backport`
+   - `unstable`
+   - `experimental`
+ * Ubuntu:
+   - `hardy-backport`
+   - `lucid-backport`
+   - `experimental-lucid-backport`
+   - `natty-backport`
+   - `experimental-natty-backport`
+   - `oneiric-backport`
+   - `experimental-oneiric-backport`
+   - `precise-backport`
+   - `experimental-precise-backport`
+   - `quantal-backport`
+   - `experimental-quantal-backport`
+
+Create source packages
+======================
+
+Source packages must be created for the right distributions.
+
+Helper scripts:
+
+ * [backports](http://svn.noreply.org/svn/weaselutils/trunk/backport)
+ * [build-tor-sources](http://svn.noreply.org/svn/weaselutils/trunk/build-tor-sources)
+
+Build packages
+==============
+
+Upload source packages to `dixie`:
+
+    dcmd rsync -v *.dsc dixie.torproject.org:
+
+Build arch any packages:
+
+    ssh dixie.torproject.org
+    for i in *.dsc; do ~weasel/bin/sbuild-stuff $i && linux32 ~weasel/bin/sbuild-stuff --binary-only $i || break; done
+
+**Or** build arch all packages:
+
+    ssh dixie.torproject.org
+    for i in *.dsc; do ~weasel/bin/sbuild-stuff $i || break; done
+
+Packages with dependencies in `deb.torproject.org` must be built using
+`$suite-debtpo-$arch-sbuild`, e.g. by running:
+
+    DIST=wheezy-debtpo ~weasel/bin/sbuild-stuff $DSC
+
+Retrieve build results:
+
+    rsync -v $(ssh dixie.torproject.org dcmd '*.changes' | sed -e 's/^/dixie.torproject.org:/') .
+
+Upload first package with source
+================================
+
+Pick the first *changes* file and stick the source in:
+
+    changestool $CHANGES_FILE includeallsources
+
+Sign it:
+
+    debsign $CHANGES_FILE
+
+Upload:
+
+    dput tor $CHANGES_FILE
+
+Start a first `dinstall`:
+
+    ssh -t palmeri.torproject.org sudo -u tordeb /srv/deb.torproject.org/bin/dinstall
+
+Move *changes* file out of the way:
+
+    dcmd mv $CHANGES_FILE archives/
+
+Upload other builds
+===================
+
+Sign the remaining *changes* files:
+
+    debsign *.changes
+
+Upload them:
+
+    dput tor *.changes
+
+Run `dinstall`:
+
+    ssh -t palmeri.torproject.org sudo -u tordeb /srv/deb.torproject.org/bin/dinstall
+
+Archive remaning build products:
+
+    dcmd mv *.changes archives/
