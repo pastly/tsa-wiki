@@ -1,5 +1,6 @@
 ## Support news 
 
+* **2013-04-18** TBB crashes on any Amazon.com product page ([#8726]https://trac.torproject.org/projects/tor/ticket/8726))
 * **2013-04-13** FF17 TBB crash on Mac OSX ([#8425](https://trac.torproject.org/projects/tor/ticket/8425))
 * **2013-04-12** Gettor: TBB too big for Gmail ([#8485](https://trac.torproject.org/projects/tor/ticket/8485))
 * **2013-04-12** Session Restore is broken ([#8457](https://trac.torproject.org/projects/tor/ticket/8457))
