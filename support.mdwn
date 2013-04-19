@@ -1,6 +1,6 @@
 ## Support news 
 
-* **2013-04-18** TBB crashes on any Amazon.com product page ([#8726](https://trac.torproject.org/projects/tor/ticket/8726))
+* **2013-04-18** Windows TBB crashes on any Amazon.com product page ([#8726](https://trac.torproject.org/projects/tor/ticket/8726))
 * **2013-04-17** Windows can't run Vidalia Bundle and Tor Browser Bundle at the same time([#4925](https://trac.torproject.org/projects/tor/ticket/4925))
 * **2013-04-17** Why Ghostery / Adblock+ will not be added to the TBB([#4188](https://trac.torproject.org/projects/tor/ticket/4188))
 * **2013-04-17** TBB with Firefox 17 ESR is exhibiting slow, clunky UI performance([#8352](https://trac.torproject.org/projects/tor/ticket/8352))
