@@ -46,6 +46,8 @@ Currently available distributions
    - `experimental-precise-backport`
    - `quantal-backport`
    - `experimental-quantal-backport`
+   - `raring-backport`
+   - `experimental-raring-backport`
 
 Create source packages
 ======================
