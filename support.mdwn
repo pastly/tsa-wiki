@@ -1,5 +1,6 @@
 ## Support news 
 
+* **2013-05-10** Windows Pluggable Transports Browser is a dead link ([#8804](https://trac.torproject.org/projects/tor/ticket/8804))
 * **2013-04-26** Orbot crashes when the app is reopened ([#8600](https://trac.torproject.org/projects/tor/ticket/8600))
 * **2013-04-20** Lack of retina display support due to FF version ([#8750](https://trac.torproject.org/projects/tor/ticket/8750))
 * **2013-04-18** Windows TBB crashes on any Amazon.com product page ([#8726](https://trac.torproject.org/projects/tor/ticket/8726))
