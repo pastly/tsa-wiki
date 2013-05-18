@@ -1,6 +1,6 @@
 ## Support news 
 
-* **2013-05-17** Vidalia stores wrong SOCKS port in torrc after control port authentication change ([#8893](https://trac.torproject.org/projects/tor/ticket/8893))
+* **2013-05-17** Vidalia writes old SOCKS port to torrc after control port authentication change ([#8893](https://trac.torproject.org/projects/tor/ticket/8893))
 * **2013-04-26** Orbot crashes when the app is reopened ([#8600](https://trac.torproject.org/projects/tor/ticket/8600))
 * **2013-04-20** Lack of retina display support due to FF version ([#8750](https://trac.torproject.org/projects/tor/ticket/8750))
 * **2013-04-18** Windows TBB crashes on any Amazon.com product page ([#8726](https://trac.torproject.org/projects/tor/ticket/8726))
