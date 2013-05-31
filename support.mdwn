@@ -1,4 +1,7 @@
 ## Support news 
+
+* **2013-05-31** tbb 2.3.25-8 - Linux 64bit crashes all the time ([#8970](https://trac.torproject.org/projects/tor/ticket/8970))
+* **2013-05-31** Mac Tor Browser Bundle does not always open Firefox upon launch ([#2140](https://trac.torproject.org/projects/tor/ticket/2140))
 * **2013-05-19** Pluggable transports bundles warn of need to upgrade when no new version is yet available ([#8645](https://trac.torproject.org/projects/tor/ticket/8645))
 * **2013-05-17** Vidalia writes old SOCKS port to torrc after control port authentication change ([#8893](https://trac.torproject.org/projects/tor/ticket/8893))
 * **2013-04-26** Orbot crashes when the app is reopened ([#8600](https://trac.torproject.org/projects/tor/ticket/8600))
