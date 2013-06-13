@@ -1,6 +1,5 @@
 ## Support news 
 
-* **2013-05-31** tbb 2.3.25-8 - Linux 64bit crashes all the time ([#8970](https://trac.torproject.org/projects/tor/ticket/8970))
 * **2013-05-31** Mac Tor Browser Bundle does not always open Firefox upon launch ([#2140](https://trac.torproject.org/projects/tor/ticket/2140))
 * **2013-05-22** ExitNodes 1 being ignored ([#8934](https://trac.torproject.org/projects/tor/ticket/8934))
 * **2013-05-19** Pluggable transports bundles warn of need to upgrade when no new version is yet available ([#8645](https://trac.torproject.org/projects/tor/ticket/8645))
