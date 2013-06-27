@@ -61,3 +61,28 @@ creation section) -- that you be added to their group.
 Should the group be orphaned or have no remaining active members, the
 same set of people who can approve new account requests can request
 you be added.
+
+== Changing your PGP key ==
+
+If you are planning on migrating to a new PGP key and you also want to
+change your key in LDAP, you need to create a ticket in
+[[trac||https://trac.torproject.org/projects/tor/newticket]] in the
+{{{Tor Sysadmin Team}}} component:
+* The ticket should include your username, your old PGP fingerprint
+  and your new PGP fingerprint.
+* The ticket should be PGP signed with your PGP key that is currently
+  stored in LDAP.
+
+=== Revoked or lost old key ===
+
+If you already revoked or lost your old PGP key and you migrated to a
+new one before updating LDAP, you need to find a sponsor to create a
+ticket for you. The sponsor should create a ticket in
+[[trac||https://trac.torproject.org/projects/tor/newticket]] in the
+{{{Tor Sysadmin Team}}} component:
+* The ticket should include your username, your old PGP fingerprint
+  and your new PGP fingerprint.
+* Your PGP key needs to be on a public keyserver and be signed by at
+  least one Tor person other than your sponsor.
+* The ticket should be PGP signed with the current valid PGP key of
+  your sponsor.
