@@ -1,5 +1,6 @@
 ## Support news 
 
+* **2013-07-03** check.torproject.org is temporarily disabled
 * **2013-06-27** x86_64 Linux TBB extraction error ([#6597](https://trac.torproject.org/projects/tor/ticket/6597))
 * **2013-05-31** Mac Tor Browser Bundle does not always open Firefox upon launch ([#2140](https://trac.torproject.org/projects/tor/ticket/2140))
 * **2013-05-22** ExitNodes 1 being ignored ([#8934](https://trac.torproject.org/projects/tor/ticket/8934))
