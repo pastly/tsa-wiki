@@ -62,6 +62,8 @@ Should the group be orphaned or have no remaining active members, the
 same set of people who can approve new account requests can request
 you be added.
 
+See also: the {{{"Host specific passwords"}}} section below
+
 == Changing/Resetting your passwords ==
 
 === LDAP ===
