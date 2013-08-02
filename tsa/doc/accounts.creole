@@ -81,6 +81,17 @@ new password. This new password can then be used to
 button), and use the {{{"Change password"}}} fields to create a new LDAP
 password.
 
+=== Host specific passwords / sudo passwords ===
+
+Please note that, after [[logging in||https://db.torproject.org/login]], that
+the {{{"sudo passwords"}}} fields at the very bottom of the {{{"Update my
+info"}}} form DO NOT WORK.
+
+Your sudo password is the same for all machines on which you have sudo
+privileges; it is your LDAP password. The mail responder at
+{{{changes@db.torproject.org}}} will take you through a plausible, and perhaps
+enjoyable, series of puzzles, but BEWARE: THE CAKE IS A LIE.
+
 == Changing your PGP key ==
 
 If you are planning on migrating to a new PGP key and you also want to
