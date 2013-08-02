@@ -62,6 +62,25 @@ Should the group be orphaned or have no remaining active members, the
 same set of people who can approve new account requests can request
 you be added.
 
+== Changing/Resetting your passwords ==
+
+=== LDAP ===
+
+If you've lost your LDAP password, you can request that a new one be
+generated. This is done by sending the phrase "Please change my Debian
+password" to chpasswd@db.torproject.org. The phrase is required to prevent the
+daemon from triggering on arbitrary signed email. The best way to invoke this
+feature is with
+
+    echo "Please change my Debian password" | gpg --clearsign | mail chpasswd@db.debian.org
+
+After validating the request the daemon will generate a new random password,
+set it in the directory and respond with an encrypted message containing the
+new password. This new password can then be used to
+[[login||https://db.torproject.org/login]] (click the {{{"Update my info"}}}
+button), and use the {{{"Change password"}}} fields to create a new LDAP
+password.
+
 == Changing your PGP key ==
 
 If you are planning on migrating to a new PGP key and you also want to
