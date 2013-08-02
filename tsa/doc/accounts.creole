@@ -72,7 +72,7 @@ password" to chpasswd@db.torproject.org. The phrase is required to prevent the
 daemon from triggering on arbitrary signed email. The best way to invoke this
 feature is with
 
-    echo "Please change my Debian password" | gpg --clearsign | mail chpasswd@db.debian.org
+{{{echo "Please change my Debian password" | gpg --clearsign | mail chpasswd@db.torproject.org}}}
 
 After validating the request the daemon will generate a new random password,
 set it in the directory and respond with an encrypted message containing the
