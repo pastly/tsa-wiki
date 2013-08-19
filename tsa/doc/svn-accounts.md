@@ -1,0 +1,32 @@
+# Getting an SVN account
+
+We still use SVN in some places. All public SVN repositories are available at [svn.torproject.org](https://svn.torproject.org). We host our presentations, check.torproject.org, website, and an number of older codebases in it.  The most frequently updated directories are the website and presentations. SVN is not tied to LDAP in any way.
+
+## SVN Repositories available
+
+The following SVN repositories are available:
+
+ - android
+ - arm
+ - blossom
+ - check
+ - projects
+ - todo
+ - torctl
+ - torflow
+ - torperf
+ - translation
+ - weather
+ - website
+
+## Steps to SVN bliss
+
+ 1. Open a [trac ticket](https://bugs.torproject.org/) per user account desired.
+ 2. The user needs to pick a username and which repository to access (see list above)
+ 3. SVN access requires output from the following command:
+~~~
+htdigest -c password.tmp "Tor subversion repository" <username>
+~~~
+ 4. The output should be mailed to torproject-admins@torproject.org with Trac ticket reference contained in the email.
+ 5. The user will be added and emailed when access is granted.
+ 6. The trac ticket is updated and closed.
