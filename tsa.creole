@@ -22,6 +22,7 @@ For a list of services and which servers they run on check
 == documentation
 
 * [[git, shell, ldap, etc. accounts|doc/accounts]]
+* [[SVN accounts|doc/svn-accounts]]
 
 == internal documentation
 
