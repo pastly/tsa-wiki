@@ -7,7 +7,7 @@ their email forwards.
 It also stores group memberships which in turn affects which users can log into
 which [[hosts|https://db.torproject.org/machines.cgi]].
 
-== New accounts ==
+== <a id="new-account">New accounts</a> ==
 
 New accounts have to be sponsored by somebody who already has a torproject.org
 account.  If you need an account created, please find somebody in the project
@@ -45,7 +45,7 @@ If the board indicates their assent, the sysadmin team will then create the
 account as requested.
 
 
-== Getting added to an existing group/Getting access to a specific host ==
+== <a id="get-access">Getting added to an existing group/Getting access to a specific host</a> ==
 
 Most of the time when people want access to a specific host, what they
 really want is getting added to a particular group -- almost all
@@ -64,7 +64,7 @@ you be added.
 
 See also: the {{{"Host specific passwords"}}} section below
 
-== Changing/Resetting your passwords ==
+== <a id="password-reset">Changing/Resetting your passwords</a> ==
 
 === LDAP ===
 
@@ -94,7 +94,7 @@ privileges; it is your LDAP password. The mail responder at
 {{{changes@db.torproject.org}}} will take you through a plausible, and perhaps
 enjoyable, series of puzzles, but BEWARE: THE CAKE IS A LIE.
 
-== Changing your PGP key ==
+== <a id="key-rollover">Changing your PGP key</a> ==
 
 If you are planning on migrating to a new PGP key and you also want to
 change your key in LDAP, you need to create a ticket in
