@@ -6,6 +6,6 @@
 * remove it from the tor-virt git
 * remove it from ud-ldap
 * on pauli:
-** puppetca revoke $host.torroject.org
-** puppetca clean $host.torroject.org
+** puppetca revoke $host.torproject.org
+** puppetca clean $host.torproject.org
 ** puppet node clean $host.torproject.org
