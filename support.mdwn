@@ -3,7 +3,6 @@
 * **2013-06-27** x86_64 Linux TBB extraction error ([#6597](https://trac.torproject.org/projects/tor/ticket/6597))
 * **2013-05-22** ExitNodes 1 being ignored ([#8934](https://trac.torproject.org/projects/tor/ticket/8934))
 * **2013-05-19** Pluggable transports bundles warn of need to upgrade when no new version is yet available ([#8645](https://trac.torproject.org/projects/tor/ticket/8645))
-* **2013-04-26** Orbot crashes when the app is reopened ([#8600](https://trac.torproject.org/projects/tor/ticket/8600))
 * **2013-04-17** TBB with Firefox 17 ESR is exhibiting slow, clunky UI performance ([#8352](https://trac.torproject.org/projects/tor/ticket/8352))
 * **2013-04-12** Gettor: TBB too big for Gmail ([#8542](https://trac.torproject.org/projects/tor/ticket/8542))
 
