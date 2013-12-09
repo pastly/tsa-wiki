@@ -1,21 +1,27 @@
-## Support news 
+# Known issues
 
-* **2013-07-03** check.torproject.org is temporarily disabled
 * **2013-06-27** x86_64 Linux TBB extraction error ([#6597](https://trac.torproject.org/projects/tor/ticket/6597))
-* **2013-05-31** Mac Tor Browser Bundle does not always open Firefox upon launch ([#2140](https://trac.torproject.org/projects/tor/ticket/2140))
 * **2013-05-22** ExitNodes 1 being ignored ([#8934](https://trac.torproject.org/projects/tor/ticket/8934))
 * **2013-05-19** Pluggable transports bundles warn of need to upgrade when no new version is yet available ([#8645](https://trac.torproject.org/projects/tor/ticket/8645))
-* **2013-05-17** Vidalia writes old SOCKS port to torrc after control port authentication change ([#8893](https://trac.torproject.org/projects/tor/ticket/8893))
-* **2013-05-16** gettor@gettor.torproject.org alias not working ([#8888](https://trac.torproject.org/projects/tor/ticket/8888))
 * **2013-04-26** Orbot crashes when the app is reopened ([#8600](https://trac.torproject.org/projects/tor/ticket/8600))
-* **2013-04-20** Lack of retina display support due to FF version ([#8750](https://trac.torproject.org/projects/tor/ticket/8750))
-* **2013-04-17** Windows can't run Vidalia Bundle and Tor Browser Bundle at the same time ([#4925](https://trac.torproject.org/projects/tor/ticket/4925))
-* **2013-04-17** Why Ghostery / Adblock+ will not be added to the TBB ([#4188](https://trac.torproject.org/projects/tor/ticket/4188))
 * **2013-04-17** TBB with Firefox 17 ESR is exhibiting slow, clunky UI performance ([#8352](https://trac.torproject.org/projects/tor/ticket/8352))
-* **2013-04-13** FF17 TBB crash on Mac OSX ([#8425](https://trac.torproject.org/projects/tor/ticket/8425))
-* **2013-04-12** Gettor: TBB too big for Gmail ([#8485](https://trac.torproject.org/projects/tor/ticket/8485))
+* **2013-04-12** Gettor: TBB too big for Gmail ([#8542](https://trac.torproject.org/projects/tor/ticket/8542))
+
+## Affecting Firefox 17 based bundles
+
+* **2013-04-20** Lack of retina display support due to FF version ([#8750](https://trac.torproject.org/projects/tor/ticket/8750))
+
+## Affecting Vidalia based bundles
+
+* **2013-05-31** Mac Tor Browser Bundle does not always open Firefox upon launch ([#2140](https://trac.torproject.org/projects/tor/ticket/2140))
+* **2013-05-17** Vidalia writes old SOCKS port to torrc after control port authentication change ([#8893](https://trac.torproject.org/projects/tor/ticket/8893))
+* **2013-04-17** Windows can't run Vidalia Bundle and Tor Browser Bundle at the same time ([#4925](https://trac.torproject.org/projects/tor/ticket/4925))
 * **2013-04-12** Windows 8 says "This app can't run on your PC" ([#8187](https://trac.torproject.org/projects/tor/ticket/8187))
 * **2013-03-26** China blocks obfs2 bridges, users need obfs3 ([#8591](https://trac.torproject.org/projects/tor/ticket/8591))
 * **2013-03-22** Unable to edit torrc from within Vidalia ([#6147](https://trac.torproject.org/projects/tor/ticket/6147))
+
+# Frequent questions
+
+* **2013-04-17** Why Ghostery / Adblock+ will not be added to the TBB ([#4188](https://trac.torproject.org/projects/tor/ticket/4188))
 
 To edit this page, clone the git repo at https://git.torproject.org/project/help/wiki.git and ask Lunar to merge your changes.
