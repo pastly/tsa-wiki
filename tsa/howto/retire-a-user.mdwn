@@ -1,0 +1,8 @@
+# How to disable an LDAP and other accounts
+
+ 1. Login to alberti.torproject.org and lock the LDAP account using `ud-info -u`
+ 2. Login as admin to trac.torproject.org and disable the user account.
+ 3. Login to eugeni.torproject.org.
+    - edit `/etc/postfix/virtual` and remove the account alias.
+    - run `sudo postmap virtual` to rebuild the virtual users table.
+    - run `sudo remove_members <list names> <email address>`
