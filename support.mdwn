@@ -5,6 +5,7 @@
 * **2013-05-19** Pluggable transports bundles warn of need to upgrade when no new version is yet available ([#8645](https://trac.torproject.org/projects/tor/ticket/8645))
 * **2013-04-17** TBB with Firefox 17 ESR is exhibiting slow, clunky UI performance ([#8352](https://trac.torproject.org/projects/tor/ticket/8352))
 * **2013-04-12** Gettor: TBB too big for Gmail ([#8542](https://trac.torproject.org/projects/tor/ticket/8542))
+* **2014-02-05** reCAPTCHA on bridges.torproject.org are impossible to solve for humans ([#10809](https://trac.torproject.org/projects/tor/ticket/10809)
 
 ## Affecting Firefox 24 based bundles
 
