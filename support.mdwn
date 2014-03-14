@@ -6,18 +6,9 @@
 * **2013-04-17** TBB with Firefox 17 ESR is exhibiting slow, clunky UI performance ([#8352](https://trac.torproject.org/projects/tor/ticket/8352))
 * **2013-04-12** Gettor: TBB too big for Gmail ([#8542](https://trac.torproject.org/projects/tor/ticket/8542))
 
-## Affecting Firefox 17 based bundles
+## Affecting Firefox 24 based bundles
 
 * **2013-04-20** Lack of retina display support due to FF version ([#8750](https://trac.torproject.org/projects/tor/ticket/8750))
-
-## Affecting Vidalia based bundles
-
-* **2013-05-31** Mac Tor Browser Bundle does not always open Firefox upon launch ([#2140](https://trac.torproject.org/projects/tor/ticket/2140))
-* **2013-05-17** Vidalia writes old SOCKS port to torrc after control port authentication change ([#8893](https://trac.torproject.org/projects/tor/ticket/8893))
-* **2013-04-17** Windows can't run Vidalia Bundle and Tor Browser Bundle at the same time ([#4925](https://trac.torproject.org/projects/tor/ticket/4925))
-* **2013-04-12** Windows 8 says "This app can't run on your PC" ([#8187](https://trac.torproject.org/projects/tor/ticket/8187))
-* **2013-03-26** China blocks obfs2 bridges, users need obfs3 ([#8591](https://trac.torproject.org/projects/tor/ticket/8591))
-* **2013-03-22** Unable to edit torrc from within Vidalia ([#6147](https://trac.torproject.org/projects/tor/ticket/6147))
 
 # Frequent questions
 
