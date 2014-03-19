@@ -6,7 +6,7 @@
 * **2013-04-17** TBB with Firefox 17 ESR is exhibiting slow, clunky UI performance ([#8352](https://trac.torproject.org/projects/tor/ticket/8352))
 * **2013-04-12** Gettor: TBB too big for Gmail ([#8542](https://trac.torproject.org/projects/tor/ticket/8542))
 * **2014-01-07** Tor Browser's Private Browsing Mode breaks sites ([#10569](https://trac.torproject.org/projects/tor/ticket/10569))
-* **2014-02-05** reCAPTCHA on bridges.torproject.org are impossible to solve for humans ([#10809](https://trac.torproject.org/projects/tor/ticket/10809)
+* **2014-02-05** reCAPTCHA on bridges.torproject.org are impossible to solve for humans ([#10809](https://trac.torproject.org/projects/tor/ticket/10809))
 
 ## Affecting Firefox 24 based bundles
 
@@ -15,5 +15,6 @@
 # Frequent questions
 
 * **2013-04-17** Why Ghostery / Adblock+ will not be added to the TBB ([#4188](https://trac.torproject.org/projects/tor/ticket/4188))
+* **2014-01-03**  torbrowser in the apple app store is fake ([10549](https://trac.torproject.org/projects/tor/ticket/10549))
 
 To edit this page, clone the git repo at https://git.torproject.org/project/help/wiki.git and ask Lunar to merge your changes.
