@@ -7,7 +7,6 @@
 * **2013-04-12** Gettor: TBB too big for Gmail ([#8542](https://trac.torproject.org/projects/tor/ticket/8542))
 * **2013-06-01** Turkish Tor Browser Bundle ([9010](https://trac.torproject.org/projects/tor/ticket/9010))
 * **2014-01-07** Tor Browser's Private Browsing Mode breaks sites ([#10569](https://trac.torproject.org/projects/tor/ticket/10569))
-* **2014-02-05** reCAPTCHA on bridges.torproject.org are impossible to solve for humans ([#10809](https://trac.torproject.org/projects/tor/ticket/10809))
 * **2014-03-27**  Tor Launcher configuration wizard has no text in Korean and Vietnamese ([#11336](https://trac.torproject.org/projects/tor/ticket/11336))
 
 ## Affecting Firefox 24 based bundles
