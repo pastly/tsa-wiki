@@ -24,9 +24,10 @@ For a list of services and which servers they run on check
 * [[git, shell, ldap, etc. accounts|doc/accounts]]
 * [[SVN accounts|doc/svn-accounts]]
 
-== other, non TSA stuff:
+== other, non TSA stuff
 
 * [[git repos and gitweb|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure/git.torproject.org]]
+* [[even more infrastructure|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure]]
 
 == internal documentation
 
