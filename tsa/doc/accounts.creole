@@ -27,7 +27,7 @@ actually belongs to the person that he wants to have access.
 
 The user's PGP key should be available from the public keyserver network.
 
-The sponsor will create a ticket in [[trac||https://trac.torproject.org/projects/tor/newticket]]
+The sponsor will create a ticket in [[trac|https://trac.torproject.org/projects/tor/newticket]]
 in the {{{Tor Sysadmin Team}}} component:
 * The ticket should include a short rationale as to why the account is
   required,
@@ -79,13 +79,13 @@ feature is with
 After validating the request the daemon will generate a new random password,
 set it in the directory and respond with an encrypted message containing the
 new password. This new password can then be used to
-[[login||https://db.torproject.org/login]] (click the {{{"Update my info"}}}
+[[login|https://db.torproject.org/login]] (click the {{{"Update my info"}}}
 button), and use the {{{"Change password"}}} fields to create a new LDAP
 password.
 
 === Host specific passwords / sudo passwords ===
 
-Please note that, after [[logging in||https://db.torproject.org/login]], that
+Please note that, after [[logging in|https://db.torproject.org/login]], that
 the {{{"sudo passwords"}}} fields at the very bottom of the {{{"Update my
 info"}}} form DO NOT WORK.
 
@@ -98,7 +98,7 @@ enjoyable, series of puzzles, but BEWARE: THE CAKE IS A LIE.
 
 If you are planning on migrating to a new PGP key and you also want to
 change your key in LDAP, you need to create a ticket in
-[[trac||https://trac.torproject.org/projects/tor/newticket]] in the
+[[trac|https://trac.torproject.org/projects/tor/newticket]] in the
 {{{Tor Sysadmin Team}}} component:
 * The ticket should include your username, your old PGP fingerprint
   and your new PGP fingerprint.
@@ -110,7 +110,7 @@ change your key in LDAP, you need to create a ticket in
 If you already revoked or lost your old PGP key and you migrated to a
 new one before updating LDAP, you need to find a sponsor to create a
 ticket for you. The sponsor should create a ticket in
-[[trac||https://trac.torproject.org/projects/tor/newticket]] in the
+[[trac|https://trac.torproject.org/projects/tor/newticket]] in the
 {{{Tor Sysadmin Team}}} component:
 * The ticket should include your username, your old PGP fingerprint
   and your new PGP fingerprint.
