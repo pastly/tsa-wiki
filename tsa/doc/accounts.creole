@@ -38,7 +38,7 @@ in the {{{Tor Sysadmin Team}}} component:
 
 === Step n+1 ===
 
-Once the request has been filed it will be reviewed by Roger, Andrew, or Nick
+Once the request has been filed it will be reviewed by Roger or Nick
 and either approved or rejected.
 
 If the board indicates their assent, the sysadmin team will then create the
