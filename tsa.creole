@@ -23,9 +23,9 @@ For a list of services and which servers they run on check
 
 * [[git, shell, ldap, etc. accounts|doc/accounts]]
 * [[SVN accounts|doc/svn-accounts]]
-* [[ssh|doc/ssh-jump-host]]
+* [[ssh jump host|doc/ssh-jump-host]]
 * [[writing to www, extra, dist, cdn, and other websites|doc/static-sites]]
-* [[When using extra.tpo|doc/extra]]
+* [[when using extra.tpo|doc/extra]]
 
 == other, non TSA stuff
 
