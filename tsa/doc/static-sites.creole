@@ -14,6 +14,10 @@ How do you edit one of these websites? Let's say you want to edit "extra".
 
 * Then you make your edits as desired to
   "/srv/extra-master.torproject.org/htdocs/".
+  For example, if you have to add one or more images (or files) that you want to use in a blog post you can:
+  {{{
+    scp /home/user/Desktop/image.png staticiforme.tpo:/srv/extra-master.torprojet.org/htdocs/blog/2017-01-01-new-blog-post/
+  }}}
 
 * When you're ready, you run "static-update-component extra.torproject.org"
   to sync your changes to the www rotation.
