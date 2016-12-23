@@ -1,0 +1,10 @@
+= When using extra.tpo =
+
+Extra is one of the sites hosted by "the www rotation". The www rotation uses several computers to host
+its websites and it is used within tpo for redundancy.
+
+Extra is used to host images that can be linked in blog posts and the like. The idea is that you do not need to
+link images from your own computer or people.tpo.
+
+Extra is used like other static sites within tpo.
+[[Learn how to write to extra|static-sites]]

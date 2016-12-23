@@ -1,0 +1,13 @@
+= learning how to do an ssh jump host on tpo =
+
+An ssh jump host is an alternative to SSH tunneling to access internal machines at tpo.
+ProxyCommand automatically executes ssh command on remote host to jump to the next host and forward all traffic through.
+
+Ex: To perform a ssh jump host and access staticiforme.tpo you might add the following to your ~/.ssh/config
+
+{{{
+Host staticiforme.torproject.org
+ProxyCommand ssh -l %r -W %h:%p perdulce.torproject.org
+
+untested, for your ~/.ssh/config
+}}}
