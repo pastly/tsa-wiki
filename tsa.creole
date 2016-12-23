@@ -23,6 +23,7 @@ For a list of services and which servers they run on check
 
 * [[git, shell, ldap, etc. accounts|doc/accounts]]
 * [[SVN accounts|doc/svn-accounts]]
+* [[writing to www, extra, dist, cdn, and other websites|doc/static-sites]]
 
 == other, non TSA stuff
 

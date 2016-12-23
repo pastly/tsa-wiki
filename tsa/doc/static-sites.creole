@@ -1,0 +1,26 @@
+= writing to www, extra, dist, cdn, and other websites =
+
+(Please expand this documentation page!)
+
+The www.torproject.org website is hosted at several computers
+for redundancy, and these computers are together called "the www
+rotation". The www rotation serves a variety of other websites too,
+like extra.tp.o, dist.tp.o, cdn.tp.o, and more.
+
+The complete list of websites served by the www rotation is:
+
+* What's the answer? "grep -- -master /etc/static-components.conf" from
+staticiforme?
+
+How do you edit one of these websites? Let's say you want to edit 'extra'.
+
+* First you ssh in to staticiforme
+  (using an ssh jump host if needed [maybe somebody can create a short file
+  explaining the recommended configuration there?]),
+
+* Then you make your edits as desired to
+  "/srv/extra-master.torproject.org/htdocs/".
+
+* When you're ready, you run "static-update-component extra.torproject.org"
+  to sync your changes to the www rotation.
+
