@@ -21,7 +21,7 @@ How do you edit one of these websites? Let's say you want to edit "extra".
 Example: You want to copy image.png from your Desktop to your blog post indexed as "2017-01-01-new-blog-post"
 
 {{{
-  scp /home/user/Desktop/image.png staticiforme.tpo:/srv/extra-master.torprojet.org/htdocs/blog/2017-01-01-new-blog-post/
+  scp /home/user/Desktop/image.png staticiforme.tpo:/srv/extra-master.torproject.org/htdocs/blog/2017-01-01-new-blog-post/
 }}}
 
 The complete list of websites served by the www rotation is not easy
