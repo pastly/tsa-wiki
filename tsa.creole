@@ -8,7 +8,7 @@ It has mostly documentation mainly targeted for the team members, but
 may also have useful information for people with torproject.org
 accounts.
 
-To contact us, mail torproject-admin@torproject.org.
+To contact us, mail [[torproject-admin@torproject.org|mailto:torproject-admin@torproject.org]].
 
 For a list of services and which servers they run on check
 [[ud-ldap|https://db.torproject.org/machines.cgi]].
@@ -26,6 +26,7 @@ For a list of services and which servers they run on check
 * [[ssh jump host|doc/ssh-jump-host]]
 * [[writing to www, extra, dist, cdn, and other websites|doc/static-sites]]
 * [[when using extra.tpo|doc/extra]]
+* [[sys admin and service admin tasks|doc/admins]]
 
 == other, non TSA stuff
 

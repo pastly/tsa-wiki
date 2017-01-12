@@ -1,0 +1,28 @@
+= torproject.org Admins =
+
+The admin team at the Tor project maintains our infrastructure and services.
+
+Within the admin team we have sysadmins and services admins. Distinction within
+the two is somewhat blurry, yet the rule of thumb is that our sysadmins do not
+maintain every service that we offer. Rather, they maintain the underlying computers
+ -- make sure they get package updates, make sure they stay on the network, etc.
+
+Then it's up to the service admins to keep their services (onionoo, atlas, blog, etc) working as intended.
+
+For example, "the blog is returning 503 errors" is a service admin thing, i.e. the
+blog service is experiencing a problem. Instead, "the blog doesn't ping" is a sysadmin thing.
+I.e. the machine running the blog service has an issue.
+
+Other tasks that the sysadmins take on are along the line of "I need this deb
+installed" and "there's a firewall rule blocking my packets to that other Tor
+machine" and "I need this userid added to that group".
+
+The service admins instead are responsible of things like "the donation machine
+is not handling credit cards correctly", "a video on media.torproject.org is
+returning 403 because its permissions are set wrong", and "the check.tp.o
+webserver crashed".
+
+A list of user facing services and their maintainers can be found at our
+[[infrastructure wiki|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure]].
+
+A list of development machines can be found [[here|https://db.torproject.org/machines.cgi]]
