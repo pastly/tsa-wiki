@@ -25,4 +25,4 @@ webserver crashed".
 A list of user facing services and their maintainers can be found at our
 [[infrastructure wiki|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure]].
 
-A list of development machines can be found [[here|https://db.torproject.org/machines.cgi]]
+A list of development machines can be found [[here|https://db.torproject.org/machines.cgi]].
