@@ -25,6 +25,6 @@ The following SVN repositories are available:
  2. The user needs to pick a username and which repository to access (see list above)
  3. SVN access requires output from the following command:
  > htdigest -c password.tmp "Tor subversion repository" <username>
- 4. The output should be mailed to the subversion service maintainer (See [Infrastructure Page on trac](https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure) with Trac ticket reference contained in the email.
+ 4. The output should be mailed to the subversion service maintainer (See [Infrastructure Page on trac](https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure)) with Trac ticket reference contained in the email.
  5. The user will be added and emailed when access is granted.
  6. The trac ticket is updated and closed.
