@@ -66,6 +66,15 @@ See also: the {{{"Host specific passwords"}}} section below
 
 == <a id="password-reset">Changing/Resetting your passwords</a> ==
 
+To find out who is on a specific group you can ssh to perdulce:
+
+$ ssh perdulce.torproject.org
+
+Then you can run:
+
+$ getent group
+
+
 === LDAP ===
 
 If you've lost your LDAP password, you can request that a new one be
