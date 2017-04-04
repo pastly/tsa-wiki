@@ -62,10 +62,6 @@ Should the group be orphaned or have no remaining active members, the
 same set of people who can approve new account requests can request
 you be added.
 
-See also: the {{{"Host specific passwords"}}} section below
-
-== <a id="password-reset">Changing/Resetting your passwords</a> ==
-
 To find out who is on a specific group you can ssh to perdulce:
 
 $ ssh perdulce.torproject.org
@@ -73,6 +69,10 @@ $ ssh perdulce.torproject.org
 Then you can run:
 
 $ getent group
+
+See also: the {{{"Host specific passwords"}}} section below
+
+== <a id="password-reset">Changing/Resetting your passwords</a> ==
 
 === LDAP ===
 
