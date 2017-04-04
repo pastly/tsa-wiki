@@ -74,7 +74,6 @@ Then you can run:
 
 $ getent group
 
-
 === LDAP ===
 
 If you've lost your LDAP password, you can request that a new one be
