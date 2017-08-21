@@ -2,18 +2,19 @@
 
 The admin team at the Tor project maintains our infrastructure and services.
 
-Within the admin team we have sysadmins and services admins. Distinction within
-the two is somewhat blurry, yet the rule of thumb is that our sysadmins do not
-maintain every service that we offer. Rather, they maintain the underlying computers
- -- make sure they get package updates, make sure they stay on the network, etc.
+Within the admin team we have sysadmins and services admins. While the
+distinction between the two might seem blurry, the rule of thumb is that
+our sysadmins do not maintain every service that we offer. Rather, they
+maintain the underlying computers -- make sure they get package updates,
+make sure they stay on the network, etc.
 
 Then it's up to the service admins to keep their services (onionoo, atlas, blog, etc) working as intended.
 
 For example, "the blog is returning 503 errors" is a service admin thing, i.e. the
-blog service is experiencing a problem. Instead, "the blog doesn't ping" is a sysadmin thing.
-I.e. the machine running the blog service has an issue.
+blog service is experiencing a problem. Instead, "the blog doesn't ping" is a sysadmin thing,
+i.e. the machine running the blog service has an issue.
 
-Other tasks that the sysadmins take on are along the line of "I need this deb
+Other tasks that the sysadmins take on are along the lines of "I need this deb
 installed" and "there's a firewall rule blocking my packets to that other Tor
 machine" and "I need this userid added to that group".
 
