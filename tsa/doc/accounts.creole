@@ -72,6 +72,16 @@ $ getent group
 
 See also: the {{{"Host specific passwords"}}} section below
 
+== <a id="aliases">Getting added to an existing email alias</a> ==
+
+Similar to being added to an LDAP group, the right way to get added
+to an existing email alias is by getting somebody who is already on
+that alias to file a ticket asking for you to be added.
+
+For specifics, see the "The sponsor will create a ticket" section above:
+create a ticket specifying the alias, the new address to add, and a
+brief motivation for the change.
+
 == <a id="password-reset">Changing/Resetting your passwords</a> ==
 
 === LDAP ===
