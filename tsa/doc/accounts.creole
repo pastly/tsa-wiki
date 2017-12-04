@@ -115,11 +115,12 @@ enjoyable, series of puzzles, but BEWARE: THE CAKE IS A LIE.
 == <a id="key-rollover">Changing/Updating your PGP key</a> ==
 
 If you are planning on migrating to a new PGP key and you also want to
-change your key in LDAP, you need to create a ticket in
+change your key in LDAP, or if you just want to update the copy of your key
+we have on file, you need to create a ticket in
 [[trac|https://trac.torproject.org/projects/tor/newticket]] in the
 {{{Tor Sysadmin Team}}} component:
 * The ticket should include your username, your old PGP fingerprint
-  and your new PGP fingerprint.
+  and your new PGP fingerprint (if you're changing keys).
 * The ticket should be PGP signed with your PGP key that is currently
   stored in LDAP.
 
