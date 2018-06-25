@@ -7,6 +7,33 @@ their email forwards.
 It also stores group memberships which in turn affects which users can log into
 which [[hosts|https://db.torproject.org/machines.cgi]].
 
+== <a id="ldap-or-alias">Decision tree: LDAP account or email alias?</a> ==
+
+Here is a simple decision tree to help you decide if a new contributor
+needs an LDAP account, or if an email alias will do. (All things being
+equal, it's better to set people up with only an email alias if that's all
+they need, since it reduces surface area which is better for security.)
+
+Are they a maintainer for one of our official software projects, meaning
+they need to push commits (write) to one of our git repos? If yes,
+they should have an LDAP account.
+
+Do they need to access (read) a private git repo, like "dirauth-conf"?
+If yes, they should have an LDAP account.
+
+Do they want to make their own personal clones of our git repos, for
+example to propose patches and changes? If yes, and also they are a
+Core Contributor, they should have an LDAP account. If yes, but they're
+not a Core Contributor, they should put their git repos somewhere else,
+like github or gitlab.
+
+Do they need to log in to our servers, for example to maintain one of
+our websites or services, or to use our irc bouncer? If yes, and also
+they are a Core Contributor, they should have an LDAP account.
+
+Are they a Core Contributor, but none of the above cases apply to them?
+If so, they should have an email alias.
+
 == <a id="new-account">New accounts</a> ==
 
 New accounts have to be sponsored by somebody who already has a torproject.org
