@@ -28,7 +28,7 @@ not a Core Contributor, they should put their git repos somewhere else,
 like github or gitlab.
 
 Do they need to log in to our servers, for example to maintain one of
-our websites or services, or to use our irc bouncer? If yes, and also
+our websites or services, or to use our shared irc host? If yes, and also
 they are a Core Contributor, they should have an LDAP account.
 
 Are they a Core Contributor, but none of the above cases apply to them?
