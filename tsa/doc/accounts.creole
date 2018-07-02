@@ -71,6 +71,21 @@ and either approved or rejected.
 If the board indicates their assent, the sysadmin team will then create the
 account as requested.
 
+== <a id="retiring-account">Retiring accounts</a> ==
+
+If you won't be using your LDAP account for a while, it's good security
+hygiene to have it disabled. Disabling an LDAP account is a simple
+operation, and reenabling an account is also simple, so we shouldn't be
+shy about disabling accounts when people stop needing them.
+
+To simplify the review process for disable requests, and because disabling
+by mistake has less impact than creating a new LDAP account by mistake, the
+policy here is "any two of {Roger, Nick, Shari, Isabela, Erin, Damian}
+are sufficient to confirm a disable request."
+
+(When we disable an LDAP account, we should be sure to either realize
+and accept that email forwarding for the person will stop working too,
+or add a new line in the email alias so email keeps working.)
 
 == <a id="get-access">Getting added to an existing group/Getting access to a specific host</a> ==
 
