@@ -1,13 +1,25 @@
 = learning how to do an ssh jump host on tpo =
 
-You need to do an ssh jump host (an alternative to SSH tunneling) to access internal machines at tpo.
+You need to use an ssh jump host to access internal machines at tpo.
+If you have a recent enough ssh (>= 2016 or so), then you can use the ProxyJump directive.  Else, use ProxyCommand.
 ProxyCommand automatically executes the ssh command on the host to jump to the next host and forward all traffic through.
+
+If your local username is different from your tpo username, also set it in your .ssh/config.
 
 Ex: To perform a ssh jump host and access staticiforme.tpo you might add the following to your ~/.ssh/config
 
+With recent ssh versions:
 {{{
+Host *.torproject.org
+  User <username>
 Host staticiforme.torproject.org
-ProxyCommand ssh -l %r -W %h:%p perdulce.torproject.org
+  ProxyJump perdulce.torproject.org
+}}}
 
-for your ~/.ssh/config
+Or with old ssh versions:
+{{{
+Host *.torproject.org
+  User <username>
+Host staticiforme.torproject.org
+  ProxyCommand ssh -l %r -W %h:%p perdulce.torproject.org
 }}}
