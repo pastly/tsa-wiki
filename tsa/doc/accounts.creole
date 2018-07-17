@@ -19,18 +19,23 @@ they need, since it reduces surface area which is better for security.)
 Regardless of whether they are a Core Contributor:
 * Are they a maintainer for one of our official software projects, meaning
   they need to push commits (write) to one of our git repos?
+** They should get an LDAP account.
 * Do they need to access (read) a private git repo, like "dirauth-conf"?
+** They should get an LDAP account.
 
 Are they a Core Contributor?
 * Do they want to make their own personal clones of our git repos, for
   example to propose patches and changes?
+** They should get an LDAP account.
 ** If they're not a Core Contributor, they should put their git repos
    somewhere else, like github or gitlab.
 * Do they need to log in to our servers to use our shared irc host?
+** They should get an LDAP account.
 ** If they're not a Core Contributor, they should put their IRC somewhere
    else, like pastly's server.
 * Do they need to log in to our servers to maintain one of our websites or
   services?
+** An existing Core Contributor should request an LDAP account.
 ** If they're not a Core Contributor, but they are a staff member who needs
    to maintain services, then Tor Project Inc should request an LDAP account.
 ** If they are not a staff member, then an existing Core Contributor should
@@ -41,9 +46,10 @@ See <a href="new-account">New LDAP accounts</a> for details.
 === Email alias reasons ===
 
 If none of the above cases apply:
-* Are they a Core Contributor? An existing Core Contributor should request
-  an email alias.
-* Are they a staff member? Tor Project Inc should request an email alias.
+* Are they a Core Contributor?
+** An existing Core Contributor should request an email alias.
+* Are they a staff member?
+** Tor Project Inc should request an email alias.
 
 See <a href="aliases">Changing email aliases</a> for details.
 
@@ -132,7 +138,7 @@ See also: the {{{"Host specific passwords"}}} section below
 Create a ticket specifying the alias, the new address to add, and a
 brief motivation for the change.
 
-For specifics, see the "The sponsor will create a ticket" section above:
+For specifics, see the "The sponsor will create a ticket" section above.
 
 === <a id="new-aliases">Adding a new email alias</a> ===
 
