@@ -24,17 +24,17 @@ Regardless of whether they are a Core Contributor:
 Are they a Core Contributor?
 * Do they want to make their own personal clones of our git repos, for
   example to propose patches and changes?
-  * If they're not a Core Contributor, they should put their git repos
-    somewhere else, like github or gitlab.
+** If they're not a Core Contributor, they should put their git repos
+   somewhere else, like github or gitlab.
 * Do they need to log in to our servers to use our shared irc host?
-  * If they're not a Core Contributor, they should put their IRC somewhere
-    else, like pastly's server.
+** If they're not a Core Contributor, they should put their IRC somewhere
+   else, like pastly's server.
 * Do they need to log in to our servers to maintain one of our websites or
   services?
-  * If they're not a Core Contributor, but they are a staff member who needs
-    to maintain services, then Tor Project Inc should request an LDAP account.
-  *  If they are not a staff member, then an existing Core Contributor should
-     request an LDAP account, and explain why they need access.
+** If they're not a Core Contributor, but they are a staff member who needs
+   to maintain services, then Tor Project Inc should request an LDAP account.
+** If they are not a staff member, then an existing Core Contributor should
+   request an LDAP account, and explain why they need access.
 
 See <a href="new-account">New LDAP accounts</a> for details.
 
