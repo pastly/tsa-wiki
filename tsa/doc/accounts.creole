@@ -127,15 +127,32 @@ $ getent group
 
 See also: the {{{"Host specific passwords"}}} section below
 
-== <a id="aliases">Getting added to an existing email alias</a> ==
+== <a id="aliases">Changing email aliases</a> ==
+
+Create a ticket specifying the alias, the new address to add, and a
+brief motivation for the change.
+
+For specifics, see the "The sponsor will create a ticket" section above:
+
+=== <a id="new-aliases">Adding a new email alias</a> ===
+
+==== Personal Email Aliases ====
+
+Tor Project Inc can request new email aliases for staff.
+
+An existing Core Contributor can request new email aliases for new Core
+Contributors.
+
+==== Group Email Aliases ====
+
+Tor Project Inc and Core Contributors can request group email aliases for new
+functions or projects.
+
+=== <a id="existing-aliases">Getting added to an existing email alias</a> ===
 
 Similar to being added to an LDAP group, the right way to get added
 to an existing email alias is by getting somebody who is already on
 that alias to file a ticket asking for you to be added.
-
-For specifics, see the "The sponsor will create a ticket" section above:
-create a ticket specifying the alias, the new address to add, and a
-brief motivation for the change.
 
 == <a id="password-reset">Changing/Resetting your passwords</a> ==
 
