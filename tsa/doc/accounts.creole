@@ -64,22 +64,22 @@ who you are working with and ask them to request an account for you.
 The sponsor will collect all required information:
 * name,
 * initial forwarding email address (the user can change that themselves later),
-* pgp key fingerprint,
+* OpenPGP key fingerprint,
 * desired username.
 
 The sponsor is responsible for verifying the information's accuracy, in
 particular establishing some confidence that the key in question
 actually belongs to the person that he wants to have access.
 
-The user's PGP key should be available from the public keyserver network.
+The user's OpenPGP key should be available from the public keyserver network.
 
 The sponsor will create a ticket in [[trac|https://trac.torproject.org/projects/tor/newticket]]
 in the {{{Tor Sysadmin Team}}} component:
 * The ticket should include a short rationale as to why the account is
   required,
 * contain all the pieces of information listed above, and
-* should be PGP signed by the sponsor using the PGP key we have on
-  file for them.  Please enclose the pgp clearsigned blob using
+* should be OpenPGP signed by the sponsor using the OpenPGP key we have on
+  file for them.  Please enclose the OpenPGP clearsigned blob using
   {{{{{{}}} and {{{}}}}}}.
 
 === Step n+1 ===
@@ -108,16 +108,21 @@ or add a new line in the email alias so email keeps working.)
 
 == <a id="get-access">Getting added to an existing group/Getting access to a specific host</a> ==
 
-Most of the time when people want access to a specific host, what they
-really want is getting added to a particular group -- almost all
-privileges in our infrastructure, such as account on a particular host,
-sudo access to a role account, or write permissions to a specific
+Almost all privileges in our infrastructure, such as account on a particular
+host, sudo access to a role account, or write permissions to a specific
 directory, come from group memberships.
 
-If you want to get added to some unix group, you will have to
-find an existing member of that group.  They should then request on
-trac -- ideally in a PGP signed message (as above in the new account
-creation section) -- that you be added to their group.
+To know which group has access to an specific host, FIXME.
+
+To get added to some unix group, it has to be requested by a member of
+that group.
+This member has to create a new ticket ticket in https://trac.torproject.org,
+OpenPGP-signed (as above in the new account creation section),
+requesting who to add to the group.
+
+If a new group needs to be created, FIXME.
+
+The reasons why a new group might need to be created are: FIXME.
 
 Should the group be orphaned or have no remaining active members, the
 same set of people who can approve new account requests can request
@@ -190,28 +195,28 @@ privileges; it is your LDAP password. The mail responder at
 {{{changes@db.torproject.org}}} will take you through a plausible, and perhaps
 enjoyable, series of puzzles, but BEWARE: THE CAKE IS A LIE.
 
-== <a id="key-rollover">Changing/Updating your PGP key</a> ==
+== <a id="key-rollover">Changing/Updating your OpenPGP key</a> ==
 
-If you are planning on migrating to a new PGP key and you also want to
+If you are planning on migrating to a new OpenPGP key and you also want to
 change your key in LDAP, or if you just want to update the copy of your key
 we have on file, you need to create a ticket in
 [[trac|https://trac.torproject.org/projects/tor/newticket]] in the
 {{{Tor Sysadmin Team}}} component:
-* The ticket should include your username, your old PGP fingerprint
-  and your new PGP fingerprint (if you're changing keys).
-* The ticket should be PGP signed with your PGP key that is currently
+* The ticket should include your username, your old OpenPGP fingerprint
+  and your new OpenPGP fingerprint (if you're changing keys).
+* The ticket should be OpenPGP signed with your OpenPGP key that is currently
   stored in LDAP.
 
 === Revoked or lost old key ===
 
-If you already revoked or lost your old PGP key and you migrated to a
+If you already revoked or lost your old OpenPGP key and you migrated to a
 new one before updating LDAP, you need to find a sponsor to create a
 ticket for you. The sponsor should create a ticket in
 [[trac|https://trac.torproject.org/projects/tor/newticket]] in the
 {{{Tor Sysadmin Team}}} component:
-* The ticket should include your username, your old PGP fingerprint
-  and your new PGP fingerprint.
-* Your PGP key needs to be on a public keyserver and be signed by at
+* The ticket should include your username, your old OpenPGP fingerprint
+  and your new OpenPGP fingerprint.
+* Your OpenPGP key needs to be on a public keyserver and be signed by at
   least one Tor person other than your sponsor.
-* The ticket should be PGP signed with the current valid PGP key of
+* The ticket should be OpenPGP signed with the current valid OpenPGP key of
   your sponsor.
