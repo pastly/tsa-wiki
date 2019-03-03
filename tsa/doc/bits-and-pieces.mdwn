@@ -1,4 +1,4 @@
-# Bits and pieces of Tor Project infrastructure
+# Bits and pieces of Tor Project infrastructure information
 
 A collection of information looking for a better place, perhaps after
 being expanded a bit to deserve their own page.

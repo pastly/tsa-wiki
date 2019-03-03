@@ -69,7 +69,7 @@ The sponsor will collect all required information:
 
 The sponsor is responsible for verifying the information's accuracy, in
 particular establishing some confidence that the key in question
-actually belongs to the person that he wants to have access.
+actually belongs to the person that they want to have access.
 
 The user's OpenPGP key should be available from the public keyserver network.
 
