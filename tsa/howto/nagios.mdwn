@@ -1,0 +1,18 @@
+# Nagios/Icinga service for Tor Project infrastructure
+
+## Getting status updates
+
+- Using a web browser: https://nagios.torproject.org/cgi-bin/icinga/status.cgi?allunhandledproblems&sortobject=services&sorttype=1&sortoption=2
+- On IRC: /j #tor-nagios
+- Over email: Add your email address to `tor-nagios/config/static/objects/contacts.cfg`
+
+## How to run a nagios check manually on a host (TARGET.tpo)
+
+    NCHECKFILE=$(egrep -A 4 THE-SERVICE-TEXT-FROM-WEB | egrep '^ *nrpe:' | cut -d : -f 2 | tr -d ' |"')
+    NCMD=$(ssh -t TARGET.tpo grep "$NCHECKFILE" /etc/nagios -r)
+    : NCMD is the command that's being run. If it looks sane, run it. With --verbose if you like more output.
+    ssh -t TARGET.tpo "$NCMD" --verbose
+
+## How to add a host
+
+- Add new hosts to `tor-nagios/config/nagios-master.cfg`.

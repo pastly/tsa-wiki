@@ -1,0 +1,108 @@
+# Bits and pieces of Tor Project infrastructure
+
+A collection of information looking for a better place, perhaps after
+being expanded a bit to deserve their own page.
+
+## Backups
+
+* We use [[Bacula|https://en.wikipedia.org/wiki/Bacula]] to make
+  backups, with one host running a director (currently dictyotum.tpo)
+  and another host for storage (currently brulloi.tpo).
+* There are `BASE` files and `WAL` files, the latter for incremental
+  backups.
+* The logs found in `/var/log/bacula-main.log` and `/var/log/bacula/`
+  seem mostly empty, just like the systemd journals.
+
+### Servers
+
+* There's one `director` and one `storage node`.
+
+* The director runs `/usr/local/sbin/dsa-bacula-scheduler` which reads
+  `/etc/bacula/dsa-clients` for a list of clients to back up. This
+  file is populated by puppet (puppetdb
+  `$bacula::tag_bacula_dsa_client_list`) and will list clients until
+  they're being deactivated in puppet.
+
+### Clients
+* `tor-puppet/modules/bacula/manifests/client.pp` gives an idea of
+  where things are at on backup clients.
+* Clients run the Bacula File Daemon, `bacula-fd(8)`.
+
+## Onion sites
+
+- Example from a vhost template
+
+    <% if scope.function_onion_global_service_hostname(['crm-2018.torproject.org']) -%>
+    <Virtualhost *:80>
+        ServerName <%= scope.function_onion_global_service_hostname(['crm-2018.torproject.org']) %>
+        Use vhost-inner-crm-2018.torproject.org
+    </VirtualHost>
+    <% end -%>
+
+- Function defined in
+  `tor-puppet/modules/puppetmaster/lib/puppet/parser/functions/onion_global_service_hostname.rb`
+  parses
+  `/srv/puppet.torproject.org/puppet-facts/onionbalance-services.yaml`.
+- `onionbalance-services.yaml` is populated through
+  `onion::balance` (`tor-puppet/modules/onion/manifests/balance.pp`)
+- `onion:balance` uses the `onion_balance_service_hostname` fact from `tor-puppet/modules/torproject_org/lib/facter/onion-services.rb`
+
+## Puppet
+
+### Before it all starts
+
+- `puppet.tpo` is currently being run on `pauli.tpo`
+- This is where the tor-puppet git repo lives
+- The repo has hooks to populate `/etc/puppet` with its contents, most
+  notably the modules directory.
+- All paths in this document are relative to the root of this
+  repository.
+
+### File layout
+
+- The root of definitions and execution is found in
+  `tor-puppet/manifests/site.pp`.
+
+- `local.yaml` (modules/torproject_org/misc/local.yaml) defines
+  services and list which host(s) supply each service. local.yaml is
+  read by [site.pp](manifests/site.pp) for setting up the $localinfo
+  and $nodeinfo variables.
+
+- `roles init.pp` (modules/roles/manifests/init.pp) maps services to
+  roles, using the `$nodeinfo` variable.
+
+- `torproject.org init.pp` (modules/torproject_org/manifests/init.pp)
+  performs basic host initialisation, like configuring Debian mirrors
+  and APT sources, installing a base set of packages, configuring
+  puppet and timezone, setting up a bunch of rc-files and running
+  ud-replicate.
+
+- `hoster.yaml` (modules/torproject_org/misc/hoster.yaml) defines
+  hosting providers and specifies things like which net blocks they
+  use, if they have a DNS resolver or a debian mirror. hoster.yaml is
+  read by
+  - the `nodeinfo()` function
+    (modules/puppetmaster/lib/puppet/parser/functions/nodeinfo.rb),
+    used for setting up the `$nodeinfo` variable
+  - `ferm's def.conf template` (modules/ferm/templates/defs.conf.erb)
+  - the `entropy provider`
+    (modules/puppetmaster/lib/puppet/parser/functions/entropy_provider.rb)
+    TODO
+
+### Generating secrets, an example
+
+- `bacula::director` inherits `bacula` which defines
+- `$bacula_director_secret` using 
+- `hkdf()` and generates
+- `/etc/bacula/bacula-dir.conf` using that
+
+### Custom facts
+
+`modules/torproject_org/lib/facter/software.rb` defines our custom
+facts, making it possible to get answer to questions like "Is this
+host running apache2?" byt simply looking at a puppet variable.
+
+### Misc
+
+- `puppet-lint` is a thing
+- TODO: how to debug things

@@ -1,0 +1,39 @@
+# How to get an X.509 certificate for your new name
+
+## The letnsencrypt-domains git repository
+
+If not already done, clone git repos letsencrypt-domains and
+backup-keys.
+
+    git clone ssh://git@git-rw.torproject.org/admin/letsencrypt-domains
+	cd letsencrypt-domains
+	git clone pauli.torproject.org:/srv/puppet.torproject.org/git/tor-backup-keys.git backup-keys
+
+## Add your new name and generate a private key
+
+    $EDIT domains		# add your domain name and optional SAN(s)
+	./bin/manage-backup-keys create   # see tor-passwords/000-backup-keys for the passphrase
+
+## Push they new key to the backup-keys repo
+
+    cd backup-keys
+	git status
+	git add $yourfiles
+	git commit
+	git push
+	cd ..
+
+## Push the updated domain list to the letsencrypt-domains repo
+
+	git diff domains
+	git add domains
+	git commit
+	git push
+
+- dehydrated is now being run on DNS master (nevii.tpo), see the
+  `letsencrypt` user and `/srv/letsencrypt`.
+- Resulting keys and certs are being copied to the LDAP host
+  (currently pauli.tpo) under
+  `/srv/puppet.torproject.org/from-letsencrypt/`, from where they're
+  being picked up by the host running the service somehow.
+- FIXME: and then what?
