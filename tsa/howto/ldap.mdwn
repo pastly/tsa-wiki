@@ -1,0 +1,29 @@
+LDAP primer
+===========
+
+LDAP is not accessible to the outside world, so you need to be behind
+the firewall. Once that's resolved, you can use [ldapvi(1)](https://manpages.debian.org/ldapvi.1.en.html) or
+[ldapsearch(1)](https://manpages.debian.org/ldapsearch.1.en.html) to inspect the database. User documentation on that
+process is in [[doc/accounts]].
+
+Basic design
+------------
+
+The LDAP setup at Tor is based on the one from
+Debian.org. `/etc/password` and `groups` files are synchronized from
+the central LDAP server using the `sshdist` account, which means
+things keep working when LDAP is down. Most operations can be
+performed on the [db.torproject.org](https://db.torproject.org/) site or by [email](https://db.torproject.org/doc-mail.html).
+
+Handy commands
+--------------
+
+This will load a text editor with a dump of all the users (useful to
+modify an existing user or add a new one):
+
+    ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
+
+This will list all known hosts in LDAP:
+
+    ldapsearch -ZZ -vLxW -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org" -b "ou=hosts,dc=torproject,dc=org" '(objectclass=*)' | grep ^dn:
+
