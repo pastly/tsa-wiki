@@ -109,3 +109,5 @@
   swapon -a
 
 * add to nagios
+
+* document the machine in the evil Google spreadsheet (!)
