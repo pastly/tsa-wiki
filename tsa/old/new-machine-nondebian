@@ -1,0 +1,52 @@
+for fc14:
+
+11-03-08 23:11:34 <weasel> I cloned the git repo into usr/local/, added two symlinks to local/sbin,
+11-03-08 23:11:41 <weasel> copied the config file to /etc/userdir-ldap
+11-03-08 23:11:47 <weasel> modified nsswitch.conf,
+11-03-08 23:11:53 <weasel> modified the pam stuff (added mkhomedir)
+11-03-08 23:12:12 <weasel> created a symlink from /var/db/.... to ../lib/misc/foo
+11-03-08 23:12:32 <weasel> disabled selinux, so ssh can read the key files
+11-03-08 23:12:38 <weasel> update ssh config
+11-03-08 23:12:40 <weasel> fix timezone
+11-03-08 23:12:52 <weasel> and created the zsh symlink
+11-03-08 23:13:03 <weasel> I think that's it.  maybe I forgot something
+
+
+
+* fix up hostname.  It needs to have the fully qualified hostname in 'hostname -f'
+
+cd /usr/local && git clone https://git.torproject.org/admin/userdir-ldap.git
+
+cd /usr/local/sbin && ln -s ../ln -s ../userdir-ldap/ud-config ../userdir-ldap/ud-replicate .
+
+mkdir /etc/userdir-ldap && cd /etc/userdir-ldap && cp /usr/local/userdir-ldap/userdir-ldap.conf .
+
+echo alberti.torproject.org,alberti,db.torproject.org,db,38.229.70.7 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAqFvZsXVYuzrgDO7IbBjeBO5WKk+sXmb0rRzPcSwIRTaMS4h3QdLDG1VjeNA5CUeAjTOYC0hAWZiXzfsl4u0KwNJUWRGZCclbIt6V7Tk74mM0405A+y0JP3NwUnTevcRcVxiDo8mrI85y5MXvipaWnPdGYayL09h9EeNDzBVKNZooCeKQBqkejhH69gyy4gdN9HgfMep3uOInyjr86W49pZ4n7CXoVt8QkTWtoBX/qPHK8igqX/dcYkOgCclVYRrQ1G4FbxEOGD+QzwPnCGDWCUgapFXoqh7HpG0Xfg5iDXGFcIu1JgDdr/SFJkr6hmYjW0gmkge0ihGj7GZ6onWhzQ== root@alberti > /etc/ssh/ssh_known_hosts &&
+ud-replicate
+
+maybe change chown in ud-replicate
+
+cd /var/db && ln -s ../lib/misc/group.db ../lib/misc/passwd.db ../lib/misc/shadow.db .
+
+edit /etc/nsswitch.conf to read:
+ | passwd:     files db
+ | shadow:     files db
+ | group:      db files
+
+check if 'id weasel' works
+
+disable selinux
+
+include pam mkhomedir for ssh and su.
+
+add to sshd_config:
+AuthorizedKeysFile /etc/ssh/userkeys/%u
+AuthorizedKeysFile2 /var/lib/misc/userkeys/%u
+
+crontab:
+cat > /etc/cron.d/ud-replicate << EOF
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+10,25,40,55 * * * * root ud-replicate
+EOF
+
+sudoers

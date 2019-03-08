@@ -1,0 +1,189 @@
+* set a hostname - pick an unused one from https://svn.torproject.org/svn/projects/misc-sysadmin/onion-names.txt
+* sane base setup
+    echo "Apt::Install-Recommends 0;" > /etc/apt/apt.conf.d/local-recommends &&
+    apt-get install locales-all rsync sudo zsh subversion git-core mtr-tiny ntp &&
+    cat /dev/null > /etc/default/locale
+
+* fix TZ
+    echo 'Etc/UTC' > /etc/timezone &&
+    dpkg-reconfigure tzdata -pcritical -fnoninteractive
+
+* ssh setup
+    cd /etc/ssh/ && rm -f ssh_host_dsa_key ssh_host_dsa_key.pub ssh_host_key ssh_host_key.pub &&
+    mkdir -p /etc/ssh/userkeys && ln -s /root/.ssh/authorized_keys /etc/ssh/userkeys/root &&
+    sed -i -e 's/^HostKey.*_dsa_key/# &/;
+               s/^X11Forwarding yes/X11Forwarding no/;
+               $ a AuthorizedKeysFile /etc/ssh/userkeys/%u
+               $ a AuthorizedKeysFile2 /var/lib/misc/userkeys/%u' sshd_config &&
+    (cd / && env -i /etc/init.d/ssh restart)
+* re-key ssh
+    cd /etc/ssh/ && rm -f ssh_host_rsa_key ssh_host_rsa_key.pub &&
+    dpkg-reconfigure openssh-server
+
+* torproject sources list entry:
+
+sudo apt-key add - << EOF &&
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+mQENBEvgZPYBCADQeFoNmFWv156s+JPiUv6vFZb1sm3sx5g61Wel38MYgEuYEdan
+mFnULzdRc5ScCqXD9iC7vJtAFWv9xobQkpffy8uQNAL6Dom/4A4z8Ywhdt8qwZWt
+qeJQ5HSv/ollXW1jd5B+VCFaLh70PMbooitq8F5uBbVhFzvd4XxbBIWw2PzFzBbI
+0daBpEdwjrtNH/E+M+ZQLMtaYyTZ1vMx+KmP2hrWtKyK4ZLmr+/2rxmoJrFGQwmp
+uBohXRHMrekrdbHPfJHPXqj4SgpP9DRj2MPemQLRByHX6Hll6xy0GKkBhg1Em5Qr
+GCCFXIiSS/kP16f7hpyBxke859m/RXLzCHHDABEBAAG0I2RiLnRvcnByb2plY3Qu
+b3JnIGFyY2hpdmUga2V5IDIwMTAtiQE8BBMBAgAmBQJL4GT2AhsDBQkFo5qABgsJ
+CAcDAgQVAggDBBYCAwECHgECF4AACgkQwsdoQg4eEkBqFAf8DtnZo0flz0IkmKDU
+D1FBAl6SHE5HN7f57mW/0CLMSvWohSKIouSBJH4dUTM8484Z15ikSRW9urzv9dsW
+w24+9EEaxBBVJqoJIMZmvqaM452kZ/zwQR4NBIGxhSJ8UblpQ0gttMB90oVoAx9a
+2erJUD8sRwCxcwPTE3fQMJZEu6oB5jIPnQQAPOznMO19CJmnZIlzWPALFC3NPRSX
+QFEZPO9CGHzpB4UDzpoBctTpTfHot33ep1c5qaLfRkmTIdImqNe2gRykglHXHCa5
+BLU4M6In3gMIoeUFeRzbE7eTm1j7NDUG3EbQf5aguRSWMWbIGWAnZdTH5ZhzSb72
+fVoq6g==
+=dBbT
+-----END PGP PUBLIC KEY BLOCK-----
+EOF
+if ! [ -e /etc/apt/sources.list.d/db.torproject.org.list ] ; then
+        echo 'deb     http://db.torproject.org/torproject-admin          lenny            main' | sudo tee /etc/apt/sources.list.d/db.torproject.org.list
+fi
+
+* install userdir-ldap
+    apt-get update &&  apt-get install userdir-ldap
+
+* fix nsswitch for ud fu.  (you might have to restart sshd here)
+    sed -i -e 's/^passwd:[[:space:]]\+compat$/passwd:         compat db/;
+              s/^group:[[:space:]]\+compat$/group:          db compat/;
+              s/^shadow:[[:space:]]\+compat$/shadow:         compat db/' \
+        /etc/nsswitch.conf
+    (cd / && env -i /etc/init.d/ssh restart)
+
+* add pam_mkhomedir to common-session:
+    grep pam_mkhomedir /etc/pam.d/common-session || \
+    echo "session optional        pam_mkhomedir.so skel=/etc/skel umask=0022" >> /etc/pam.d/common-session
+
+* setup sudo
+    grep '^%adm' /etc/sudoers || echo '%adm    ALL=(ALL) ALL' >> /etc/sudoers
+    grep '^%adm.*apt-get' /etc/sudoers || echo '%adm    ALL=(ALL) NOPASSWD: /usr/bin/apt-get update, /usr/bin/apt-get dist-upgrade, /usr/bin/apt-get clean' >> /etc/sudoers
+
+* add host to ud-ldap
+  : on alberti : && sudo -u sshdist ud-generate && sudo -H ud-replicate
+
+* fix resolver
+  sed -i -e 's/search localdomain/search torproject.org/' /etc/resolv.conf
+
+* do one ud-replicate:
+  echo alberti.torproject.org,alberti,db.torproject.org,db,38.229.70.7 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAqFvZsXVYuzrgDO7IbBjeBO5WKk+sXmb0rRzPcSwIRTaMS4h3QdLDG1VjeNA5CUeAjTOYC0hAWZiXzfsl4u0KwNJUWRGZCclbIt6V7Tk74mM0405A+y0JP3NwUnTevcRcVxiDo8mrI85y5MXvipaWnPdGYayL09h9EeNDzBVKNZooCeKQBqkejhH69gyy4gdN9HgfMep3uOInyjr86W49pZ4n7CXoVt8QkTWtoBX/qPHK8igqX/dcYkOgCclVYRrQ1G4FbxEOGD+QzwPnCGDWCUgapFXoqh7HpG0Xfg5iDXGFcIu1JgDdr/SFJkr6hmYjW0gmkge0ihGj7GZ6onWhzQ== root@alberti > /etc/ssh/ssh_known_hosts &&
+  ud-replicate
+
+* apply phobos' sudo defaults
+  sed -i -e '
+          /^Defaults/ a Defaults mail_badpass\
+Defaults mail_no_host\
+Defaults mail_no_perms\
+Defaults tty_tickets\
+Defaults insults\
+Defaults !lecture
+      ' /etc/sudoers
+* try to become root using sudo.
+
+* disable password auth with ssh (again: once you verified you can log in and become root using keys.)
+    #vi /etc/ssh/sshd_config
+    #  | PasswordAuthentication no
+
+    if grep '^PasswordAuthentication' /etc/ssh/sshd_config; then
+      sed -i -e 's/^PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config;
+    else
+      sed -i -e '$ a PasswordAuthentication no' /etc/ssh/sshd_config
+    fi &&
+    (cd / && env -i /etc/init.d/ssh restart)
+
+* get rid of unneeded network services:
+
+  dpkg --purge portmap nfs-common
+
+  dpkg --purge exim4 exim4-base exim4-config exim4-daemon-light  at bsd-mailx
+  userdel -r Debian-exim
+
+* install postfix
+  apt-get install postfix postfix-cdb bsd-mailx
+
+  rm /etc/mailname
+
+  cat > /etc/postfix/main.cf << 'EOF'
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+mydomain = torproject.org
+myorigin = $myhostname
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = no
+
+# TLS parameters
+smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_use_tls=yes
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtp_use_tls=yes
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+alias_maps =
+        hash:/etc/aliases
+        cdb:/var/lib/misc/thishost/mail-forward
+alias_database = hash:/etc/aliases
+mydestination = $myhostname
+                localhost.$mydomain
+                localhost
+relayhost =
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+mailbox_command = procmail -a "$EXTENSION"
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = all
+EOF
+
+   env -i /etc/init.d/postfix restart
+
+   sed -i -e 's/^root:.*/root: torproject-admin@torproject.org/' /etc/aliases && newaliases
+
+
+* install root admin key
+  echo 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAgEA2ToYPcCcP+/+E8dVlorOeeQpAauQN2rHF8LBy0BPzY9W4x0eMkPI5r5vDSN48+w9W/SELTd1ZFy7d2n6bjt06W0+78YwLeRN4wOoyiryh3yd2Kiy74Plb81RRx+Px9erh0mpMF9krnWfGyrr+q8be2ACWNHLiSUyx5PC5QmetBH+Ug7O+NpAL/grmLgdzkOEzaatrI+re1RyfwvJQ6ZC3Wc+KKUOVvB6zoRk9qegUydvx1NX5SrfDQrBzFBv6vcL0N1TESxDx8Pu6uFFsuWWBlhb3AKZKJEtLV8AqGQ007A3oK5PP/fdUvgKOcbw3bWXZKy/dgcH+httQPPt8brmXtRvNgXozsH6soegnoWA/opNVHcWwLjfk9mFMGLvY5zzX26xg9sVnBK1dI6geqGhv20oWIcIqEhmFr0HQnCIE9tMRb6jDmzymXoX2gnR2nfgpg81jLFSYm/BJYjISVrLAFy50N+4HcJ/VYTO/KBVoERfkz88LK5p2zOQNdMNSN4WIGizl6G7lQrFAZAkdk2dfaIA/PkxVXG0/Rfh+R2z94UCiAfc06FzkYRfFreThpgPWI4B/QFcBQ0MsxuQzl+ea3jRVKRGyKHpwRtjh2Ebt0YfCpyn1ZfU+enLIYJ0TmpC6HXpWiSc8qSaP6gMF0ULqZUtip1NfJiaEkUyhR5XbIU= Peter Palfrader - torproject adm key (2010-01-09)' >> /root/.ssh/authorized_keys &&
+  wc -l /root/.ssh/authorized_keys
+
+* clean away broken firewall
+  rm -f /etc/network/if-pre-up.d/iptables /etc/iptables.rules /etc//iptables.up.rules
+  for j in INPUT FORWARD OUTPUT; do iptables -P $j ACCEPT; done; iptables -F
+
+* set new root password
+
+* sane editor
+  sudo apt-get install vim && sudo  update-alternatives --set editor /usr/bin/vim.basic
+
+
+* add more software
+apt-get install ferm git-core logwatch rkhunter munin-node sudo fail2ban htop etckeeper wget
+
+* configure the firewall
+* take ferm defaults, but need something for ferm here.
+
+* rkhunter
+rkhunter --update --propupd
+
+* fail2ban:
+/etc/init.d/fail2ban start
+
+* copy munin-node.conf from schmitzi to /etc/munin/
+* on new host:
+sudo /etc/init.d/munin-node restart
+* on schmitzi, add the host to /etc/munin/munin.conf

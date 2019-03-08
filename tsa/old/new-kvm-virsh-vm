@@ -1,0 +1,230 @@
+#!/bin/bash
+
+# RUN ON moly
+#############
+
+set -e
+set -u
+
+VG=vg0
+SUITE=wheezy
+MIRROR=http://ftp.us.debian.org/debian
+#SPONSOR="xx"
+
+check_installed() {
+    local p
+    for p in "$@"; do
+        if ! dpkg -l "$p" 2>/dev/null | grep -q '^ii'; then
+            echo >&2 "Error: package $p not installed:"
+            echo >&2 "  apt-get install $*"
+            exit 1
+        fi
+    done
+}
+get_sshkey_fprs() {
+    local f
+    for f in etc/ssh/ssh_host*_key.pub; do
+        echo -n "  "
+        ssh-keygen -l -f "$f"
+    done
+}
+cleanup() {
+    set +x
+    if [ -n "$disk" ]; then
+        echo "Maybe:"
+        echo "lvremove $disk"
+    fi
+    echo
+    if [ -n "${target:-}" ] && [ -e "$target" ]; then
+        cd /
+        if [ "$(stat -f / -c %i)" != "$(stat -f "$target" -c %i)" ]; then
+            umount "$target"
+        fi
+        rmdir "$target"
+    fi
+
+    if [ -n "${part1:-}" ]; then
+        kpartx -d -p -p -v "$disk"
+    fi
+}
+check_installed debootstrap debian-archive-keyring kpartx ipv6calc
+
+echo -n "New VM's name: "
+if [ -n "${1:-}" ]; then echo "$1"; guest="$1"; shift; else read guest; fi
+echo
+echo -n "Disk size: [8g]"
+if [ -n "${1:-}" ]; then echo "$1"; disksize="$1"; shift; else read disksize; fi
+disksize=${disksize:-8g}
+
+trap cleanup EXIT
+
+LV="$guest"
+lvcreate -L "$disksize" -n "$LV" "$VG"
+
+disk="/dev/mapper/$VG-$(echo $guest | sed -e 's/-/--/')"
+target="/mnt/target-$guest"
+
+if ! [ -e "$disk" ]; then
+    echo >&2 "Error: Disk $disk does not exist."
+    exit 1
+fi
+if [ -e "$target" ]; then
+    echo >&2 "Error: Directory $target already exists."
+    exit 1
+fi
+
+if [ "$(head -c 65536 "$disk" | sha1sum | awk '{print $1}')" != "1adc95bebe9eea8c112d40cd04ab7a8d75c4f961" ]; then
+    echo -n "Warning: Disk appears to be not be empty.  Continue anyway? [y/N] "
+    read ans
+    [ "$ans" = "y" ] || exit 0
+fi
+
+echo -n "ipaddr: "
+if [ -n "${1:-}" ]; then echo "$1"; ipaddr="$1"; shift; else read ipaddr; fi
+netmask=255.255.255.192
+gateway=38.229.72.1
+ip6addr=2620:0:6b0:b:1a1a::${ipaddr}
+ip6gateway=2620:0:6b0:b::1
+
+set -x
+
+if [ -e "$disk-part1" ]; then
+    # we already had a partition table and udev/kpartx got it at boot time
+    kpartx -v -d -p -part $disk
+fi
+echo '2048,,L,*' | sfdisk -u S --Linux "$disk"
+kpartx -v -p -p -a "$disk"
+part1="${disk}-p1"
+mkfs.ext4 "$part1"
+
+mkdir "$target"
+mount "$part1" "$target"
+cd "$target"
+
+debootstrap --variant=minbase --keyring=/usr/share/keyrings/debian-archive-keyring.gpg "$SUITE" . "$MIRROR"
+
+### Set up swap and fstab
+dd if=/dev/zero of=swapfile bs=1024k count=512
+chmod 0 swapfile
+mkswap ./swapfile
+
+uuidroot=$(blkid -s UUID -o value ${part1}) &&
+cat > etc/fstab << EOF
+UUID=$uuidroot    /               ext4   errors=remount-ro 0       1
+/swapfile none swap sw 0 0
+EOF
+echo 'RAMTMP=yes' >> etc/default/tmpfs
+
+### Set up basic networking stuff
+echo "$guest" > etc/hostname
+cat > etc/hosts << EOF
+127.0.0.1       localhost
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+EOF
+rm -fv etc/udev/rules.d/70-persistent-*
+mkdir -p etc/udev/rules.d/
+touch etc/udev/rules.d/75-persistent-net-generator.rules
+
+cat > etc/network/interfaces << EOF
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address $ipaddr
+    netmask $netmask
+    up   ip route add $gateway/32 dev \$IFACE
+    up   ip route add default via $gateway dev \$IFACE
+    down ip route del default via $gateway dev \$IFACE
+    down ip route del $gateway/32 dev \$IFACE
+iface eth0 inet6 static
+    address $ip6addr
+    gateway $ip6gateway
+    netmask 64
+    accept_ra 0
+EOF
+
+cat > etc/resolv.conf << EOF
+nameserver 8.8.8.8
+search torproject.org
+EOF
+
+### A couple packages
+mv etc/apt/sources.list etc/apt/sources.list.d/debian.list
+chroot . apt-get update
+echo "Apt::Install-Recommends 0;" > etc/apt/apt.conf.d/local-recommends
+chroot . apt-get install -y locales-all net-tools iproute ifupdown dialog vim netbase udev psmisc usbutils pciutils
+
+### Set up kernel and bootloader
+chroot . apt-get install -y linux-image-amd64
+DEBIAN_FRONTEND=noninteractive chroot . apt-get install -y grub2
+
+! [ -e dev/vda ]
+! [ -e dev/vda1 ]
+cp -av `readlink -f "$disk"` dev/new-root
+cp -av `readlink -f "$part1"` dev/new-root1
+chroot . grub-install --modules=part_msdos /dev/new-root
+rm -v dev/new-root*
+
+cp -av `readlink -f "$disk"` dev/vda
+cp -av `readlink -f "$part1"` dev/vda1
+rm boot/grub/device.map
+chroot . update-grub
+rm -v dev/vda*
+
+rootpw="$(head -c 12 /dev/urandom | base64)"
+echo "root:$rootpw" | chroot . chpasswd
+
+### install ssh
+chroot . apt-get install -y ssh
+sed -i -e "s/`hostname`\$/$guest/" etc/ssh/ssh_host*_key.pub
+sshkeys="$(get_sshkey_fprs)"
+rsahostkey="$(cat etc/ssh/ssh_host_rsa_key.pub)"
+
+### clean up
+trap - EXIT
+cleanup
+
+
+echo "$guest's root password is $rootpw"
+echo "SSH host key fingerprints are:"
+echo "$sshkeys"
+echo "IP addresses:"
+echo "  $ipaddr"
+echo "  $ip6addr"
+
+echo
+echo "ud-ldap ldpavi snippet:"
+cat << EOF
+add host=$guest,ou=hosts,dc=torproject,dc=org
+host: $guest
+hostname: $guest.torproject.org
+objectClass: top
+objectClass: debianServer
+l: Germany
+distribution: Debian GNU/Linux
+access: restricted
+admin: torproject-admin@torproject.org
+architecture: amd64
+sshRSAHostKey: $rsahostkey
+ipHostNumber: $ipaddr
+ipHostNumber: `ipv6calc --in ipv6addr --out ipv6addr $ip6addr`
+mXRecord: 0 INCOMING-MX
+physicalHost: `hostname -f`
+description: XXX
+purpose: XXX
+
+EOF
+#sponsor: $SPONSOR
+
+echo "Maybe run this now: "
+echo " cd /etc/tor-virt && git pull && virsh define `hostname`/$guest.xml && virsh autostart $guest"
+echo "And then:"
+echo " virsh start $guest"

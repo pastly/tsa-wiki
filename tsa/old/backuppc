@@ -1,0 +1,10 @@
+
+on serra:
+
+in /etc/backuppc:
+
+- edit hosts, add the host in question
+- create a file called $host.pl,
+  . include the common file,
+  . list shares to be backed up
+  (use an existing file as template)
