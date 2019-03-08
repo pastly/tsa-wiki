@@ -7,7 +7,7 @@
     cat /dev/null > /etc/default/locale
     # cat /etc/resolv.conf   # and ensure it has domain torproject.org in it.
     grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf
-    cat /etc/hosts
+    vi /etc/hosts
 
 * add to ldap on alberti
     for i in /etc/ssh/ssh_host_rsa_key.pub /etc/ssh/ssh_host_ed25519_key.pub; do
@@ -72,6 +72,11 @@
 * do more puppet runs
   puppet agent -t
   puppet agent -t
+
+* do on ud-replicate:
+  puppet agent -t
+  echo alberti.torproject.org,alberti,db.torproject.org,db,38.229.70.7,2620:0:6b0:b:1a1a:0:26e5:4806 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAW1UewATLaASMo4mJoH+L8AgN1sJUIk/87z6OdrQNL9fDseLhFSPNg1LsL2Ep1ZbE22ieERHcaS4Mm8QrX9Y2VrUmFWK3jwz3+enhZkEzq7K+YKGKhUwSu+Cr+gKD1olKnw8COsZ4v5xkLh5Or854ZNJKRB84IF99P9TZ+0l/LyJCE3RVY/wV5FyhrweGmVUQVqsi7xv815uRNWjsiBWvizZddny8xaKsNTD7guo+nN9h9gjKzv6ktj/U9nbmBsBiLs4zZj7/6rfgXK020xOp63LXz8jRnDiISgHw+ERFYlmUYs04JXVrcI21jdnhzNCpLwSwBITQLSVPEaXJqO9v root@alberti > /etc/ssh/ssh_known_hosts &&
+  ud-replicate
 
 * get rid of unneeded network services:
 
