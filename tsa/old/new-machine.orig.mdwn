@@ -1,3 +1,6 @@
+This is probably not relevant anymore. When the next host is created,
+review these docs and add what's missing to [[new-machine]].
+
 * set a hostname - pick an unused one from https://svn.torproject.org/svn/projects/misc-sysadmin/onion-names.txt
 * sane base setup
     echo "Apt::Install-Recommends 0;" > /etc/apt/apt.conf.d/local-recommends &&
