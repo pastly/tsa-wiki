@@ -106,6 +106,6 @@
         echo '/swapfile none swap sw 0 0' >> /etc/fstab && \
         swapon -a
 
-* add to nagios
+* add to [[nagios]]
 
 * document the machine in the evil Google spreadsheet (!)
