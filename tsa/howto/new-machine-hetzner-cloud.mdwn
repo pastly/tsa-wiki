@@ -11,6 +11,6 @@ Pick the following settings:
  4. Volume: only if extra space is required
  5. Additional features: nothing (no user data or backups)
  6. SSH key: enable all configured keys
- 7. Name: FQDN picked from the [[naming-scheme]]
+ 7. Name: FQDN picked from the [[doc/naming-scheme]]
 
 Then follow the rest of [[new-machine]].
