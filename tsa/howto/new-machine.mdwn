@@ -56,7 +56,7 @@
         echo -e "$sha256  $filename" | sha256sum -c && \
         puppet ca sign $(basename "$filename" .pem) && \
         echo && \
-        echo && \
+        echo "--- 8< --- CUT HERE --- 8< ---" && \
         echo && \
         echo 'cat > /var/lib/puppet/ssl/certs/ca.pem << EOF ' && \
         cat /var/lib/puppet/ssl/certs/ca.pem && \
@@ -67,9 +67,13 @@
         echo 'puppet agent --enable' && \
         echo 'puppet agent -t --pluginsync' && \
         echo 'puppet agent -t --pluginsync' && \
+        echo
+        echo "--- 8< --- CUT HERE --- 8< ---" && \
+        echo
         cd /
 
-* copy paste the thing you just created on pauli into a root shell on the new host
+* copy paste the thing between `CUT HERE` from `pauli` into a root
+  shell on the new host
 
 * do more puppet runs, and run a ud-replicate to get ldap users, then
   more puppet runs since we now have more users:
