@@ -1,7 +1,7 @@
 
 (all commands to be run as root unless otherwise noted)
 
-* set a hostname - pick an unused one from https://svn.torproject.org/svn/projects/misc-sysadmin/onion-names.txt
+* set a hostname - pick an unused one from the [[naming-scheme]]
 
 * sane base setup
     grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf

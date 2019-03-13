@@ -1,0 +1,52 @@
+There are multiple naming schemes in use:
+
+ * onion species
+ * role-based
+ * location-based
+
+Onion species
+=============
+
+[Wikipedia list of onion species][], preferably picking a first letter
+matching purpose (e.g. "m" for monitoring, "b" for backups, "p" for
+puppet) and ideally not overlapping with [existing machines at
+debian.org][] in the first three letters or at least the short
+hostname part
+
+[Wikipedia list of onion species]: https://en.wikipedia.org/wiki/List_of_Allium_species
+[existing machines at debian.org]: https://db.debian.org/machines.cgi
+
+> Example: monticola.torproject.org was picked as a "monitoring"
+> ("mon") server to run the experimental Prometheus server. no
+> machine is named "monticola" at Debian.org and no machine has
+> "mon" or smaller as its first three letters there either.
+
+Role
+====
+
+Another naming scheme is `role-ID`, where:
+
+ * `role` is what the server is for, for example `gitlab`, `mon` for
+   monitoring, `crm`, etc. try to keep it short and abbreviate to
+   at most three letters if role is longer than five. `role` might
+   have a dash (`-`) in it to describe the service better (`crm-ext`
+   vs `crm-int`)
+ * `ID` is a two-character number, padded with zero, starting from
+   one, to distinguish between multiple instances of the same server
+   (e.g. `mon-01`, `mon-02`)
+
+Location
+========
+
+Another naming scheme used for virtual machines is `hoster-locN-ID`
+(example `hetzner-hel1-01`), where:
+
+ * `hoster`: is the hosting provider (example `hetzner`)
+ * `locN`: is the three-letter code of the city where the machine is
+   located, followed by a digit in case there are multiple locations
+   in the same city (e.g. `hel1`)
+ * `ID`: is an two-character number, padded with zero, starting from
+   one, to distinguish multiple instances at the same location
+
+This is used for virtual machines at Hetzner that are bound to a
+specific location.
