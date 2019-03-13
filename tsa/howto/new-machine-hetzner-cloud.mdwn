@@ -1,6 +1,8 @@
-Go to the [Heztner console](https://console.hetzner.cloud/) and clikety on the web interface to get
-a new instance. Credentials are in `tor-passwords.git` under
-`hetzner`.
+Go to the [Heztner console][] and clikety on the web interface to get
+a new instance. Credentials are in `tor-passwords.git` in
+`hosts-extra-info` under `hetzner`.
+
+ [Heztner console]: https://console.hetzner.cloud/
 
 Pick the following settings:
 
@@ -12,5 +14,7 @@ Pick the following settings:
  5. Additional features: nothing (no user data or backups)
  6. SSH key: enable all configured keys
  7. Name: FQDN picked from the [[doc/naming-scheme]]
+ 8. Create the server
+ 9. Login to the server as root with SSH
 
 Then follow the rest of [[new-machine]].
