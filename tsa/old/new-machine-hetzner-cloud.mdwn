@@ -1,4 +1,16 @@
 Go to the [Heztner console](https://console.hetzner.cloud/) and clikety on the web interface to get
-a new instance. Credentials are in `tor-passwords.git` under `hetzner`.
+a new instance. Credentials are in `tor-passwords.git` under
+`hetzner`.
 
-Then follow [[new-machine]].
+Pick the following settings:
+
+ 1. Location: depends on the project, a monitoring server might be
+    better in a different location than the other VMs
+ 2. Image: Debian 9
+ 3. Type: depends on the project
+ 4. Volume: only if extra space is required
+ 5. Additional features: nothing (no user data or backups)
+ 6. SSH key: enable all configured keys
+ 7. Name: FQDN picked from the [[naming-scheme]]
+
+Then follow the rest of [[new-machine]].
