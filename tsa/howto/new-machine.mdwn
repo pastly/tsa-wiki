@@ -8,7 +8,13 @@
         grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf
         vi /etc/hosts # make sure the local host is there with both FQDN and just hostname
 
-* add to ldap on `alberti` using `ldapvi`. To generate the ssh host key block, use:
+* add to ldap on `alberti` using:
+
+        ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
+
+  Copy-paste the host block of another similar host, and change the
+  leading number to an `add`. See also the [ldapvi manual](http://www.lichteblau.com/ldapvi/manual/) for more
+  help. To generate the ssh host key block, use:
 
         for i in /etc/ssh/ssh_host_rsa_key.pub /etc/ssh/ssh_host_ed25519_key.pub; do
             echo "sshRSAHostKey: `cat $i`"
