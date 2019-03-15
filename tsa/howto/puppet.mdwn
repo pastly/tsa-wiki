@@ -16,6 +16,22 @@ query:
 
 The currently known values are: `kvm`, `physical`, and `xenu`.
 
+## Other ways of extracting a host list
+
+ * Using the PuppetDB API:
+
+        curl -s -G http://localhost:8080/pdb/query/v4/facts  | jq -r ".[].certname"
+
+ * Using [Cumin](https://doc.wikimedia.org/cumin/master/introduction.html)
+
+ * Using LDAP:
+ 
+        HOSTS=$(ssh alberti.torproject.org 'ldapsearch -h db.torproject.org -x -ZZ -b dc=torproject,dc=org -LLL "hostname=*.torproject.org" hostname | awk "\$1 == \"hostname:\" {print \$2}" | sort')
+        for i in `echo $HOSTS`; do mkdir hosts/x-$i 2>/dev/null || continue; echo $i; ssh $i ' ...'; done
+
+    the mkdir is so that I can run the same command in many terminal
+    windows and each host gets only one once
+
 Batch jobs on all hosts
 =======================
 
