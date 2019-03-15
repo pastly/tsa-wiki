@@ -1,0 +1,40 @@
+Listing all hosts under puppet
+==============================
+
+The following will list all hosts under Puppet and their `virtual`
+value:
+
+    ssh -t pauli.torproject.org "sudo -u postgres psql puppetdb -P pager=off -F',' -A -t -c \"SELECT c.certname, value_string FROM factsets fs INNER JOIN facts f ON f.factset_id = fs.id INNER JOIN fact_values fv ON fv.id = f.fact_value_id INNER JOIN fact_paths fp ON fp.id = f.fact_path_id INNER JOIN certnames c ON c.certname = fs.certname WHERE fp.name = 'virtual' AND c.deactivated IS NULL\""  | tee hosts.csv
+
+The resulting file is a Comma-Seperated Value (CSV) file which can be
+used for other purposes later.
+
+Possible values of the `virtual` field can be obtain with a similar
+query:
+    
+    ssh -t pauli.torproject.org "sudo -u postgres psql puppetdb -P pager=off -A -t -c \"SELECT DISTINCT value_string FROM factsets fs INNER JOIN facts f ON f.factset_id = fs.id INNER JOIN fact_values fv ON fv.id = f.fact_value_id INNER JOIN fact_paths fp ON fp.id = f.fact_path_id WHERE fp.name = 'virtual';\""
+
+The currently known values are: `kvm`, `physical`, and `xenu`.
+
+Batch jobs on all hosts
+=======================
+
+With that trick, a job can be ran on all hosts with
+[parallel-ssh](https://code.google.com/archive/p/parallel-ssh/), for example, check the uptime:
+
+    cut -d, -f1 hosts.hsv | parallel-ssh -i -h /dev/stdin uptime
+
+This would do the same, but only on physical servers:
+
+    grep 'physical$' hosts.hsv | cut -d -f1 | parallel-ssh -i -h /dev/stdin uptime
+
+This would fetch the `/etc/motd` on all machines:
+
+    cut -d -f1 hosts.csv | parallel-slurp -h /dev/stdin -L motd /etc/motd motd
+
+To run batch commands through sudo that requires a password, you will need to fool both sudo and ssh a little more:
+
+    cut -d -f1 hosts.csv | parallel-ssh -P -I -i -x -tt -h /dev/stdin -o pvs sudo pvs
+
+You should then type your password then Control-d. Warning: this will
+show your password on your terminal and probably in the logs as well. 
