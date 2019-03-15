@@ -1,6 +1,10 @@
 Listing all hosts under puppet
 ==============================
 
+This will list all active hosts known to the Puppet master:
+
+    ssh -t pauli.torproject.org 'sudo -u postgres psql puppetdb -P pager=off -A -t -c "SELECT c.certname FROM certnames c WHERE c.deactivated IS NULL"'
+
 The following will list all hosts under Puppet and their `virtual`
 value:
 
