@@ -58,6 +58,38 @@ This will make the drive blink (slot number 0 in enclosure 252):
 
     megacli -PdLocate -start -physdrv[252:0] -aALL
 
+SMART monitoring
+----------------
+
+Some servers will fail to properly detect disk drives in their SMART
+configuration. In particular, `smartd` does not support:
+
+ * virtual disks (e.g. `/dev/nbd0`)
+ * MMC block devices (e.g. `/dev/mmcblk0`, commonly found on ARM
+   devices)
+ * out of the box, CCISS raid devices (e.g. `/dev/cciss/c0d0`)
+
+The latter can be configured with the following snippet in
+`/etc/smartd.conf`:
+
+    #DEVICESCAN -d removable -n standby -m root -M exec /usr/share/smartmontools/smartd-runner
+    DEFAULT -n standby -m root -M exec /usr/share/smartmontools/smartd-runner
+    /dev/cciss/c0d0 -d cciss,0
+    /dev/cciss/c0d0 -d cciss,1
+    /dev/cciss/c0d0 -d cciss,2
+    /dev/cciss/c0d0 -d cciss,3
+    /dev/cciss/c0d0 -d cciss,4
+    /dev/cciss/c0d0 -d cciss,5
+
+Notice how the `DEVICESCAN` is commented out to be replaced by the
+CCISS configuration. One line for each drive should be added (and no,
+it does not autodetect all drives unfortunately). This hack was
+deployed on `listera` which uses that hardware RAID.
+
+Other hardware RAID controllers are better supported. For example, the
+`megaraid` controller on `moly` was correctly detected by `smartd`
+which accurately found a broken hard drive.
+
 References
 ----------
 
