@@ -1,0 +1,67 @@
+Hardware RAID
+=============
+
+Some TPO machines have hardware RAID with `megaraid`
+controllers. Those are controlled with the `MegaCLI` command that is
+... rather hard to use.
+
+First, alias the megacli command because the package (derived from the
+upstream RPM by Alien) installs it in a strange location:
+
+    alias megacli=/opt/MegaRAID/MegaCli/MegaCli
+
+This will confirm you are using hardware raid:
+
+    root@moly:/home/anarcat# lspci | grep -i raid
+    05:00.0 RAID bus controller: LSI Logic / Symbios Logic MegaRAID SAS 2108 [Liberator] (rev 05)
+
+This will show the RAID levels of each enclosure, for example this is
+RAID-10:
+
+    root@moly:/home/anarcat# megacli -LdPdInfo -aALL | grep "RAID Level"
+    RAID Level          : Primary-1, Secondary-0, RAID Level Qualifier-0
+
+This lists a summary of all the disks, for example the first disk has
+failed here:
+
+    root@moly:/home/anarcat# megacli -PDList -aALL | grep -e '^Enclosure' -e '^Slot' -e '^PD' -e '^Firmware' -e '^Raw' -e '^Inquiry'
+    Enclosure Device ID: 252
+    Slot Number: 0
+    Enclosure position: 0
+    PD Type: SAS
+    Raw Size: 558.911 GB [0x45dd2fb0 Sectors]
+    Firmware state: Failed
+    Inquiry Data: SEAGATE ST3600057SS     [REDACTED]
+    Enclosure Device ID: 252
+    Slot Number: 1
+    Enclosure position: 0
+    PD Type: SAS
+    Raw Size: 558.911 GB [0x45dd2fb0 Sectors]
+    Firmware state: Online, Spun Up
+    Inquiry Data: SEAGATE ST3600057SS     [REDACTED]
+    Enclosure Device ID: 252
+    Slot Number: 2
+    Enclosure position: 0
+    PD Type: SAS
+    Raw Size: 558.911 GB [0x45dd2fb0 Sectors]
+    Firmware state: Online, Spun Up
+    Inquiry Data: SEAGATE ST3600057SS     [REDACTED]
+    Enclosure Device ID: 252
+    Slot Number: 3
+    Enclosure position: 0
+    PD Type: SAS
+    Raw Size: 558.911 GB [0x45dd2fb0 Sectors]
+    Firmware state: Online, Spun Up
+    Inquiry Data: SEAGATE ST3600057SS     [REDACTED]
+
+This will make the drive blink (slot number 0 in enclosure 252):
+
+    megacli -PdLocate -start -physdrv[252:0] -aALL
+
+References
+----------
+
+Here are some external documentation links:
+
+ * <https://cs.uwaterloo.ca/twiki/view/CF/MegaRaid>
+ * <https://raid.wiki.kernel.org/index.php/Hardware_Raid_Setup_using_MegaCli>
