@@ -1,13 +1,13 @@
 Prometheus
 ==========
 
-Prometheus is a monitoring system that is designed to process a large
-number of metrics, centralize them on one (or multiple) servers and
-serve them with a well-defined API. That API is queried through a
+[Prometheus](https://prometheus.io/) is a monitoring system that is designed to process a
+large number of metrics, centralize them on one (or multiple) servers
+and serve them with a well-defined API. That API is queried through a
 domain-specific language (DSL) called "PromQL" or "Prometheus Query
 Language". Prometheus also supports basic graphing capabilities
 although those are limited enough that we use a separate graphing
-layer on top (Grafana).
+layer on top (see [[Grafana]]).
 
 The Prometheus web interface is available at:
 
