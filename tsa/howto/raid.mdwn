@@ -65,3 +65,4 @@ Here are some external documentation links:
 
  * <https://cs.uwaterloo.ca/twiki/view/CF/MegaRaid>
  * <https://raid.wiki.kernel.org/index.php/Hardware_Raid_Setup_using_MegaCli>
+ * <https://sysadmin.compxtreme.ro/how-to-replace-an-lsi-raid-disk-with-megacli/>
