@@ -104,3 +104,10 @@ The firewall rules are exported from the server, defined in
 upstream Puppet module to install Prometheus using backported Debian
 packages. The monitoring server itself is defined in
 `roles::monitoring`.
+
+The [Prometheus Puppet module](https://github.com/voxpupuli/puppet-prometheus/) was patched to [allow scrape job
+collection](https://github.com/voxpupuli/puppet-prometheus/pull/304) and [use of Debian packages for installation](https://github.com/voxpupuli/puppet-prometheus/pull/303). Much
+of the initial Prometheus configuration was also documented in [ticket
+#29681](https://trac.torproject.org/projects/tor/ticket/29681) and especially [ticket #29388](https://trac.torproject.org/projects/tor/ticket/29388) which investigates
+storage requirements and possible alternatives for data retention
+policies.
