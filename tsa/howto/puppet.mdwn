@@ -104,4 +104,11 @@ Just check the monitoring server:
 
     cumin 'R:class=roles::monitoring' uptime
 
-Any Puppet fact or class can be queried that way.
+Any Puppet fact or class can be queried that way. This also serves as
+a ad-hoc interface to query PuppetDB for certain facts, as you don't
+have to provide a command. In that case, `cumin` runs in "dry mode"
+and will simply show which hosts match the request:
+
+    $ cumin 'F:virtual=physical'
+    16 hosts will be targeted:
+    [...]
