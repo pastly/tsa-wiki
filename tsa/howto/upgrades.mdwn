@@ -1,0 +1,371 @@
+Debian upgrades
+===============
+
+Debian package upgrades are not automatic on TPO machines. Pending
+upgrades are noticed by Nagios which warns loudly about them in its
+usual channels.
+
+When a few pending upgrades have piled up, a batch of upgrades can be
+done with the `torproject-upgrade-prepare` command, which is available
+in the `admin/tor-misc.git` project in git-rw.
+
+Here's an example run of the tool:
+
+    weasel@orinoco:~$ torproject-upgrade-prepare                      
+    Agent pid 5384               
+    Pass a valid window to KWallet::Wallet::openWallet().
+    Identity added: /home/weasel/.ssh/id_rsa (/home/weasel/.ssh/id_rsa)
+    build-arm-03.torproject.org: ControlSocket /home/weasel/.ssh/.pipes/orinoco/weasel@rouyi.torproject.org:22 already exists, disabling multiplexing
+    rouyi.torproject.org: ControlSocket /home/weasel/.ssh/.pipes/orinoco/weasel@rouyi.torproject.org:22 already exists, disabling multiplexing
+    build-arm-01.torproject.org: ControlSocket /home/weasel/.ssh/.pipes/orinoco/weasel@rouyi.torproject.org:22 already exists, disabling multiplexing
+    build-arm-02.torproject.org: ControlSocket /home/weasel/.ssh/.pipes/orinoco/weasel@rouyi.torproject.org:22 already exists, disabling multiplexing
+    gillii.torproject.org: ssh: connect to host gillii.torproject.org port 22: No route to host
+    geyeri.torproject.org: ssh: connect to host geyeri.torproject.org port 22: No route to host
+    chiwui.torproject.org: W: Size of file /var/lib/apt/lists/partial/deb.debian.org_debian_dists_jessie-backports_InRelease is not what the server reported 166070 130112
+    chiwui.torproject.org: W: Size of file /var/lib/apt/lists/partial/deb.debian.org_debian_dists_jessie-updates_InRelease is not what the server reported 145060 16384
+    ------------------------------------------------------------
+    Upgrade available on alberti.torproject.org brulloi.torproject.org chamaemoly.torproject.org colchicifolium.torproject.org corsicum.torproject.org cupani.torproject.org gayi.torproject.org henryi.torproject.org iranicum.torproject.org materculae.torproject.org meronense.torproject.org nevii.torproject.org palmeri.torproject.org scw-arm-ams-01.torproject.org troodi.torproject.org vineale.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      libssl1.0.2 linux-image-4.9.0-8--x- openssh-client openssh-server
+      openssh-sftp-server ssh
+    6 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst openssh-sftp-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst libssl1.0.2 [1.0.2q-1~deb9u1] (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-]) []
+    Inst openssh-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-client [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Inst ssh [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Inst linux-image-4.9.0-8--x- [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf ssh (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Conf linux-image-4.9.0-8--x- (4.9.144-3.1 Debian:stable-updates [-x-])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on orestis.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      libssl1.0.2 linux-image-4.9.0-8--x- linux-libc-dev openssh-client
+      openssh-server openssh-sftp-server
+    6 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst libssl1.0.2 [1.0.2q-1~deb9u1] (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Inst openssh-sftp-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-client [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Inst linux-image-4.9.0-8--x- [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Inst linux-libc-dev [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf linux-image-4.9.0-8--x- (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf linux-libc-dev (4.9.144-3.1 Debian:stable-updates [-x-])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on cdn-backend-sunet-01.torproject.org hetzner-hel1-01.torproject.org hetzner-hel1-02.torproject.org hetzner-hel1-03.torproject.org kvm4.torproject.org kvm5.torproject.org listera.torproject.org macrum.torproject.org nutans.torproject.org textile.torproject.org unifolium.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      libssl1.0.2 linux-image-4.9.0-8--x- openssh-client openssh-server
+      openssh-sftp-server
+    5 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst libssl1.0.2 [1.0.2q-1~deb9u1] (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Inst openssh-sftp-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-client [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Inst linux-image-4.9.0-8--x- [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf linux-image-4.9.0-8--x- (4.9.144-3.1 Debian:stable-updates [-x-])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on eugeni.torproject.org omeiense.torproject.org pauli.torproject.org polyanthum.torproject.org rouyi.torproject.org rude.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      libssl1.0.2 linux-image-4.9.0-8--x- linux-libc-dev openssh-client
+      openssh-server openssh-sftp-server ssh
+    7 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst openssh-sftp-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst libssl1.0.2 [1.0.2q-1~deb9u1] (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-]) []
+    Inst openssh-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-client [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Inst ssh [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Inst linux-image-4.9.0-8--x- [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Inst linux-libc-dev [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf ssh (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Conf linux-image-4.9.0-8--x- (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf linux-libc-dev (4.9.144-3.1 Debian:stable-updates [-x-])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on arlgirdense.torproject.org bracteata.torproject.org build-x86-07.torproject.org build-x86-08.torproject.org build-x86-09.torproject.org carinatum.torproject.org crm-ext-01.torproject.org crm-int-01.torproject.org forrestii.torproject.org gitlab-01.torproject.org neriniflorum.torproject.org opacum.torproject.org perdulce.torproject.org savii.torproject.org saxatile.torproject.org staticiforme.torproject.org subnotabile.torproject.org togashii.torproject.org web-hetzner-01.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      linux-image-4.9.0-8--x-
+    1 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst linux-image-4.9.0-8--x- [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf linux-image-4.9.0-8--x- (4.9.144-3.1 Debian:stable-updates [-x-])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on build-arm-01.torproject.org build-arm-02.torproject.org build-arm-03.torproject.org scw-arm-par-01.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      libssl1.0.2 openssh-client openssh-server openssh-sftp-server ssh
+    5 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst openssh-sftp-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst libssl1.0.2 [1.0.2q-1~deb9u1] (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-]) []
+    Inst openssh-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-client [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Inst ssh [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf ssh (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on chiwui.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    The following packages will be upgraded:
+      bind9-host dnsutils file libbind9-90 libdns-export100 libdns100
+      libirs-export91 libisc-export95 libisc95 libisccc90 libisccfg-export90
+      libisccfg90 liblwres90 libmagic1 libssl-dev libssl1.0.0 openssl
+      qemu-guest-agent
+    18 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst libssl-dev [1.0.1t-1+deb8u10] (1.0.1t-1+deb8u11 Debian-Security:8/oldstable [-x-]) []
+    Inst libssl1.0.0 [1.0.1t-1+deb8u10] (1.0.1t-1+deb8u11 Debian-Security:8/oldstable [-x-])
+    Inst file [1:5.22+15-2+deb8u4] (1:5.22+15-2+deb8u5 Debian-Security:8/oldstable [-x-]) []
+    Inst libmagic1 [1:5.22+15-2+deb8u4] (1:5.22+15-2+deb8u5 Debian-Security:8/oldstable [-x-])
+    Inst libisc-export95 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Inst libdns-export100 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Inst libisccfg-export90 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Inst libirs-export91 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Inst dnsutils [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-]) []
+    Inst bind9-host [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-]) []
+    Inst libisc95 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-]) []
+    Inst libdns100 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-]) []
+    Inst libisccc90 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-]) []
+    Inst libisccfg90 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-]) []
+    Inst liblwres90 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-]) []
+    Inst libbind9-90 [1:9.9.5.dfsg-9+deb8u16] (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Inst openssl [1.0.1t-1+deb8u10] (1.0.1t-1+deb8u11 Debian-Security:8/oldstable [-x-])
+    Inst qemu-guest-agent [1:2.1+dfsg-12+deb8u9] (1:2.1+dfsg-12+deb8u10 Debian-Security:8/oldstable [-x-])
+    Conf libssl1.0.0 (1.0.1t-1+deb8u11 Debian-Security:8/oldstable [-x-])
+    Conf libssl-dev (1.0.1t-1+deb8u11 Debian-Security:8/oldstable [-x-])
+    Conf libmagic1 (1:5.22+15-2+deb8u5 Debian-Security:8/oldstable [-x-])
+    Conf file (1:5.22+15-2+deb8u5 Debian-Security:8/oldstable [-x-])
+    Conf libisc-export95 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libdns-export100 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libisccfg-export90 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libirs-export91 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libisc95 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libdns100 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libisccc90 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libisccfg90 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf libbind9-90 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf liblwres90 (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf bind9-host (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf dnsutils (1:9.9.5.dfsg-9+deb8u17 Debian-Security:8/oldstable [-x-])
+    Conf openssl (1.0.1t-1+deb8u11 Debian-Security:8/oldstable [-x-])
+    Conf qemu-guest-agent (1:2.1+dfsg-12+deb8u10 Debian-Security:8/oldstable [-x-])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on nova.torproject.org:
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      libssl1.0.2 linux-image-4.9.0-8-686-pae openssh-client openssh-server
+      openssh-sftp-server ssh
+    6 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst openssh-sftp-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst libssl1.0.2 [1.0.2q-1~deb9u1] (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-]) []
+    Inst openssh-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-]) []
+    Inst openssh-client [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Inst ssh [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Inst linux-image-4.9.0-8-686-pae [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [-x-])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [-x-])
+    Conf ssh (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Conf linux-image-4.9.0-8-686-pae (4.9.144-3.1 Debian:stable-updates [-x-])
+
+    Accept [y/N]? y
+    ------------------------------------------------------------
+    Upgrade available on crispum.torproject.org oo-hetzner-03.torproject.org oschaninii.torproject.org:
+    build-arm-01.torproject.org
+    Hit:1 http://security.debian.org stretch/updates InRelease
+    Hit:2 https://mirror.netcologne.de/debian stretch-backports InRelease
+    Ign:3 https://mirror.netcologne.de/debian stretch InRelease
+    Hit:4 https://mirror.netcologne.de/debian stretch-updates InRelease
+    Hit:5 https://mirror.netcologne.de/debian stretch Release
+    Ign:6 https://db.torproject.org/torproject-admin tpo-all InRelease
+    Ign:7 https://db.torproject.org/torproject-admin stretch InRelease
+    Hit:8 https://db.torproject.org/torproject-admin tpo-all Release
+    Hit:9 https://db.torproject.org/torproject-admin stretch Release
+    Hit:10 https://cdn-aws.deb.debian.org/debian stretch-backports InRelease
+    Ign:11 https://cdn-aws.deb.debian.org/debian stretch InRelease
+    Hit:12 https://cdn-aws.deb.debian.org/debian stretch-updates InRelease
+    Hit:13 https://cdn-aws.deb.debian.org/debian stretch Release
+    Reading package lists... Done 
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    Calculating upgrade... Done
+    The following packages will be upgraded:
+      libssl1.0.2 openssh-client openssh-server openssh-sftp-server ssh
+    5 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst openssh-sftp-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [arm64]) []
+    Inst libssl1.0.2 [1.0.2q-1~deb9u1] (1.0.2r-1~deb9u1 Debian-Security:9/stable [arm64]) []
+    Inst openssh-server [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [arm64]) []
+    Inst openssh-client [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [arm64])
+    Inst ssh [1:7.4p1-10+deb9u5] (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [arm64])
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [arm64])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [arm64])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [arm64])
+    Conf ssh (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    Calculating upgrade... Done
+    The following packages will be upgraded:
+      libssl1.0.2 openssh-client openssh-server openssh-sftp-server ssh
+    5 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Need to get 2125 kB of archives.
+    After this operation, 4096 B of additional disk space will be used.
+    Get:1 http://security.debian.org stretch/updates/main arm64 openssh-sftp-server arm64 1:7.4p1-10+deb9u6 [34.1 kB]
+    Get:2 http://security.debian.org stretch/updates/main arm64 libssl1.0.2 arm64 1.0.2r-1~deb9u1 [913 kB]
+    Get:3 http://security.debian.org stretch/updates/main arm64 openssh-server arm64 1:7.4p1-10+deb9u6 [289 kB]
+    Get:4 http://security.debian.org stretch/updates/main arm64 openssh-client arm64 1:7.4p1-10+deb9u6 [699 kB]
+    Get:5 http://security.debian.org stretch/updates/main arm64 ssh all 1:7.4p1-10+deb9u6 [189 kB]
+    Fetched 2125 kB in 1s (1464 kB/s)
+    Preconfiguring packages ...
+    (Reading database ... 52534 files and directories currently installed.)
+    Preparing to unpack .../openssh-sftp-server_1%3a7.4p1-10+deb9u6_arm64.deb ...
+    Unpacking openssh-sftp-server (1:7.4p1-10+deb9u6) over (1:7.4p1-10+deb9u5) ...
+    Preparing to unpack .../libssl1.0.2_1.0.2r-1~deb9u1_arm64.deb ...
+    Unpacking libssl1.0.2:arm64 (1.0.2r-1~deb9u1) over (1.0.2q-1~deb9u1) ...
+    Preparing to unpack .../openssh-server_1%3a7.4p1-10+deb9u6_arm64.deb ...
+    Unpacking openssh-server (1:7.4p1-10+deb9u6) over (1:7.4p1-10+deb9u5) ...
+    Preparing to unpack .../openssh-client_1%3a7.4p1-10+deb9u6_arm64.deb ...
+    Conf libssl1.0.2 (1.0.2r-1~deb9u1 Debian-Security:9/stable [amd64])
+    Conf openssh-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [amd64])
+    Conf openssh-client (1:7.4p1-10+deb9u6 Debian-Security:9/stable [amd64])
+    Conf ssh (1:7.4p1-10+deb9u6 Debian-Security:9/stable [all])
+    Conf linux-image-4.9.0-8-amd64 (4.9.144-3.1 Debian:stable-updates [amd64])
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    Calculating upgrade... Done
+    The following packages will be upgraded:
+      libssl1.0.2 linux-image-4.9.0-8-amd64 openssh-client openssh-server openssh-sftp-server ssh
+    6 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Need to get 41.8 MB of archives.
+    After this operation, 4096 B of additional disk space will be used.
+    Get:1 http://security.debian.org stretch/updates/main amd64 openssh-sftp-server amd64 1:7.4p1-10+deb9u6 [39.7 kB]
+    Get:2 http://security.debian.org stretch/updates/main amd64 libssl1.0.2 amd64 1.0.2r-1~deb9u1 [1302 kB]
+    Get:3 http://security.debian.org stretch/updates/main amd64 openssh-server amd64 1:7.4p1-10+deb9u6 [332 kB]
+    Get:4 http://security.debian.org stretch/updates/main amd64 openssh-client amd64 1:7.4p1-10+deb9u6 [781 kB]
+    Get:5 https://mirrors.wikimedia.org/debian stretch-updates/main amd64 linux-image-4.9.0-8-amd64 amd64 4.9.144-3.1 [39.1 MB]
+    Get:6 http://security.debian.org stretch/updates/main amd64 ssh all 1:7.4p1-10+deb9u6 [189 kB]
+    Fetched 41.8 MB in 10s (4111 kB/s)                                                                                                                                                                                                                                              
+    Preconfiguring packages ...
+    (Reading database ... 45757 files and directories currently installed.)
+    Preparing to unpack .../0-openssh-sftp-server_1%3a7.4p1-10+deb9u6_amd64.deb ...
+    Unpacking openssh-sftp-server (1:7.4p1-10+deb9u6) over (1:7.4p1-10+deb9u5) ...
+    Preparing to unpack .../1-libssl1.0.2_1.0.2r-1~deb9u1_amd64.deb ...
+    Unpacking libssl1.0.2:amd64 (1.0.2r-1~deb9u1) over (1.0.2q-1~deb9u1) ...
+    Preparing to unpack .../2-openssh-server_1%3a7.4p1-10+deb9u6_amd64.deb ...
+    Unpacking openssh-server (1:7.4p1-10+deb9u6) over (1:7.4p1-10+deb9u5) ...
+    Preparing to unpack .../3-openssh-client_1%3a7.4p1-10+deb9u6_amd64.deb ...
+    Unpacking openssh-client (1:7.4p1-10+deb9u6) over (1:7.4p1-10+deb9u5) ...
+    Preparing to unpack .../4-ssh_1%3a7.4p1-10+deb9u6_all.deb ...
+    Unpacking ssh (1:7.4p1-10+deb9u6) over (1:7.4p1-10+deb9u5) ...
+    Preparing to unpack .../5-linux-image-4.9.0-8-amd64_4.9.144-3.1_amd64.deb ...
+    Unpacking linux-image-4.9.0-8-amd64 (4.9.144-3.1) over (4.9.144-3) ...
+    Setting up linux-image-4.9.0-8-amd64 (4.9.144-3.1) ...
+    /etc/kernel/postinst.d/initramfs-tools:
+    update-initramfs: Generating /boot/initrd.img-4.9.0-8-amd64
+    I: The initramfs will attempt to resume from /dev/sdc
+    I: (UUID=4e725edc-e3df-4122-89aa-19ce43ec9a0e)
+    I: Set the RESUME variable to override this.
+    Inst linux-image-4.9.0-8-amd64 [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [amd64])
+    Inst linux-libc-dev [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [amd64])
+    Conf openssh-sftp-server (1:7.4p1-10+deb9u6 Debian-Security:9/stable [amd64])
+    Processing triggers for libc-bin (2.24-11+deb9u4) ...
+    Processing triggers for systemd (232-25+deb9u9) ...
+    Processing triggers for man-db (2.7.6.1-2) ...
+    Setting up openssh-client (1:7.4p1-10+deb9u6) ...
+    Setting up openssh-sftp-server (1:7.4p1-10+deb9u6) ...
+    Setting up openssh-server (1:7.4p1-10+deb9u6) ...
+    Setting up ssh (1:7.4p1-10+deb9u6) ...
+    [master 4f397dc] committing changes in /etc after apt run
+     Committer: root <root@peninsulare.torproject.org>
+    Unpacking linux-image-4.9.0-8-amd64 (4.9.144-3.1) over (4.9.144-3) ...
+    [master a58f4a8] committing changes in /etc after apt run
+
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    Calculating upgrade...
+    The following packages will be upgraded:
+      linux-image-4.9.0-8--x- linux-libc-dev
+    2 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Inst linux-image-4.9.0-8--x- [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Inst linux-libc-dev [4.9.144-3] (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf linux-image-4.9.0-8--x- (4.9.144-3.1 Debian:stable-updates [-x-])
+    Conf linux-libc-dev (4.9.144-3.1 Debian:stable-updates [-x-])
+
+    Accept [y/N]? y
+    ============================================================
+    Failed:  build-x86-05.torproject.org build-x86-06.torproject.org dictyotum.torproject.org fallax.torproject.org getulum.torproject.org geyeri.torproject.org gillii.torproject.org hedgei.torproject.org majus.torproject.org moly.torproject.org peninsulare.torproject.org web-cymru-01.torproject.org
+    No updates on: 
+    Accepted changes:
+      torproject-upgrade '180463a1d97794d04af05ba99ff0dabd2c5648c4|29af4f3d269e7a8ddc22fc2d2d970c70a373d9e8|36d9a3e4d8c4b58c8e8b325022afa78573ac2667|42bec5e8be9279422bf3b5dc704f4f077c597099|83b56903918edad25655a7c85d5dc12448e1619b|eb227197d16c5e1a613a00a5e5abcb817a0ec65d|ec52867d0041b23a27393ee5afa3b45df2e3b4b9|ed456dc5ed1c12d7024644af5aac54c9370b7466|fe78acc5ff2d634eabf7676c6bcd60f248e7b610'
+    weasel@orinoco:~$   torproject-upgrade '180463a1d97794d04af05ba99ff0dabd2c5648c4|29af4f3d269e7a8ddc22fc2d2d970c70a373d9e8|36d9a3e4d8c4b58c8e8b325022afa78573ac2667|42bec5e8be9279422bf3b5dc704f4f077c597099|83b56903918edad25655a7c85d5dc12448e1619b|eb227197d16c5e1a613a00a5e5abcb817a0ec65d|ec52867d0041b23a27393ee5afa3b45df2e3b4b9|ed456dc5ed1c12d7024644af5aac54c9370b7466|fe78acc5ff2d634eabf7676c6bcd60f248e7b610'
+    [exited]
+
