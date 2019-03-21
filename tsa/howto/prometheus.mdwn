@@ -9,6 +9,9 @@ Language". Prometheus also supports basic graphing capabilities
 although those are limited enough that we use a separate graphing
 layer on top (see [[Grafana]]).
 
+Basic design
+------------
+
 The Prometheus web interface is available at:
 
 <https://prometheus.torproject.org>
@@ -17,8 +20,25 @@ A simple query you can try is to pick any metric in the list and click
 `Execute`. For example, [this link](https://prometheus1.torproject.org/graph?g0.range_input=2w&g0.expr=node_load5&g0.tab=0) will show the 5-minute load
 over the last two weeks for the known servers.
 
-All machines configured through Puppet are scraped by the central
-server every 15 seconds.
+Here you can see, from the [Prometheus overview documentation](https://prometheus.io/docs/introduction/overview/) the
+basic architecture of a Prometheus site:
+
+<img src="https://prometheus.io/assets/architecture.png" alt="A
+drawing of Prometheus' architecture, showing the push gateway and
+exporters adding metrics, service discovery through file_sd and
+Kubernetes, alerts pushed to the Alertmanager and the various UIs
+pulling from Prometheus" />
+
+As you can see, Prometheus is somewhat tailored towards
+[Kubernetes](https://kubernetes.io/) but it can be used without it. We're deploying it with
+the `file_sd` discovery mechanism, where Puppet collects all exporters
+into the central server, which then scrapes those exporters every
+`scrape_interval` (by default 15 seconds). The architecture graph also
+shows the Alertmanager which could be used to (eventually) replace our
+Nagios deployment.
+
+It does not show that Prometheus can federate to multiple instances
+and the Alertmanager can be configured with High availability.
 
 Munin expatriates
 -----------------
