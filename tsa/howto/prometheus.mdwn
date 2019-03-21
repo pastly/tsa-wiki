@@ -1,13 +1,15 @@
 Prometheus
 ==========
 
-[Prometheus](https://prometheus.io/) is a monitoring system that is designed to process a
+[Prometheus][] is a monitoring system that is designed to process a
 large number of metrics, centralize them on one (or multiple) servers
 and serve them with a well-defined API. That API is queried through a
 domain-specific language (DSL) called "PromQL" or "Prometheus Query
 Language". Prometheus also supports basic graphing capabilities
 although those are limited enough that we use a separate graphing
 layer on top (see [[Grafana]]).
+
+[Prometheus]: https://prometheus.io/
 
 Basic design
 ------------
@@ -17,11 +19,15 @@ The Prometheus web interface is available at:
 <https://prometheus.torproject.org>
 
 A simple query you can try is to pick any metric in the list and click
-`Execute`. For example, [this link](https://prometheus1.torproject.org/graph?g0.range_input=2w&g0.expr=node_load5&g0.tab=0) will show the 5-minute load
+`Execute`. For example, [this link][] will show the 5-minute load
 over the last two weeks for the known servers.
 
-Here you can see, from the [Prometheus overview documentation](https://prometheus.io/docs/introduction/overview/) the
+[this link]: https://prometheus1.torproject.org/graph?g0.range_input=2w&g0.expr=node_load5&g0.tab=0
+
+Here you can see, from the [Prometheus overview documentation][] the
 basic architecture of a Prometheus site:
+
+[Prometheus overview documentation]: https://prometheus.io/docs/introduction/overview/
 
 <img src="https://prometheus.io/assets/architecture.png" alt="A
 drawing of Prometheus' architecture, showing the push gateway and
@@ -30,12 +36,14 @@ Kubernetes, alerts pushed to the Alertmanager and the various UIs
 pulling from Prometheus" />
 
 As you can see, Prometheus is somewhat tailored towards
-[Kubernetes](https://kubernetes.io/) but it can be used without it. We're deploying it with
+[Kubernetes][] but it can be used without it. We're deploying it with
 the `file_sd` discovery mechanism, where Puppet collects all exporters
 into the central server, which then scrapes those exporters every
 `scrape_interval` (by default 15 seconds). The architecture graph also
 shows the Alertmanager which could be used to (eventually) replace our
 Nagios deployment.
+
+[Kubernetes]: https://kubernetes.io/
 
 It does not show that Prometheus can federate to multiple instances
 and the Alertmanager can be configured with High availability.
@@ -125,9 +133,15 @@ upstream Puppet module to install Prometheus using backported Debian
 packages. The monitoring server itself is defined in
 `roles::monitoring`.
 
-The [Prometheus Puppet module](https://github.com/voxpupuli/puppet-prometheus/) was patched to [allow scrape job
-collection](https://github.com/voxpupuli/puppet-prometheus/pull/304) and [use of Debian packages for installation](https://github.com/voxpupuli/puppet-prometheus/pull/303). Much
-of the initial Prometheus configuration was also documented in [ticket
-#29681](https://trac.torproject.org/projects/tor/ticket/29681) and especially [ticket #29388](https://trac.torproject.org/projects/tor/ticket/29388) which investigates
+The [Prometheus Puppet module][] was patched to [allow scrape job
+collection][] and [use of Debian packages for installation][]. Much of
+the initial Prometheus configuration was also documented in
+[ticket #29681][] and especially [ticket #29388][] which investigates
 storage requirements and possible alternatives for data retention
 policies.
+
+[ticket #29388]: https://trac.torproject.org/projects/tor/ticket/29388
+[ticket #29681]: https://trac.torproject.org/projects/tor/ticket/29681
+[use of Debian packages for installation]: https://github.com/voxpupuli/puppet-prometheus/pull/303
+[allow scrape job collection]: https://github.com/voxpupuli/puppet-prometheus/pull/304
+[Prometheus Puppet module]: https://github.com/voxpupuli/puppet-prometheus/
