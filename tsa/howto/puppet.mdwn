@@ -22,9 +22,15 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
 
 ## Other ways of extracting a host list
 
- * Using the PuppetDB API:
+ * Using the [PuppetDB API][]:
 
         curl -s -G http://localhost:8080/pdb/query/v4/facts  | jq -r ".[].certname"
+
+   The [fact API][] is quite extensive and allows for very complex
+   queries. For example, this shows all hosts with the `apache2` fact
+   set to `true`:
+
+        curl -s -G http://localhost:8080/pdb/query/v4/facts --data-urlencode 'query=["and", ["=", "name", "apache2"], ["=", "value", true]]' | jq -r ".[].certname"
 
  * Using [Cumin][], see below
 
@@ -37,6 +43,9 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
 
     the mkdir is so that I can run the same command in many terminal
     windows and each host gets only one once
+
+ [PuppetDB API]: https://puppet.com/docs/puppetdb/4.3/api/index.html
+ [fact API]: https://puppet.com/docs/puppetdb/4.3/api/query/v4/facts.html
 
 Batch jobs on all hosts
 =======================
