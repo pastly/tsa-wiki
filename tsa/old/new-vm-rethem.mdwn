@@ -1,0 +1,261 @@
+= HOW I CREATED A NEW VM AT RETHEMHOSTING (CYMRU) FOR MUMBLE
+
+A quick guide for how to make VMs.
+
+18 Sep 2015
+
+== WHAT YOU WILL NEED
+
+ * Access to many git repositories
+ * Sudo access all over the place
+ * GPG key that can decrypt files in those git repositories
+ * Your ssh configuration file set up to use the appropriate
+   ProxyCommand magic to ssh into various .torproject.org hosts.
+ * Enough Unix shell skillz to be dangerous to yourself and others
+
+== THE STEPS
+
+ * Go to the approach for rethemhosting.  You can find it in
+   hosts-extra-info in the tor-passwords repository.
+
+   If your browser hates you when you do this, it's possible that
+   rethemhosting still hasn't upgraded their DH parameters to
+   something non-embarrassing. Disable the DHE ciphersuites and try
+   again.  Very sorry.  I emailed them about it.
+
+ * Pick an onion species name:
+
+   https://en.wikipedia.org/wiki/List_of_Allium_species
+
+   (I went with "tuburosum", since I have some of that in my
+   fridge. Try not to pick something that has the first 3 characters
+   in common with some other host.)
+
+ * In the rethemhosting interface, go to the list of instances, then
+   select "add instance" (currently towards the top right.)
+
+   It will walk you through a wizard.
+
+   1: Select ISO
+
+   2: Select "my ISOs", then tor-debian-7.8-20150221.
+
+      (If there is something more recent than that, ask weasel if it
+      is safe to use!)
+
+      You will have only one option for hypervisor.
+
+   3: Configure the CPU/RAM requirements as needed
+
+   4: Select 20 GB disk, always. More disks can get added later.
+
+   5: Is easy; nothing to do here.
+
+   6: Select 'Tor External Dual', then make it the default, then
+      deselect the original network.
+
+      Weasel explains: "one is I think an internal network that isn't
+      routed anywhere, and the two external things are two networks
+      that are in the internet but with different address space.  I
+      think the first tor external one is full."
+
+   7: Give it a name.  No group.
+
+  * Launch the VM!  It will boot from a custom install CD.
+
+  * Did you think you were done? Lolololollol11ol!
+
+  * Once the VM is running, click on it in the rethem interface, and
+    go to the NICs tab.  Learn the IP addresses (v4 and v6) and
+    gateways for the new VM.
+
+  * Edit the domains git repository.  (It is at
+    git@git-rw.torproject.org:admin/dns/domains.)
+
+    DO NOT EDIT torproject.org!!!!!!
+
+    Instead, add the reverse-dns records as appropriate to the *.arpa files.
+
+    ipv6cal can help with ipv6 reverse fu.  e.g.:
+
+      weasel@defiant:~$ ipv6calc --in ipv6addr --out revnibbles.arpa 2607:8500:5:1::5a2c
+      c.2.a.5.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.5.0.0.0.0.0.5.8.7.0.6.2.ip6.arpa.
+
+    Commit and push when you are done; magic will happen.
+
+  * Now you need to get console access to the new VM: Click the rightmost
+    icon on the details screen at the rethem cloudstack thing.
+
+    The debian installer is about to ask you for some advice:
+
+      - Tell it the IP address to use.
+      - Tell it a netmask
+      - Tell it a gateway.
+      - Tell it the hostname.
+
+    It might ask you if you want to create a swap partition.  You don't.
+
+    It will ask you if you want to write the new partition map to the
+    the disk.  You do.
+
+    Now it will do a debian installation!  This will take a while.
+
+  * You need to add the new host to nagios.
+
+    git clone git@git-rw.torproject.org:admin/tor-nagios
+
+    cd config
+
+    edit nagios-master.cfg
+
+    Add the new host right below the most recently added host.  By
+    default, you should put it in these hostgroups:
+           computers, syslog-ng-hosts, no-ntp-peer.
+
+    (Other hostgroups are documented at XXXXXXXXXXXXX.)
+
+    Run make.  Did that work?
+
+    If so, run make install.
+
+    Commit and push.
+
+  * ssh into your shiny new host!  (as root.)
+
+    (The root password is the one marked as "rethemhosting
+    torproject.org preseed debian-install image default root password"
+    in hosts-extra-info in tor-passwords.git.  Don't worry, we'll
+    change it.)
+
+    (Use -o HostKeyAlgorithms=ssh-rsa to avoid a warning later on.)
+
+  * If you got in, detach the ISO.
+
+    It's one of the icons in the cloudstack thing.  It looks like a paperclip.
+
+
+  * Get a shell on alberti, then run:
+
+
+    ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D uid=nickm,ou=users,dc=torproject,dc=org
+
+    You will need to use your ldap password.
+
+    Now you are editing the LDAP database!
+
+    Look for the last host= entry for a rethemhosting host in the file.
+
+    Copy that whole block to the end of the file, and replace the
+    number with the word "add".  Then set the hostname correctly, and
+    update the other stuff.  (like memory, ssh host key, ip addresses,
+    purpose.) drop or replace allowedGroups.
+
+    Use dpkg --print-architecture if you don't know what the architecture is.
+    (It's amd64.)
+
+    Save and quit, then say yes.
+
+
+  * Open an editor on the new host as root, and edit
+    /etc/network/interfaces.  Edit it to be a copy of the one on the
+    most recently created host, except fill in the correct values for
+    this host.  I got:
+
+========
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+    address 154.35.132.152/28
+    gateway 154.35.132.145
+iface eth0 inet6 static
+    address 2607:8500:5:1::5a2c/64
+    gateway 2607:8500:5:1::1
+    accept_ra 0
+========
+
+    Your IP will vary.
+
+  * Edit /etc/resolv.conf and /etc/hosts so that they include the
+    proper domain.  (It is probably torproject.org, not
+    rethemhosting.)
+
+  * Reboot the new host (with shutdown -r now), and make sure it comes
+    up with the right IP.
+
+  * Now you are going to read new-machine-cymru on alberti!  It lives
+    in /src/db.torproject.org.
+
+    Follow its instructions _on the new host_ as root.
+
+  * You will be told to recursively follow the instructions in
+    new-machine on alberti, which lives in the same repository.  Do
+    so.
+
+    Some notes:
+         - You will need to be root for nearly all of this.
+         - If something just won't work, try puppet agent -t on the
+           new host again, and give it another try.
+         - Use weasel's magical pws scripts to manage the
+           tor-passwords repository.
+
+  * On the new host, if there is an /etc/apt/sources.list.d/debian.list,
+    remove /etc/apt/sources.list, then apt-get update.
+
+  * Run one last  "apt-get update && apt-get dist-upgrade && apt-get clean"
+
+  * Reboot again for good measure!
+
+  * (Unless you used -o HostKeyAlgorithms=ssh-rsa before:)
+    When you next ssh into the new host, the key will probably have
+    changed.  That's because it switched from ECDSA to RSA.  Don't
+    worry, but make sure you got the right one.
+
+NOW YOU HAVE A HOST!
+
+But, nobody can log into it.  That's sad.
+
+I wanted to set it up so that ioerror could log in and become a new
+"tormumble" role and administer the stuff.
+
+= So here's how I made the tormumble role and stuff!
+
+  * Do the magic thing on alberti again to edit the ldap database.
+
+    Create a role account and associated group in ldap - ldapvi and
+    copy one from before, picking a free uid/gid number pair.
+
+    Add the group to the allowedGroups for the host.
+
+    Add the group to the supplemenataryGids for the users who should
+    be in it.
+
+    Then, in puppet:
+
+       /usr/sbin/visudo -f ./modules/sudo/files/sudoers
+
+    And add a line of the form:
+
+       %rolename   hostname=(groupname)  ALL
+
+  * Then on the host, you need to log in as the role user to create
+    their homedir and stuff.  Do su - <role account> to do this, then
+    log out again.
+
+    If you couldn't log in, then the LDAP info hasn't propagated
+    yet. Run this on alberti:
+         sudo -u sshdist ud-generate
+    And this on the new host as root:
+         ud-replicate
+
+  * Move the home directory to the right place:
+
+      mkdir /srv/<roledirectoryservicewhatever>.torproject.org
+      mv /home/<roleuser> to /srv/$foo/home
+
+      , then replace the original location with a symlink
+
+      Also, chown /srv/<roledirectoryservicewhatever>.torproject.org
+      to the new <roleuser>:<rolegroup>

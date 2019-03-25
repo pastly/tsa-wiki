@@ -1,0 +1,117 @@
+
+(all commands to be run as root unless otherwise noted)
+
+* set a hostname - pick an unused one from the [[doc/naming-scheme]]
+
+* sanitize DNS configuration:
+
+        grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf
+        vi /etc/hosts # make sure the local host is there with both FQDN and just hostname
+
+* add to ldap on `alberti` using:
+
+        ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
+
+  Copy-paste the host block of another similar host, and change the
+  leading number to an `add`. See also the [ldapvi manual](http://www.lichteblau.com/ldapvi/manual/) for more
+  help. To generate the ssh host key block, use:
+
+        for i in /etc/ssh/ssh_host_rsa_key.pub /etc/ssh/ssh_host_ed25519_key.pub; do
+            echo "sshRSAHostKey: `cat $i`"
+        done
+
+* then:
+  * on alberti:
+  
+        sudo -u sshdist ud-generate && sudo -H ud-replicate && sudo puppet agent -t
+
+  * on nevii:
+
+        sudo -H ud-replicate
+
+* set up puppet:
+  * on pauli:
+
+        ( puppet agent -t --environment=production || true ) && \
+        ud-replicate && \
+        sudo -H -u puppet make -C /srv/puppet.torproject.org/auto-ca install
+
+  * on new machine:
+
+        me=$(hostname -f) && \
+        [ "$me" != "${me%torproject.org}" ] && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends puppet lsb-release && \
+        service puppet stop && \
+        systemctl mask puppet.service && \
+        (puppet agent -t || true ) && \
+        cd /var/lib/puppet/ssl/certificate_requests && \
+        echo sha256sum output: && \
+        echo && \
+        sha256sum $me.pem && \
+        echo && \
+        echo && \
+        cd /
+
+  * on pauli:
+
+        cd /var/lib/puppet/ssl/ca/requests && \
+        ( [ -e $filename ] || (echo "$filename does not exist."; exit 1) ) && \
+        echo "paste sha256sum output followed by control-d: " && \
+        sha256sum -c && \
+        puppet ca sign $(basename "$filename" .pem) && \
+        echo && \
+        echo "--- 8< --- CUT HERE --- 8< ---" && \
+        echo && \
+        echo 'cat > /var/lib/puppet/ssl/certs/ca.pem << EOF ' && \
+        cat /var/lib/puppet/ssl/certs/ca.pem && \
+        echo 'EOF' && \
+        echo "cat > /var/lib/puppet/ssl/certs/$filename << EOF " && \
+        cat /var/lib/puppet/ssl/ca/signed/$filename && \
+        echo 'EOF' && \
+        echo 'puppet agent --enable' && \
+        echo 'puppet agent -t --pluginsync' && \
+        echo 'puppet agent -t --pluginsync' && \
+        echo
+        echo "--- 8< --- CUT HERE --- 8< ---" && \
+        echo
+        cd /
+
+* copy paste the thing between `CUT HERE` from `pauli` into a root
+  shell on the new host
+
+* do more puppet runs, and run a ud-replicate to get ldap users, then
+  more puppet runs since we now have more users:
+
+        puppet agent -t
+        ud-replicate
+        puppet agent -t
+        puppet agent -t
+
+* get rid of unneeded network services (only needed if we did not install this
+  from a minbase but from somebody else's install/image):
+
+        dpkg --purge portmap nfs-common exim4 exim4-base exim4-config exim4-daemon-light
+        userdel -r Debian-exim
+
+* fix `/etc/aliases`:
+
+        ( ! grep '^root:' /etc/aliases && echo 'root: torproject-admin@torproject.org' >> /etc/aliases ) &&
+        sed -i -e 's/^root:.*/root: torproject-admin@torproject.org/' /etc/aliases && newaliases
+
+* set new root password, and document it
+
+* swap and tmp
+
+        grep tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
+
+        ! grep swap /etc/fstab && \
+        dd if=/dev/zero bs=1024k count=1024 of=/swapfile && \
+        chmod 0 /swapfile && \
+        mkswap /swapfile && \
+        echo '/swapfile none swap sw 0 0' >> /etc/fstab && \
+        swapon -a
+
+* add to [[nagios]]
+
+* document the machine in the evil Google spreadsheet (!)

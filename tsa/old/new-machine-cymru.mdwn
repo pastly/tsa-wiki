@@ -1,0 +1,13 @@
+After installing from our tor iso:
+
+- set up dedicated /srv disk, if we have one
+
+- make a swapfile (either on / or on /srv if that's a dedicated FS)
+  cd /srv && [ -e lost+found ] &&
+  dd if=/dev/zero of=swapfile bs=1024k count=4096 &&
+  chmod 0 swapfile &&
+  mkswap swapfile &&
+  echo "`readlink -f swapfile` none swap sw 0 0" >> /etc/fstab &&
+  swapon -a
+
+- follow normal new-machine docs

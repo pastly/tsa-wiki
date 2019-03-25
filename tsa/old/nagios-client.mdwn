@@ -1,0 +1,16 @@
+
+sudo apt-get update &&
+sudo apt-get install tor-nagios-checks &&
+sudo sed -i -e 's/^#DAEMON/DAEMON/' /etc/default/nagios-nrpe-server &&
+sudo env -i /etc/init.d/nagios-nrpe-server restart &&
+if [ -e '/etc/firehol/firehol.conf' ] ; then
+        echo 'You might want to add these to /etc/firehol/firehol.conf:'
+        echo
+        cat << EOF
+server custom monit tcp/4949 default accept src 38.229.70.32
+server custom nrpe tcp/5666 default accept src 38.229.70.32
+server ntp accept src 38.229.70.32
+server icmp accept src 38.229.70.32
+EOF
+fi
+

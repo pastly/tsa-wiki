@@ -1,0 +1,28 @@
+Grafana
+=======
+
+[Grafana](https://grafana.com/) is a graphing engine and dashboard management tool that
+processes data from multiple data sources. We use it to trend various
+metrics collected from servers by [[Prometheus]].
+
+<https://grafana.torproject.org/>
+
+Puppet implementation
+---------------------
+
+Grafana was installed with Puppet using the upstream Debian
+package, following a debate regarding the merits of Debian packages
+versus Docker containers when neither are trusted, see [this
+comment](https://trac.torproject.org/projects/tor/ticket/29684#comment:3) for a summary.
+
+Manual configuration was performed after the installed:
+
+ 1. admin password reset on first install, stored in
+    `torr-passwords.git`, in `hosts-extra-info`.
+
+ 2. Prometheus datasource configured by hand
+
+ 3. 5 dashboards imported and configured by hand
+
+Those should be integrated in the Puppet configuration and
+authentication needs to be figured out.

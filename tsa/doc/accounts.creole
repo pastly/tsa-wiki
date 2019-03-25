@@ -7,6 +7,11 @@ their email forwards.
 It also stores group memberships which in turn affects which users can log into
 which [[hosts|https://db.torproject.org/machines.cgi]].
 
+This document should be consistent with the [[Tor membership
+policy|https://gitweb.torproject.org/community/policies.git/plain/membership.txt]],
+in case of discrepancy between the two documents, the membership
+policy overrules this document.
+
 == <a id="ldap-or-alias">Decision tree: LDAP account or email alias?</a> ==
 
 Here is a simple decision tree to help you decide if a new contributor
