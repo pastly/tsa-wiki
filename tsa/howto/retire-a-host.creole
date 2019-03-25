@@ -1,11 +1,10 @@
 = Decommissioning a host =
 
+* remove the host from tor-nagios/config/nagios-master.cfg
 * stop the VM: virsh destroy $host
 * undefine it: virsh undefine $host
-* remove the LVM logical volumes
-* remove it from the tor-virt git
+* if applicable, possibly only on moly.tpo: remove the LVM logical volumes
 * remove it from ud-ldap
 * on pauli:
-** puppetca revoke $host.torproject.org
-** puppetca clean $host.torproject.org
 ** puppet node clean $host.torproject.org
+** puppet node deactive $host.torproject.org
