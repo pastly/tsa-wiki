@@ -1,0 +1,24 @@
+# Creating a new user (for a human being)
+- on laptop
+  - verify pgp key
+  - add pgp key to admin/account-keyring and git push to both torgit and
+    alberti.torproject.org/srv/db.torproject.org/keyrings/keyring.git
+- on alberti, as a user with LDAP write access
+  - ud-useradd -n
+  - sudo -u sshdist ud-generate && sudo -H ud-replicate
+- on eugeni
+  - sudo -H ud-replicate
+  - egrep -q $new_login /etc/postfix/debian || echo "hmm, new user missing, please fix"
+  - sudo puppet agent -t
+
+# Creating a role acount and a group for it
+
+1. Do _not_ use ud-groupadd and ud-roleadd. They are partly broken.
+
+2. On LDAP host (currently alberti.tpo), as a user with LDAP write access, do
+  - `ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D uid=${USER},ou=users,dc=torproject,dc=org`
+  - Cut and paste a gid entry, pick a nice gidNumber.
+  - Cut and paste a uid entry, pick a nice uidNumber.
+  - Add 'allowedGroups: NEW-GROUP' to host entry/ies that should have
+    this role account.
+3. `sudo -u sshdist ud-generate && sudo -H ud-replicate`
