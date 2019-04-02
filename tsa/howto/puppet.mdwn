@@ -32,6 +32,11 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
 
         curl -s -G http://localhost:8080/pdb/query/v4/facts --data-urlencode 'query=["and", ["=", "name", "apache2"], ["=", "value", true]]' | jq -r ".[].certname"
 
+   This will list all hosts sorted by their report date, older first,
+   followed by the timestamp, space-separated:
+
+        curl -s -G http://localhost:8080/pdb/query/v4/nodes  | jq -r 'sort_by(.report_timestamp) | .[] | "\(.certname) \(.report_timestamp)"' | column -s\  -t
+
  * Using [Cumin][], see below
 
 [Cumin]: https://doc.wikimedia.org/cumin/master/introduction.html
