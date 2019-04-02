@@ -39,8 +39,6 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
 
  * Using [Cumin][], see below
 
-[Cumin]: https://doc.wikimedia.org/cumin/master/introduction.html
-
  * Using LDAP:
  
         HOSTS=$(ssh alberti.torproject.org 'ldapsearch -h db.torproject.org -x -ZZ -b dc=torproject,dc=org -LLL "hostname=*.torproject.org" hostname | awk "\$1 == \"hostname:\" {print \$2}" | sort')
@@ -51,12 +49,13 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
 
  [PuppetDB API]: https://puppet.com/docs/puppetdb/4.3/api/index.html
  [fact API]: https://puppet.com/docs/puppetdb/4.3/api/query/v4/facts.html
+ [Cumin]: https://doc.wikimedia.org/cumin/master/introduction.html
 
 Batch jobs on all hosts
 =======================
 
 With that trick, a job can be ran on all hosts with
-[parallel-ssh](https://code.google.com/archive/p/parallel-ssh/), for example, check the uptime:
+[parallel-ssh][], for example, check the uptime:
 
     cut -d, -f1 hosts.hsv | parallel-ssh -i -h /dev/stdin uptime
 
@@ -81,14 +80,14 @@ You can also use [Cumin][] to operate arbitrary shell commands on
 Puppet hosts or a subset of hosts. First, install Cumin and setup a
 tunnel to connect to the Puppet locally:
 
-    virtualenv --python=python3 ~/.venv/cumin
-    ~/.venv/cumin/bin/pip3 install cumin
+    virtualenv --python=python3 ~/.virtualenvs/cumin
+    ~/.virtualenvs/cumin/bin/pip3 install cumin
     ssh -L8080:localhost:8080 pauli.torproject.org
 
-Notice how Cumin is installed in a [Python virtualenv](https://virtualenv.pypa.io/): it is not
-yet [in Debian](https://bugs.debian.org/924685). You'll also need a patch to enable plain HTTP
-access, see [this bug report](https://phabricator.wikimedia.org/T218441). You might also want to disable the
-[root check](https://phabricator.wikimedia.org/T218440) as well. Then drop the following configuration in
+Notice how Cumin is installed in a [Python virtualenv][]: it is not
+yet [in Debian][]. You'll also need a patch to enable plain HTTP
+access, see [this bug report][]. You might also want to disable the
+[root check][] as well. Then drop the following configuration in
 `~/.config/cumin/config.yaml`:
 
     transport: clustershell
@@ -102,14 +101,14 @@ access, see [this bug report](https://phabricator.wikimedia.org/T218441). You mi
 
 From here on we'll assume you use the following alias:
 
-    alias cumin="~/.venv/cumin/bin/cumin --config ~/.config/cumin/config.yaml"
+    alias cumin="~/.virtualenvs/cumin/bin/cumin --config ~/.config/cumin/config.yaml"
 
 This will run the `uptime` command on all hosts:
 
     cumin '*' uptime
 
 To run against only a subset, you need to use the Cumin grammar, which
-is [briefly described in the Wikimedia docs](https://wikitech.wikimedia.org/wiki/Cumin#PuppetDB_host_selection). For example, this
+is [briefly described in the Wikimedia docs][]. For example, this
 will run the same command only on physical hosts:
 
     cumin 'F:virtual=physical' uptime
@@ -126,3 +125,10 @@ and will simply show which hosts match the request:
     $ cumin 'F:virtual=physical'
     16 hosts will be targeted:
     [...]
+
+[root check]: https://phabricator.wikimedia.org/T218440
+[this bug report]: https://phabricator.wikimedia.org/T218441
+[in Debian]: https://bugs.debian.org/924685
+[Python virtualenv]: https://virtualenv.pypa.io/
+[briefly described in the Wikimedia docs]: https://wikitech.wikimedia.org/wiki/Cumin#PuppetDB_host_selection
+[parallel-ssh]: https://code.google.com/archive/p/parallel-ssh/
