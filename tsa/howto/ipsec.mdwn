@@ -1,0 +1,124 @@
+IPsec
+=====
+
+IPsec is deployed with [strongswan][] on multiple servers throughout
+the architecture. It interconnects many of the KVM hosts but also the
+monitoring server because it can be used as a NAT bypass mechanism for
+some machines.
+
+ [strongswan]: http://www.strongswan.org/
+
+Hooking up a new node to the IPsec network
+------------------------------------------
+
+This is managed through Puppet, so it's basically a matter of adding
+the hostname to the `ipsec` role in
+`modules/torproject_org/misc/local.yaml` and adding the network
+configuration block to `modules/ipsec/misc/config.yaml`. For example,
+this was the diff for the new monitoring server:
+
+    diff --git c/modules/ipsec/misc/config.yaml w/modules/ipsec/misc/config.yaml
+    index e4367c38..3b724e77 100644
+    --- c/modules/ipsec/misc/config.yaml
+    +++ w/modules/ipsec/misc/config.yaml
+    @@ -50,3 +49,9 @@ hetzner-hel1-01.torproject.org:
+       subnet:
+         - 95.216.141.241/32
+         - 2a01:4f9:c010:5f1::1/128
+    +
+    +hetzner-nbg1-01.torproject.org:
+    +  address: 195.201.139.202
+    +  subnet:
+    +    - 195.201.139.202/32
+    +    - 2a01:4f8:c2c:1e17::1/128
+    diff --git c/modules/torproject_org/misc/local.yaml w/modules/torproject_org/misc/local.yaml
+    index 703254f4..e2dd9ea3 100644
+    --- c/modules/torproject_org/misc/local.yaml
+    +++ w/modules/torproject_org/misc/local.yaml
+    @@ -163,6 +163,7 @@ services:
+         - scw-arm-par-01.torproject.org
+       ipsec:
+         - hetzner-hel1-01.torproject.org
+    +    - hetzner-nbg1-01.torproject.org
+         - kvm4.torproject.org
+         - kvm5.torproject.org
+         - macrum.torproject.org
+
+Then Puppet needs to run on the various peers and the new peer should
+be rebooted, otherwise it will not be able to load the new IPsec
+kernel modules.
+
+Debugging
+---------
+
+To diagnose problems, you can check the state of a given connexion
+with, for example:
+
+    ipsec status hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org
+
+This will show summary information of the current connexion. This
+shows, for example, an established and working connexion:
+
+    root@hetzner-nbg1-01:/home/anarcat# ipsec status hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org
+    Routed Connections:
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org{6}:  ROUTED, TUNNEL, reqid 6
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org{6}:   195.201.139.202/32 2a01:4f8:c2c:1e17::1/128 === 95.216.141.241/32 2a01:4f9:c010:5f1::1/128
+    Security Associations (3 up, 2 connecting):
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org[4]: ESTABLISHED 9 minutes ago, 195.201.139.202[195.201.139.202]...95.216.141.241[95.216.141.241]
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org{7}:  INSTALLED, TUNNEL, reqid 6, ESP SPIs: [redacted]_i [redacted]_o
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org{7}:   195.201.139.202/32 2a01:4f8:c2c:1e17::1/128 === 95.216.141.241/32 2a01:4f9:c010:5f1::1/128
+
+As a comparison, here is a connexion that is failing to complete:
+
+    root@hetzner-hel1-01:/etc/ipsec.secrets.d# ipsec status hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org
+    Routed Connections:
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org{6}:  ROUTED, TUNNEL, reqid 6
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org{6}:   95.216.141.241/32 2a01:4f9:c010:5f1::1/128 === 195.201.139.202/32 2a01:4f8:c2c:1e17::1/128
+    Security Associations (7 up, 1 connecting):
+    hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org[18]: CONNECTING, 95.216.141.241[%any]...195.201.139.202[%any]
+
+The following messages are then visible in `/var/log/daemon.log` on
+that side of the connexion:
+
+    Apr  4 21:32:58 hetzner-hel1-01/hetzner-hel1-01 charon[14592]: 12[IKE] initiating IKE_SA hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org[17] to 195.201.139.202
+    Apr  4 21:35:44 hetzner-hel1-01/hetzner-hel1-01 charon[14592]: 05[IKE] initiating IKE_SA hetzner-hel1-01.torproject.org-hetzner-nbg1-01.torproject.org[18] to 195.201.139.202
+
+In this case, the other side wasn't able to start the `charon` daemon
+properly because of missing kernel modules:
+
+    Apr  4 21:38:07 hetzner-nbg1-01/hetzner-nbg1-01 ipsec[25243]: charon has quit: initialization failed
+    Apr  4 21:38:07 hetzner-nbg1-01/hetzner-nbg1-01 ipsec[25243]: charon refused to be started
+    Apr  4 21:38:07 hetzner-nbg1-01/hetzner-nbg1-01 ipsec[25243]: ipsec starter stopped
+
+Note that the `ipsec statusall` can also be used for more detailed
+status information.
+
+The `ipsec up <connexion>` command can also be used to start a
+connexion manually, `ipsec down <connexion>` for stopping a connexion,
+naturally. Connexions are defined in `/etc/ipsec.conf.d`.
+
+The `traceroute` command can be used to verify a host is well
+connected over IPsec. For example, this host is directly connected:
+
+    root@hetzner-nbg1-01:/home/anarcat# traceroute hetzner-hel1-01.torproject.org 
+    traceroute to hetzner-hel1-01.torproject.org (95.216.141.241), 30 hops max, 60 byte packets
+     1  hetzner-hel1-01.torproject.org (95.216.141.241)  23.780 ms  23.781 ms  23.851 ms
+
+Another example, this host is configured through IPsec, but somehow
+unreachable:
+
+    root@hetzner-nbg1-01:/home/anarcat# traceroute kvm4.torproject.org 
+    traceroute to kvm4.torproject.org (94.130.38.33), 30 hops max, 60 byte packets
+     1  * * *
+     2  * * *
+     3  * * *
+     4  * * *
+     5  * * *
+
+That was because Puppet hadn't run on that other end. This Cumin
+recipe fixed that:
+
+    cumin 'C:ipsec' 'puppet agent -t'
+
+The first run "failed" (as in, Puppet returned a non-zero status
+because it performed changes) but another run "succeeded").
