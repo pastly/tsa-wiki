@@ -1,3 +1,67 @@
+# Reference
+
+This documents generally how things are setup.
+
+### Before it all starts
+
+- `puppet.tpo` is currently being run on `pauli.tpo`
+- This is where the tor-puppet git repo lives
+- The repo has hooks to populate `/etc/puppet` with its contents, most
+  notably the modules directory.
+- All paths in this document are relative to the root of this
+  repository.
+
+### File layout
+
+- The root of definitions and execution is found in
+  `tor-puppet/manifests/site.pp`.
+
+- `local.yaml` (modules/torproject_org/misc/local.yaml) defines
+  services and list which host(s) supply each service. local.yaml is
+  read by [site.pp](manifests/site.pp) for setting up the $localinfo
+  and $nodeinfo variables.
+
+- `roles init.pp` (modules/roles/manifests/init.pp) maps services to
+  roles, using the `$nodeinfo` variable.
+
+- `torproject.org init.pp` (modules/torproject_org/manifests/init.pp)
+  performs basic host initialisation, like configuring Debian mirrors
+  and APT sources, installing a base set of packages, configuring
+  puppet and timezone, setting up a bunch of rc-files and running
+  ud-replicate.
+
+- `hoster.yaml` (modules/torproject_org/misc/hoster.yaml) defines
+  hosting providers and specifies things like which net blocks they
+  use, if they have a DNS resolver or a debian mirror. hoster.yaml is
+  read by
+  - the `nodeinfo()` function
+    (modules/puppetmaster/lib/puppet/parser/functions/nodeinfo.rb),
+    used for setting up the `$nodeinfo` variable
+  - `ferm's def.conf template` (modules/ferm/templates/defs.conf.erb)
+  - the `entropy provider`
+    (modules/puppetmaster/lib/puppet/parser/functions/entropy_provider.rb)
+    TODO
+
+### Generating secrets, an example
+
+- `bacula::director` inherits `bacula` which defines
+- `$bacula_director_secret` using 
+- `hkdf()` and generates
+- `/etc/bacula/bacula-dir.conf` using that
+
+### Custom facts
+
+`modules/torproject_org/lib/facter/software.rb` defines our custom
+facts, making it possible to get answer to questions like "Is this
+host running apache2?" byt simply looking at a puppet variable.
+
+### Misc
+
+- `puppet-lint` is a thing
+- TODO: how to debug things
+
+# How to guides
+
 Listing all hosts under puppet
 ==============================
 
