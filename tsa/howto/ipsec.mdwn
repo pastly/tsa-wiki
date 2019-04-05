@@ -78,6 +78,10 @@ secret should be generated:
 
     printf '195.201.139.202 mikrotik.sbg.torproject.org : PSK "%s"' $(base64 < /dev/urandom | head -c 32) > /etc/ipsec.secrets.d/20-local-peers.secrets
 
+In the above, the first field is the IP of the "left" side, the second
+field is the hostname of the "right" side, and then it's followed by a
+secret, the "pre-shared key" (PSK) that will be reused below.
+
 That's for the "left" side. The "right" side, the Mikrotik one, is a
 little more involved. The first step is to gain access to the Mikrotik
 SSH terminal, details of which are stored in `tor-passwords`, in
