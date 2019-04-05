@@ -48,6 +48,67 @@ Then Puppet needs to run on the various peers and the new peer should
 be rebooted, otherwise it will not be able to load the new IPsec
 kernel modules.
 
+Special case: Mikrotik server
+-----------------------------
+
+The Mikrotik server is a special case that is not configured in
+Puppet, because Puppet can't run on its custom OS. To configure such a
+pairing, you first need to configure it on the normal server end,
+using something like this:
+
+    conn hetzner-nbg1-01.torproject.org-mikrotik.sbg.torproject.org
+      ike = aes128-sha256-modp3072
+
+      left       = 195.201.139.202
+      leftsubnet = 195.201.139.202/32
+
+      right = 141.201.12.27
+      rightallowany = yes
+      rightid     = mikrotik.sbg.torproject.org
+      rightsubnet = 172.30.115.0/24
+
+      auto = route
+
+      forceencaps = yes
+      dpdaction = hold
+
+The `left` part is the public IP of the "normal server". The `right`
+part has the public *and* private IPs of the Mikrotik server. Then a
+secret should be generated:
+
+    printf '195.201.139.202 mikrotik.sbg.torproject.org : PSK "%s"' $(base64 < /dev/urandom | head -c 32) > /etc/ipsec.secrets.d/20-local-peers.secrets
+
+That's for the "left" side. The "right" side, the Mikrotik one, is a
+little more involved. The first step is to gain access to the Mikrotik
+SSH terminal, details of which are stored in `tor-passwords`, in
+`hosts-extra-info`. A good trick is to look at the output of
+`/export` for an existing peer and copy-paste the good stuff. Here is
+how the `nbg1` peer was configured on the "right" side:
+
+    [admin@mtsbg] /ip ipsec> peer add address=195.201.139.202 exchange-mode=ike2 name=hetzner-nbg1-01 port=500 profile=profile_1
+    [admin@mtsbg] /ip ipsec> identity add my-id=fqdn:mikrotik.sbg.torproject.org peer=hetzner-nbg1-01 secret=[REDACTED]
+    [admin@mtsbg] /ip ipsec> policy add dst-address=195.201.139.202/32 proposal=my-ipsec-proposal sa-dst-address=195.201.139.202 sa-src-address=0.0.0.0 src-address=172.30.115.0/24 tunnel=yes
+    [admin@mtsbg] /ip firewall filter> add action=accept chain=from-tor-hosts comment=hetzner-hel1-01 src-address=195.201.139.202
+    [admin@mtsbg] /system script> print
+    Flags: I - invalid 
+     0   name="ping_ipsect_tunnel_peers" owner="admin" policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon 
+    ,,
+    [admin@mtsbg] /system script> remove 0
+    [admin@mtsbg] /system script> add dont-require-permissions=no name=ping_ipsect_tunnel_peers owner=admin policy=\
+    \...     ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="/ping count=1 src-address=172.30.115.1 172.30.134.1 ; \
+    "\...     \n/ping count=1 src-address=172.30.115.1 94.130.28.193 ; \
+    "\...     \n/ping count=1 src-address=172.30.115.1 94.130.38.33 ; \ 
+    "\...     \n/ping count=1 src-address=172.30.115.1 95.216.141.241 ; \
+    "\...     \n/ping count=1 src-address=172.30.115.1 195.201.139.202 ; \
+    "\...     \n"
+    [admin@mtsbg] /ip firewall nat> add action=accept chain=srcnat dst-address=195.201.139.202 src-address=172.30.115.0/24
+
+The `[REDACTED]` part should be the `PSK` field defined on the `left`
+side (what is between quotes).
+
+More information about how to configure IPsec on Mikrotik routers is
+available in [the upstream documentation](https://wiki.mikrotik.com/wiki/Manual:IP/IPsec).
+
 Debugging
 ---------
 
