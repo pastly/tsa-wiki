@@ -2,7 +2,7 @@
 
 This documents generally how things are setup.
 
-### Before it all starts
+## Before it all starts
 
 - `puppet.tpo` is currently being run on `pauli.tpo`
 - This is where the tor-puppet git repo lives
@@ -11,7 +11,7 @@ This documents generally how things are setup.
 - All paths in this document are relative to the root of this
   repository.
 
-### File layout
+## File layout
 
 - The root of definitions and execution is found in
   `tor-puppet/manifests/site.pp`.
@@ -42,28 +42,20 @@ This documents generally how things are setup.
     (modules/puppetmaster/lib/puppet/parser/functions/entropy_provider.rb)
     TODO
 
-### Generating secrets, an example
-
-- `bacula::director` inherits `bacula` which defines
-- `$bacula_director_secret` using 
-- `hkdf()` and generates
-- `/etc/bacula/bacula-dir.conf` using that
-
-### Custom facts
+## Custom facts
 
 `modules/torproject_org/lib/facter/software.rb` defines our custom
 facts, making it possible to get answer to questions like "Is this
 host running apache2?" byt simply looking at a puppet variable.
 
-### Misc
+## Misc
 
 - `puppet-lint` is a thing
 - TODO: how to debug things
 
 # How to guides
 
-Listing all hosts under puppet
-==============================
+## Listing all hosts under puppet
 
 This will list all active hosts known to the Puppet master:
 
@@ -84,7 +76,7 @@ query:
 
 The currently known values are: `kvm`, `physical`, and `xenu`.
 
-## Other ways of extracting a host list
+### Other ways of extracting a host list
 
  * Using the [PuppetDB API][]:
 
@@ -115,8 +107,7 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
  [fact API]: https://puppet.com/docs/puppetdb/4.3/api/query/v4/facts.html
  [Cumin]: https://doc.wikimedia.org/cumin/master/introduction.html
 
-Batch jobs on all hosts
-=======================
+## Batch jobs on all hosts
 
 With that trick, a job can be ran on all hosts with
 [parallel-ssh][], for example, check the uptime:
@@ -138,7 +129,7 @@ To run batch commands through sudo that requires a password, you will need to fo
 You should then type your password then Control-d. Warning: this will
 show your password on your terminal and probably in the logs as well. 
 
-## Using Cumin
+### Using Cumin
 
 You can also use [Cumin][] to operate arbitrary shell commands on
 Puppet hosts or a subset of hosts. First, install Cumin and setup a
@@ -196,3 +187,10 @@ and will simply show which hosts match the request:
 [Python virtualenv]: https://virtualenv.pypa.io/
 [briefly described in the Wikimedia docs]: https://wikitech.wikimedia.org/wiki/Cumin#PuppetDB_host_selection
 [parallel-ssh]: https://code.google.com/archive/p/parallel-ssh/
+
+## Generating secrets
+
+- `bacula::director` inherits `bacula` which defines
+- `$bacula_director_secret` using
+- `hkdf()` and generates
+- `/etc/bacula/bacula-dir.conf` using that
