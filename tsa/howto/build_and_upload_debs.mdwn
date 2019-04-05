@@ -126,3 +126,25 @@ Run `dinstall`:
 Archive remaning build products:
 
     dcmd mv *.changes archives/
+
+Uploading admin packages
+========================
+
+There is a separate Debian archive, on `db.torproject.org`, which can
+be used to upload packages specifically designed to run on
+`torproject.org` infrastructure. The following `.dput.cf` should allow
+you to upload built packages to the server, provided you have the
+required accesses:
+
+    [tpo-admin]
+    fqdn = alberti.torproject.org
+    incoming = /srv/db.torproject.org/ftp-archive/archive/pool/tpo-all/
+    method = sftp
+
+Then to install the packages:
+
+    ssh alberti.torproject.org make -C /srv/db.torproject.org/ftp-archive
+
+This might require fixing some permissions. Do a `chmod g+w` on the
+broken directories if this happens and open a ticket if it does, to
+create a service account instead of that hack.
