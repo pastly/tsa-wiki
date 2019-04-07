@@ -33,6 +33,7 @@ continue with:
  1. unmount the iso (ISO Images tab), start the VM (power tab or top right).
  1. `ssh -o FingerprintHash=md5 -o UserKnownHostsFile=~/.ssh/known_hosts.initramfs root@<ipaddr>`  to unlock the host,
  1. `ssh root@<ipaddr>` to access it once booted and then
- 1. follow the rest of [[new-machine]].
 
-TODO: what to do with the initramfs ssh keys?  put them in ldap? dns?
+Then
+ 1. Document the LUKS passphrase and root password as well as initramfs ssh key fingerprints in tor-passwords,
+ 1. follow the rest of [[new-machine]].
