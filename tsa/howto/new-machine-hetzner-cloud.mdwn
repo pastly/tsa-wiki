@@ -8,13 +8,31 @@ Pick the following settings:
 
  1. Location: depends on the project, a monitoring server might be
     better in a different location than the other VMs
- 2. Image: Debian 9
- 3. Type: depends on the project
- 4. Volume: only if extra space is required
- 5. Additional features: nothing (no user data or backups)
- 6. SSH key: enable all configured keys
- 7. Name: FQDN picked from the [[doc/naming-scheme]]
- 8. Create the server
- 9. Login to the server as root with SSH
+ 1. Image: Debian 9
+ 1. Type: depends on the project
+ 1. Volume: only if extra space is required
+ 1. Additional features: nothing (no user data or backups)
+ 1. SSH key: enable all configured keys
+ 1. Name: FQDN picked from the [[doc/naming-scheme]]
+ 1. Create the server
 
-Then follow the rest of [[new-machine]].
+Then, since we actually want our own Debian install, and since we want the root filesystem to be encrypted,
+continue with:
+
+ 1. Continue on Hetzner's web interface, select the server.
+ 1. ISO-Images: Mount SystemRescueCD (2018-04-02)
+ 1. reboot the system and it will boot into the rescue system
+ 1. open the console (the icon is near the top right)
+ 1. set a root password in the rescue system
+ 1. get the `ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub` output
+ 1. on your host, ssh-copy-id root@&lt;ipaddr&gt;
+ 1. then copy over `/usr/share/keyrings/debian-archive-keyring.gpg` and `tor-install-hetzner` to the new host,
+ 1. log into the host and run `./tor-install-hetzner`
+ 1. once done, note down all the info and shutdown the VM
+ 1. you might have to kill this terminal since the rescue system has done weird copy-paste settings to your terminal  (you will know once the passphrase is not accepted at the copy/paste step a few items down)
+ 1. unmount the iso (ISO Images tab), start the VM (power tab or top right).
+ 1. `ssh -o FingerprintHash=md5 -o UserKnownHostsFile=~/.ssh/known_hosts.initramfs root@<ipaddr>`  to unlock the host,
+ 1. `ssh root@<ipaddr>` to access it once booted and then
+ 1. follow the rest of [[new-machine]].
+
+TODO: what to do with the initramfs ssh keys?  put them in ldap? dns?
