@@ -55,10 +55,11 @@
 
   * on pauli:
 
+        echo "paste sha256sum output now:" && \
+        read sha256 filename && \
         cd /var/lib/puppet/ssl/ca/requests && \
         ( [ -e $filename ] || (echo "$filename does not exist."; exit 1) ) && \
-        echo "paste sha256sum output followed by control-d: " && \
-        sha256sum -c && \
+        echo -e "$sha256  $filename" | sha256sum -c && \
         puppet ca sign $(basename "$filename" .pem) && \
         echo && \
         echo "--- 8< --- CUT HERE --- 8< ---" && \
