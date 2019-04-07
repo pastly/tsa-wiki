@@ -73,9 +73,9 @@
         echo 'puppet agent --enable' && \
         echo 'puppet agent -t --pluginsync' && \
         echo 'puppet agent -t --pluginsync' && \
-        echo
+        echo && \
         echo "--- 8< --- CUT HERE --- 8< ---" && \
-        echo
+        echo && \
         cd /
 
 * copy paste the thing between `CUT HERE` from `pauli` into a root
