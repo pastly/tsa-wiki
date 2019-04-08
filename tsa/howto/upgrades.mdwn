@@ -1,6 +1,17 @@
 Debian upgrades
 ===============
 
+Major upgrades
+--------------
+
+Major upgrades are done by hand, with a "cheat sheet" created for each
+major release. Here are the currently documented ones:
+
+[[!map pages="page(tsa/howto/upgrades/*)"]]
+
+Minor upgrades
+--------------
+
 Debian package upgrades are not automatic on TPO machines. Pending
 upgrades are noticed by Nagios which warns loudly about them in its
 usual channels.
