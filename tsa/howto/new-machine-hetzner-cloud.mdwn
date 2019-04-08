@@ -42,14 +42,7 @@ Then
 To setup autoboot using mandos:
 
  1. install mandos-client
- 1. add a new key to the LUKS partition and prepare mandos snippet:
-
-        t=`tempfile`
-        dd if=/dev/random bs=1 count=128 of="$t"
-        cryptsetup luksAddKey /dev/sda2 "$t"
-        mandos-keygen --passfile "$t"
-
- 1. and add a workaround for Debian Bug#926641
+ 1. add a workaround for Debian Bug#926641
 
         cat > /etc/initramfs-tools/scripts/init-premount/local-fix-permissions-workaround << 'EOF'
         #!/bin/sh
@@ -67,7 +60,15 @@ To setup autoboot using mandos:
         # work around for debian bug #926641
         chmod a+rx /usr/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/mandos/plugins.d /usr/lib/mandos/plugin-helpers
         EOF
+        chmod +x /etc/initramfs-tools/scripts/init-premount/local-fix-permissions-workaround
+
+ 1. `echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf`
+ 1. add a new key to the LUKS partition and prepare mandos snippet:
+
+        t=`tempfile` &&
+        dd if=/dev/random bs=1 count=128 of="$t" &&
+        cryptsetup luksAddKey /dev/sda2 "$t" &&
+        mandos-keygen --passfile "$t"
 
  1. add the output of `mandos-keygen` to `/etc/mandos/clients.conf` on the mandos-server and `service mandos restart` and `puppet agent -t` (to update the firewall after you added the host to ldap)
- 1. `echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf`
  1. rebuild the initrd on the new host `update-initramfs -u` and reboot (
