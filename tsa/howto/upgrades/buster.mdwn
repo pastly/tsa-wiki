@@ -5,34 +5,36 @@ Procedure
 
  1. Pre-upgrade backups and preperation:
 
-        sudo apt install ttyrec screen debconf-utils apt-show-versions deborphan
-        sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec
-        umask 0077
-        tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states /var/lib/aptitude/pkgstates /var/cache/debconf
-        dpkg --get-selections "*" > /var/backups/dpkg-selections-pre-buster.txt
-        debconf-get-selections > /var/backups/debconf-selections-pre-buster.txt
-        apt-mark showhold
-        dpkg --audit
-        dpkg -l '*dkms' # look for dkms packages and make sure they are relevant, if not, purge.
+        sudo apt install ttyrec screen debconf-utils apt-show-versions deborphan &&
+        sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec &&
+        umask 0077 &&
+        tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states /var/cache/debconf &&
+        dpkg --get-selections "*" > /var/backups/dpkg-selections-pre-buster.txt &&
+        debconf-get-selections > /var/backups/debconf-selections-pre-buster.txt &&
+        apt-mark showhold &&
+        dpkg --audit &&
+        : look for dkms packages and make sure they are relevant, if not, purge. &&
+        dpkg -l '*dkms' &&
         : make sure backups are up to date
 
  2. Perform any pending upgrade and clear out old pins:
 
-        rm /etc/apt/preferences /etc/apt/preferences.d/* #  Check for pinned (on hold) packages, and possibly disable
-        rm /etc/apt/sources.list.d/testing.list # or other similar backports or sources from later releases
-        rm /etc/apt/sources.list.d/stretch-backports.list
-        apt update && apt -y upgrade
-        dpkg -l 'linux-image-*' # list kernel images and purge unused packages
-        # look for packages from backports, other suites or archives
-        # if possible, switch to official packages by disabling
-        # third-party repositories
+        : Check for pinned (on hold) packages, and possibly disable &&
+        rm -f /etc/apt/preferences /etc/apt/preferences.d/* &&
+        rm -f /etc/apt/sources.list.d/testing.list &&
+        rm -f /etc/apt/sources.list.d/stretch-backports.list &&
+        apt update && apt -y upgrade &&
+        : list kernel images and purge unused packages &&
+        dpkg -l 'linux-image-*' &&
+        : look for packages from backports, other suites or archives &&
+        : if possible, switch to official packages by disabling third-party repositories &&
         apt-show-versions | grep -v /stretch | grep -v 'not installed$'
 
  3. Check free space, see [this guide to free up space][] and
     download packages:
 
-        sed -i 's/stretch/buster/g' /etc/apt/sources.list.d/* /etc/apt/sources.list
-        apt update; apt -o APT::Get::Trivial-Only=true dist-upgrade; df -h
+        sed -i 's/stretch/buster/g' /etc/apt/sources.list.d/* /etc/apt/sources.list &&
+        apt update && apt -o APT::Get::Trivial-Only=true dist-upgrade && df -h &&
         apt -y -d upgrade && apt -y -d dist-upgrade
 
  4. Actual upgrade run:
