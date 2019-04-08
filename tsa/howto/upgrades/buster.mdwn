@@ -54,6 +54,9 @@ Procedure
         # review packages that are not in the new distribution
         apt-show-versions | grep -v /buster
 
+ 6. Change the hostgroup of the host to buster in Nagios (in
+    `tor-nagios/config/nagios-master.cfg` on `git-wr@git.tpo`)
+
 [this guide to free up space]: http://www.debian.org/releases/buster/amd64/release-notes/ch-upgrading.en.html#sufficient-space
 
 Issues
