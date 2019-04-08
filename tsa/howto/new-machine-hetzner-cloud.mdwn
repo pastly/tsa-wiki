@@ -51,22 +51,22 @@ To setup autoboot using mandos:
 
  1. and add a workaround for Debian Bug#926641
 
-    cat > /etc/initramfs-tools/scripts/init-premount/local-fix-permissions-workaround << 'EOF'
-    #!/bin/sh
-    PREREQ=""
-    prereqs() {
-      echo "$PREREQ"
-    }
-    case $1 in
-      prereqs)
-        prereqs
-        exit 0
-        ;;
-    esac
-    . /scripts/functions
-    # work around for debian bug #926641
-    chmod a+rx /usr/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/mandos/plugins.d /usr/lib/mandos/plugin-helpers
-    EOF
+        cat > /etc/initramfs-tools/scripts/init-premount/local-fix-permissions-workaround << 'EOF'
+        #!/bin/sh
+        PREREQ=""
+        prereqs() {
+          echo "$PREREQ"
+        }
+        case $1 in
+          prereqs)
+            prereqs
+            exit 0
+            ;;
+        esac
+        . /scripts/functions
+        # work around for debian bug #926641
+        chmod a+rx /usr/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/mandos/plugins.d /usr/lib/mandos/plugin-helpers
+        EOF
 
  1. add the output of `mandos-keygen` to `/etc/mandos/clients.conf` on the mandos-server and `service mandos restart` and `puppet agent -t` (to update the firewall after you added the host to ldap)
  1. `echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf`
