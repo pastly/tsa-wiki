@@ -21,19 +21,53 @@ continue with:
 
  1. Continue on Hetzner's web interface, select the server.
  1. ISO-Images: Mount SystemRescueCD (2018-04-02)
- 1. reboot the system and it will boot into the rescue system
  1. open the console (the icon is near the top right)
+ 1. reboot the system (either using Ctrl-Alt-Del at the console or using the Power tab on the web interface) and it will boot into the rescue system
  1. set a root password in the rescue system
  1. get the `ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub` output
- 1. on your host, ssh-copy-id root@&lt;ipaddr&gt;
+ 1. on your host, ssh-copy-id root@&lt;ipaddr&gt;  (find the ip address either on the web interface, or ask `ip a`)
  1. then copy over `/usr/share/keyrings/debian-archive-keyring.gpg` and `tor-install-hetzner` to the new host,
- 1. log into the host and run `./tor-install-hetzner`
- 1. once done, note down all the info and shutdown the VM
- 1. you might have to kill this terminal since the rescue system has done weird copy-paste settings to your terminal  (you will know once the passphrase is not accepted at the copy/paste step a few items down)
+ 1. log into the host and run `./tor-install-hetzner` (the ipv6 address prefix you find on the web interface.  Make it end in ::1.)
+ 1. once done, note down all the info and poweroff the VM (from the shell is fine)
+ 1. you might have to kill this terminal since the rescue system has done weird copy-paste settings to your terminal  (you will know once the passphrase is not accepted in the initrd when you copy/paste it a few steps down)
  1. unmount the iso (ISO Images tab), start the VM (power tab or top right).
- 1. `ssh -o FingerprintHash=md5 -o UserKnownHostsFile=~/.ssh/known_hosts.initramfs root@<ipaddr>`  to unlock the host,
+ 1. `ssh -o FingerprintHash=sha1 -o UserKnownHostsFile=~/.ssh/known_hosts.initramfs root@<ipaddr>`  to unlock the host, (to compare ssh's base64 output to dropbear's b16, you can use `perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'` to convert base64 to base16.
  1. `ssh root@<ipaddr>` to access it once booted and then
 
 Then
- 1. Document the LUKS passphrase and root password as well as initramfs ssh key fingerprints in tor-passwords,
+
+ 1. Document the LUKS passphrase and root password in tor-passwords,
  1. follow the rest of [[new-machine]].
+
+To setup autoboot using mandos:
+
+ 1. install mandos-client
+ 1. add a new key to the LUKS partition and prepare mandos snippet:
+```
+  t=`tempfile`
+  dd if=/dev/random bs=1 count=128 of="$t"
+  cryptsetup luksAddKey /dev/sda2 "$t"
+  mandos-keygen --passfile "$t"
+```
+ 1. and add a workaround for Debian Bug#926641
+```
+ cut -b 2- > /etc/initramfs-tools/scripts/init-premount/local-fix-permissions-workaround << 'EOF'
+ #!/bin/sh
+ PREREQ=""
+ prereqs() {
+   echo "$PREREQ"
+ }
+ case $1 in
+   prereqs)
+     prereqs
+     exit 0
+     ;;
+ esac
+ . /scripts/functions
+ # work around for debian bug #926641
+ chmod a+rx /usr/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/mandos/plugins.d /usr/lib/mandos/plugin-helpers
+EOF
+```
+ 1. add the output of `mandos-keygen` to `/etc/mandos/clients.conf` on the mandos-server and `service mandos restart` and `puppet agent -t` (to update the firewall after you added the host to ldap)
+ 1. `echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf`
+ 1. rebuild the initrd on the new host `update-initramfs -u` and reboot (
