@@ -71,4 +71,4 @@ To setup autoboot using mandos:
         mandos-keygen --passfile "$t"
 
  1. add the output of `mandos-keygen` to `/etc/mandos/clients.conf` on the mandos-server and `service mandos restart` and `puppet agent -t` (to update the firewall after you added the host to ldap)
- 1. rebuild the initrd on the new host `update-initramfs -u` and reboot (
+ 1. rebuild the initrd on the new host `update-initramfs -u` and reboot
