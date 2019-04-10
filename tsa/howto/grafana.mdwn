@@ -15,14 +15,14 @@ package, following a debate regarding the merits of Debian packages
 versus Docker containers when neither are trusted, see [this
 comment](https://trac.torproject.org/projects/tor/ticket/29684#comment:3) for a summary.
 
-Manual configuration was performed after the installed:
+Some manual configuration was performed after the install. An admin
+password reset on first install, stored in `torr-passwords.git`, in
+`hosts-extra-info`. Everything else is configured in Puppet.
 
- 1. admin password reset on first install, stored in
-    `torr-passwords.git`, in `hosts-extra-info`.
-
- 2. Prometheus datasource configured by hand
-
- 3. 5 dashboards imported and configured by hand
-
-Those should be integrated in the Puppet configuration and
-authentication needs to be figured out.
+Grafana dashboards, in particular, live in
+`modules/profile/files/grafana/dashboards`, which is a copy of
+anarcat's [grafana-dashboards repository](https://gitlab.com/anarcat/grafana-dashboards). The `README.md` file
+there contains more instructions on how to add and update
+dashboards. In general, dashboards must not be modified directly
+through the web interface, at least not without being exported back
+into the repository.
