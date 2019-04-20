@@ -153,6 +153,186 @@ moved into a class parameter, probably in `common.yaml`.
 
 # How to guides
 
+## Modifying an existing configuration
+
+For new deployments, this is *NOT* the prefered method. For example,
+if you are deploying new software that is not already in use in our
+infrastructure, do *not* follow this guide and instead follow the
+`Adding new configuration` guide below.
+
+If you are touching an *existing* configuration, things are much
+simpler however: you simply go to the module where the code already
+exists and make changes. You `git commit` and `git push` the code,
+then immediately run `puppet agent -t` on the affected node.
+
+Look at the `File layout` section above to find the right piece of
+code to modify. If you are making changes that potentially affect more
+than one host, you should also definitely look at the `Progressive
+deployment` section below.
+
+## Adding new configuration
+
+This is a broad topic, but let's take the Prometheus monitoring system
+as an example which followed the [role/profile/module][]
+pattern.
+
+First, the [Prometheus modules on the Puppet forge][] were evaluated
+for quality and popularity. There was a clear winner there: the
+[Prometheus module][] from [Vox Populi][] had hundreds of thousands
+more downloads than the [next option][], which was deprecated.
+
+[next option]: https://forge.puppet.com/brutus777/prometheus
+[Vox Populi]: https://voxpupuli.org/
+[Prometheus module]: https://forge.puppet.com/puppet/prometheus
+[Prometheus modules on the Puppet forge]: https://forge.puppet.com/modules?q=prometheus
+
+Next, the module was added to the Puppetfile (in
+`3rdparty/Puppetfile`):
+
+    mod 'puppet-prometheus', '6.4.0'
+
+... and librarian was ran:
+
+    librarian-puppet install
+
+This fetched a lot of code from the Puppet forge: the stdlib, archive
+and system modules were all installed or updated. All those modules
+were audited manually, by reading each file and looking for obvious
+security flaws or backdoors. Then the code was committed into git:
+
+    git add 3rdparty
+    git commit -m'install prometheus module after audit'
+
+Then the module was configured in a profile, in `modules/profile/manifests/prometheus/server.pp`:
+
+    class profile::prometheus::server {
+      class {
+        'prometheus::server':
+          # follow prom2 defaults
+          localstorage        => '/var/lib/prometheus/metrics2',
+          storage_retention   => '15d',
+      }
+    }
+
+The above contains our local configuration for the upstream
+`prometheus::server` class installed in the `3rdparty` directory. In
+particular, it sets a retention period and a different path for the
+metrics, so that they follow the new Prometheus 2.x defaults.
+
+Then this profile was added to a *role*, in
+`modules/roles/manifests/monitoring.pp`:
+
+    # the monitoring server
+    class roles::monitoring {
+      include profile::prometheus::server
+    }
+
+Notice how the role does not refer to any implementation detail, like
+that the monitoring server uses Prometheus. It looks like a trivial,
+useless, class but it can actually grow to include *multiple*
+profiles.
+
+Then that role is added to the Hiera configuration of the monitoring
+server, in `hiera/nodes/hetzner-nbg1-01.torproject.org.yaml`:
+
+    classes:
+      - roles::monitoring
+
+And Puppet was ran on the host, with:
+
+    puppet --enable ; puppet agent -t --noop ; puppet --disable "testing prometheus deployment"
+
+This led to some problems as the upstream module doesn't support
+installing from Debian packages. Support for Debian was added to the
+code in `3rdparty/modules/prometheus`, and committed into git:
+
+    emacs 3rdparty/modules/prometheus/manifests/*.pp # magic happens
+    git commit -m'implement all the missing stuff' 3rdparty
+    git push
+
+And the above puppet commandline was ran again, continuing that loop
+until things were good.
+
+If you need to deploy the code to multiple hosts, see the `Progressive
+deployment` section below. To contribute changes back upstream (and
+you should do so), see the section right below.
+
+## Contributing changes back upstream
+
+For simple changes, the above workflow works well, but eventually it
+is preferable to actually fork the upstream repo and operate on our
+fork until the changes are merged upstream. 
+
+First, the modified module is moved out of the way:
+
+    mv 3rdparty/modules/prometheus{,.orig}
+
+The module is then forked on GitHub or wherever it is hosted, and then
+added to the Puppetfile:
+
+    mod 'puppet-prometheus',
+        :git => 'https://github.com/anarcat/puppet-prometheus.git',
+        :branch => 'deploy'
+
+Then Librarian is ran again to fetch that code:
+
+    librarian-puppet install
+
+Because Librarian is a little dumb, it might checkout your module in
+"detached head" mode, in which case you will want to fix the checkout:
+
+    cd 3rdparty/modules/prometheus
+    git checkout deploy
+    git reset --hard origin/deploy
+    git pull
+
+Note that the `deploy` branch here is a merge of all the different
+branches proposed upstream in different pull requests, but it could
+also be the `master` branch or a single branch if only a single pull
+request was sent.
+
+Since you now have a clone of the upstream repository, you can push
+and pull normally with upstream. When you make a change, however, you
+need to commit (and push) the change *both* in the sub-repo and the
+main repository:
+
+    cd 3rdparty/modules/prometheus
+    $EDITOR manifests/init.pp # more magic stuff
+    git commit -m'change the frobatz to a argblu'
+    git push
+    cd ..
+    git commit -m'change the frobatz to a argblu'
+    git push
+
+Often, I make commits directly in our main Puppet repository, without
+pushing to the third party fork, until I am happy with the code, and
+then I craft a nice pretty commit that can be pushed upstream,
+reversing that process:
+
+    $EDITOR 3rdparty/prometheus/manifests/init.pp # dirty magic stuff
+    git commit -m'change the frobatz to a quuxblah'
+    git push
+    # see if that works, generally not
+    git commit -m'rah. wanted a quuxblutz'
+    git push
+    # now we are good, update our pull request
+    cd 3rdparty/modules/prometheus
+    git commit -m'change the frobatz to a quuxblutz'
+    git push
+
+It's annoying to double-commit things, but I haven't found a best way
+to do so just yet. This problem is further discussed in [ticket
+#29387][].
+
+Also note that when you update code like this, the `Puppetfile` does
+not change, but the `Puppetfile.lock` file *does* change. The `GIT.sha`
+parameter needs to be updated. This can be done by hand, but since
+that is error-prone, you might want to simply run `librarian-puppet
+update prometheus-puppet` to update that module.
+
+This will *also* update dependencies so make sure you audit those
+changes before committing and pushing.
+
 ## Listing all hosts under puppet
 
 This will list all active hosts known to the Puppet master:
