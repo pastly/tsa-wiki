@@ -321,8 +321,7 @@ reversing that process:
     git push
 
 It's annoying to double-commit things, but I haven't found a best way
-to do so just yet. This problem is further discussed in [ticket
-#29387][].
+to do so just yet. This problem is further discussed in [ticket #29387][].
 
 Also note that when you update code like this, the `Puppetfile` does
 not change, but the `Puppetfile.lock` file *does* change. The `GIT.sha`
