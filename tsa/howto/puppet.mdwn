@@ -51,8 +51,8 @@ host running apache2?" byt simply looking at a puppet variable.
 ## Style guide
 
 Puppet manifests should generally follow the [Puppet style
-guide][]. This can be easily done with [Flycheck][] in Emacs or a
-similar plugin in your favorite text editor.
+guide][]. This can be easily done with [Flycheck][] in Emacs,
+[vim-puppet][], or a similar plugin in your favorite text editor.
 
 Many files do not *currently* follow the style guide, as they
 *predate* the creation of said guide. Files should *not* be completely
@@ -64,8 +64,9 @@ reason completely rewritten.
 
 Otherwise the style already in use in the file should be followed.
 
-[Flycheck]: http://flycheck.org/
 [Puppet style guide]: https://puppet.com/docs/puppet/4.8/style_guide.html
+[Flycheck]: http://flycheck.org/
+[vim-puppet]: https://github.com/rodjek/vim-puppet
 
 ## Hiera
 
