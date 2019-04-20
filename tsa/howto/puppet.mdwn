@@ -267,3 +267,89 @@ and will simply show which hosts match the request:
 - `$bacula_director_secret` using
 - `hkdf()` and generates
 - `/etc/bacula/bacula-dir.conf` using that
+
+## Progressive deployment
+
+If you are making a major change to the infrastructure, you may want
+to deploy it progressively. A good way to do so is to include the new
+class manually in the node configuration, say in
+`hiera/nodes/$fqdn.yaml`:
+
+    classes:
+      - my_new_class
+
+Then you can check the effect of the class on the host with the
+`--noop` mode. Make sure you disable Puppet so that automatic runs do
+not actually execute the code, with:
+
+    puppet agent --disable "testing my_new_class deployment"
+
+Then the new manifest can be simulated with this command:
+
+    puppet agent --enable ; puppet agent -t --noop ; puppet agent --disable "testing my_new_class deployment"
+
+Examine the output and, once you are satisfied, you can re-enable the
+agent and actually run the manifest with:
+
+    puppet agent --enable ; puppet agent -t
+
+If the change is *inside* an existing class, that change can be
+enclosed in a class parameter and that parameter can be passed as an
+argument from Hiera. This is how the transition to a managed
+`/etc/apt/sources.list` file was done:
+
+ 1. first, a parameter was added to the class that would remove the
+    file, defaulting to `false`:
+
+        class torproject_org(
+          Boolean $manage_sources_list = false,
+        ) {
+          if $manage_sources_list {
+            # the above repositories overlap with most default sources.list
+            file {
+              '/etc/apt/sources.list':
+                ensure => absent,
+            }
+          }
+        }
+
+ 2. then that parameter was enabled on one host, say in
+    `hiera/nodes/brulloi.torproject.org.yaml`:
+ 
+        torproject_org::manage_sources_list: true
+
+ 3. Puppet was run on that host using the simulation mode:
+
+        puppet agent --enable ; puppet agent -t --noop ; puppet agent --disable "testing my_new_class deployment"
+
+ 4. when satisfied, the real operation was done:
+
+        puppet agent --enable ; puppet agent -t --noop
+
+ 5. then this was added to two other hosts, and Puppet was ran there
+
+ 6. finally, all hosts were checked to see if the file was present on
+    hosts and had any content:
+
+        cumin '*' 'du /etc/apt/sources.list'
+
+ 7. since it was missing everywhere, the parameter was set to `true`
+    by default and the custom configuration removed from the three
+    test nodes
+
+## Debugging things
+
+When a Puppet manifest is not behaving as it should, the first step is
+to run it by hand on the host:
+
+    puppet agent -t
+
+If that doesn't yield enough information, you can see pretty much
+everything that Puppet does with the `--debug` flag. This will, for
+example, include `Exec` resources `onlyif` commands and allow you to
+see why they do not work correctly (a common problem):
+
+    puppet agent -t --debug
+
+Finally, some errors show up only on the Puppetmaster: you can look in
+`/var/log/daemon.log` there for errors that will only show up there.
