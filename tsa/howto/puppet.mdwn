@@ -15,34 +15,56 @@ This documents generally how things are setup.
 
 ## File layout
 
-- The root of definitions and execution is found in
-  `tor-puppet/manifests/site.pp`.
+- `3rdparty/modules` include modules that are shared publicly and do
+  not contain any TPO-specific configuration. There is a `Puppetfile`
+  there that documents where each module comes from and that can be
+  maintained with [r10k][] or [librarian][].
 
-- `local.yaml` (modules/torproject_org/misc/local.yaml) defines
-  services and list which host(s) supply each service. local.yaml is
-  read by [site.pp](manifests/site.pp) for setting up the $localinfo
-  and $nodeinfo variables.
+  [librarian]: https://librarian-puppet.com/
+  [r10k]: https://github.com/puppetlabs/r10k/
 
-- `roles init.pp` (modules/roles/manifests/init.pp) maps services to
-  roles, using the `$nodeinfo` variable.
+- `modules` includes roles, profiles, and classes that make the bulk
+  of our configuration.
 
-- `torproject.org init.pp` (modules/torproject_org/manifests/init.pp)
-  performs basic host initialisation, like configuring Debian mirrors
-  and APT sources, installing a base set of packages, configuring
-  puppet and timezone, setting up a bunch of rc-files and running
-  ud-replicate.
+- in there, the `roles` class (`modules/roles/manifests/init.pp`) maps
+  services to roles, using the `$nodeinfo` variable.
 
-- `hoster.yaml` (modules/torproject_org/misc/hoster.yaml) defines
-  hosting providers and specifies things like which net blocks they
-  use, if they have a DNS resolver or a debian mirror. hoster.yaml is
-  read by
+- The `torproject_org` module
+  (`modules/torproject_org/manifests/init.pp`) performs basic host
+  initialisation, like configuring Debian mirrors and APT sources,
+  installing a base set of packages, configuring puppet and timezone,
+  setting up a bunch of rc-files and running ud-replicate.
+
+- In there, `local.yaml` (`modules/torproject_org/misc/local.yaml`)
+  defines services and list which host(s) supply each
+  service. `local.yaml` is read by the `roles` class above for setting
+  up the `$localinfo` and `$nodeinfo` variables. It also defines the
+  `$roles` parameter and defines `ferm` macros.
+
+- There is also the `hoster.yaml` file
+  (`modules/torproject_org/misc/hoster.yaml`) which defines hosting
+  providers and specifies things like which network blocks they use,
+  if they have a DNS resolver or a Debian mirror. `hoster.yaml` is read
+  by
   - the `nodeinfo()` function
-    (modules/puppetmaster/lib/puppet/parser/functions/nodeinfo.rb),
+    (`modules/puppetmaster/lib/puppet/parser/functions/nodeinfo.rb`),
     used for setting up the `$nodeinfo` variable
-  - `ferm's def.conf template` (modules/ferm/templates/defs.conf.erb)
+  - ferm's `def.conf` template (`modules/ferm/templates/defs.conf.erb`)
   - the `entropy provider`
-    (modules/puppetmaster/lib/puppet/parser/functions/entropy_provider.rb)
+    (`modules/puppetmaster/lib/puppet/parser/functions/entropy_provider.rb`)
     TODO
+
+- The root of definitions and execution is in Pupept is found in
+  the `manifests/site.pp` file, but this file is now mostly empty, in
+  favor of Hiera.
+
+Note that the above is the current state of the file hierachy. As part
+of the transition to Hiera, a lot of the above architecture will
+change in favor of the more standard [role/profile/module][]
+pattern. See [ticket #29387][] for an in-depth discussion.
+
+[role/profile/module]: https://puppet.com/docs/pe/2017.2/r_n_p_intro.html
+[ticket #29387]: https://trac.torproject.org/projects/tor/ticket/29387
 
 ## Custom facts
 
