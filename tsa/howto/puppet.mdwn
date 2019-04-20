@@ -48,6 +48,65 @@ This documents generally how things are setup.
 facts, making it possible to get answer to questions like "Is this
 host running apache2?" byt simply looking at a puppet variable.
 
+## Hiera
+
+[Hiera][] is a "key/value lookup tool for configuration data" which
+Puppet uses to look up values for class parameters and node
+configuration in General.
+
+We are in the process of transitionning over to this mecanism from our
+previous set of custom YAML lookup system. This documents the way we
+currently use Hiera.
+
+[Hiera]: https://puppet.com/docs/hiera/3.2/
+
+### Classes definitions
+
+Each host declares which class it should include through a `classes`
+parameter. For example, this is what configures a Prometheus server:
+
+    classes:
+      - roles::monitoring
+
+Roles should be *abstract* and *not* implementation specific. Each
+role includes a set of profiles which *are* implementation
+specific. For example, the `monitoring` role includes
+`profile::prometheus::server` and `profile::grafana`. Do *not* include
+profiles directly from Hiera.
+
+As a temporary exception to this rule, old modules can be included as
+we transition from the `has_role` mechanism to Hiera, but eventually
+those should be ported to shared modules from the Puppet forge, with
+our glue built into a profile on top of the third-party module. The
+role `roles::monitoring` follows that pattern correctly.
+
+### Node configuration
+
+On top of the host configuration, some node-specific configuration can
+be performed from Hiera. This should be avoided as much as possible,
+but sometimes there is just no other way. A good example are the
+`build-arm-*` nodes which include the following configuration:
+
+    bacula::client::ensure: "absent"
+
+This disables backups on those machines, which are normally configured
+everywhere. This is done because they are behind a firewall and
+therefore not reachable, an unusual condition in the network. Another
+example is `nutans` which sits behind a NAT so it doesn't know its own
+IP address. To export proper firewall rules, the allow address has
+been overriden as such:
+
+    bind::secondary::allow_address: 89.45.235.22
+
+Those types of parameters are normally automatically guess inside
+modules' classes, but they are overridable from Hiera.
+
+Note: eventually *all* host configuration will be done here, but there
+are currently still some configurations hardcoded in individual
+modules. For example, the Bacula director is hardcoded in the `bacula`
+base class (in `modules/bacula/manifests/init.pp`). That should be
+moved into a class parameter, probably in `common.yaml`.
+
 ## Misc
 
 - `puppet-lint` is a thing
