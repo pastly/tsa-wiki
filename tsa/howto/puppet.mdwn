@@ -362,6 +362,16 @@ argument from Hiera. This is how the transition to a managed
     by default and the custom configuration removed from the three
     test nodes
 
+ 8. then Puppet was ran by hand everywhere, using Cumin, with a batch
+    of 5 hosts at a time:
+
+        cumin -o txt -b 5 '*' 'puppet agent -t'
+
+    because Puppet returns a non-zero value when changes are made,
+    this will above when any one host in a batch of 5 will actually
+    operate a change. You can then examine the output and see if the
+    change is legitimate or abort the configuration change.
+
 ## Debugging things
 
 When a Puppet manifest is not behaving as it should, the first step is
