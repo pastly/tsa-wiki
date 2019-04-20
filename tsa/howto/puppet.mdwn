@@ -48,6 +48,25 @@ This documents generally how things are setup.
 facts, making it possible to get answer to questions like "Is this
 host running apache2?" byt simply looking at a puppet variable.
 
+## Style guide
+
+Puppet manifests should generally follow the [Puppet style
+guide][]. This can be easily done with [Flycheck][] in Emacs or a
+similar plugin in your favorite text editor.
+
+Many files do not *currently* follow the style guide, as they
+*predate* the creation of said guide. Files should *not* be completely
+reformatted unless there's a good reason. For example, if a
+conditional covering a large part of a file is removed and the file
+needs to be reindented, it's a good opportunity to fix style in the
+file. Same if a file is split in two components or for some other
+reason completely rewritten.
+
+Otherwise the style already in use in the file should be followed.
+
+[Flycheck]: http://flycheck.org/
+[Puppet style guide]: https://puppet.com/docs/puppet/4.8/style_guide.html
+
 ## Hiera
 
 [Hiera][] is a "key/value lookup tool for configuration data" which
@@ -106,11 +125,6 @@ are currently still some configurations hardcoded in individual
 modules. For example, the Bacula director is hardcoded in the `bacula`
 base class (in `modules/bacula/manifests/init.pp`). That should be
 moved into a class parameter, probably in `common.yaml`.
-
-## Misc
-
-- `puppet-lint` is a thing
-- TODO: how to debug things
 
 # How to guides
 
