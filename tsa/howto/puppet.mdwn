@@ -1,3 +1,5 @@
+[[!toc]]
+
 # Reference
 
 This documents generally how things are setup.
