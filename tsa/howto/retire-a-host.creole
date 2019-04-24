@@ -8,3 +8,4 @@
 * if it has any associated records in tor-dns/domains or auto-dns, remove it from there too
 * on pauli:   read x ; puppet node clean $x.torproject.org && puppet node deactivate $x.torproject.org
 * grep the tor-puppet repo for the host (and maybe its IP addresses) and clean up
+* clean host from tor-passwords
