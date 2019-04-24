@@ -5,16 +5,18 @@ Procedure
 
  1. Pre-upgrade backups and preperation:
 
+        # note: that screen call does not really work this way
+
         sudo apt install ttyrec screen debconf-utils apt-show-versions deborphan &&
         sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec &&
-        umask 0077 &&
-        tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states /var/cache/debconf &&
-        dpkg --get-selections "*" > /var/backups/dpkg-selections-pre-buster.txt &&
-        debconf-get-selections > /var/backups/debconf-selections-pre-buster.txt &&
-        apt-mark showhold &&
+        ( umask 0077 &&
+          tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states /var/cache/debconf &&
+          dpkg --get-selections "*" > /var/backups/dpkg-selections-pre-buster.txt &&
+          debconf-get-selections > /var/backups/debconf-selections-pre-buster.txt &&
+          apt-mark showhold) &&
         dpkg --audit &&
         : look for dkms packages and make sure they are relevant, if not, purge. &&
-        dpkg -l '*dkms' &&
+        ( dpkg -l '*dkms' || true ) &&
         : make sure backups are up to date
 
  2. Perform any pending upgrade and clear out old pins:
@@ -33,20 +35,37 @@ Procedure
  3. Check free space, see [this guide to free up space][] and
     download packages:
 
-        sed -i 's/stretch/buster/g' /etc/apt/sources.list.d/* /etc/apt/sources.list &&
-        apt update && apt -o APT::Get::Trivial-Only=true dist-upgrade && df -h &&
-        apt -y -d upgrade && apt -y -d dist-upgrade
+        sed -i 's/stretch/buster/g' /etc/apt/sources.list.d/* &&
+        rm -f /etc/apt/sources.list.d/backports.debian.org.list &&
+        apt update &&
+        apt -y -d upgrade &&
+        apt -y -d dist-upgrade
 
  4. Actual upgrade run:
 
-        apt dist-upgrade
+        apt install -y dpkg apt &&
+        apt dist-upgrade &&
+        : ferm will fail until the next reboot
 
- 5. Post-upgrade checks:
+ 5. Reboot, then fix ferm:
 
-        puppet agent -t
-        dpkg -l '*-dbg' # look for dbg package and possibly replace with -dbgsym
-        apt autoremove -y --purge
+        reboot
+
+        dpkg --configure -a
+
+ 6. Post-upgrade procedures:
+
+        apt-mark manual git &&
+        apt purge $(for i in apt-transport-https dh-python emacs24-nox gnupg-agent libatomic1 libbind9-140 libcryptsetup4 libdns-export162 libdns162 libevent-2.0-5 libevtlog0 libgdbm3 libicu57 libisc-export160 libisc160 libisccc140 libisccfg140 libjansson4 liblvm2app2.2 liblvm2cmd2.02 liblwres141 libmpfr4 libncurses5 libperl5.24 libprocps6 libpython3.5 libpython3.5-minimal libpython3.5-stdlib libruby2.3 libssl1.0.2 libunbound2 libunistring0 libxslt1.1 libyajl2 python3-distutils python3-lib2to3 python3.5 python3.5-minimal ruby-nokogiri ruby-pkg-config ruby-rgen ruby-safe-yaml ruby2.3 sgml-base xml-core git-core gcc-6-base:amd64 nagios-plugins-basic perl-modules-5.24; do dpkg -l "$i" 2>/dev/null | grep -q '^ii' && echo "$i"; done) &&
+        (puppet agent -t || true) &&
+        (puppet agent -t || true)
+
+ 7. Post-upgrade checks:
+
+        dsa-check-packages
         while deborphan -n | grep -q . ; do apt purge $(deborphan -n); done
+        apt --purge autoremove
+        dpkg -l '*-dbg' # look for dbg package and possibly replace with -dbgsym
         apt clean
         reboot
         # review and purge older kernel once the new one boots properly
@@ -54,8 +73,8 @@ Procedure
         # review packages that are not in the new distribution
         apt-show-versions | grep -v /buster
 
- 6. Change the hostgroup of the host to buster in Nagios (in
-    `tor-nagios/config/nagios-master.cfg` on `git-wr@git.tpo`)
+ 8. Change the hostgroup of the host to buster in Nagios (in
+    `tor-nagios/config/nagios-master.cfg` on `git@git-rw.tpo`)
 
 [this guide to free up space]: http://www.debian.org/releases/buster/amd64/release-notes/ch-upgrading.en.html#sufficient-space
 
