@@ -31,7 +31,7 @@ continue with:
  1. once done, note down all the info and poweroff the VM (from the shell is fine)
  1. you might have to kill this terminal since the rescue system has done weird copy-paste settings to your terminal  (you will know once the passphrase is not accepted in the initrd when you copy/paste it a few steps down)
  1. unmount the iso (ISO Images tab), start the VM (power tab or top right).
- 1. `ssh -o FingerprintHash=sha1 -o UserKnownHostsFile=~/.ssh/known_hosts.initramfs root@<ipaddr>`  to unlock the host, (to compare ssh's base64 output to dropbear's b16, you can use `perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'` to convert base64 to base16.
+ 1. `ssh -o FingerprintHash=sha1 root@<ipaddr>`  to unlock the host, (to compare ssh's base64 output to dropbear's b16, you can use `perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'` to convert base64 to base16.
  1. `ssh root@<ipaddr>` to access it once booted and then
 
 Then
@@ -45,7 +45,8 @@ To setup autoboot using mandos:
  1. `echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf`
  1. add a new key to the LUKS partition and prepare mandos snippet:
 
-        (umask 077 &&
+        (apt install haveged &&
+         umask 077 &&
          t=`tempfile` &&
          dd if=/dev/random bs=1 count=128 of="$t" &&
          cryptsetup luksAddKey /dev/sda2 "$t" &&
