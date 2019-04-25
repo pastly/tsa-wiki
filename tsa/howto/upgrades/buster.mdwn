@@ -6,9 +6,9 @@ Procedure
  1. Pre-upgrade backups and preperation:
 
         : reset to the default locale
-        export LANG=C.UTF-8
+        export LANG=C.UTF-8 &&
+        : note that screen call does not really work this way &&
         sudo apt install ttyrec screen debconf-utils apt-show-versions deborphan &&
-        # note: that screen call does not really work this way
         sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec &&
         ( umask 0077 &&
           tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states /var/cache/debconf &&
