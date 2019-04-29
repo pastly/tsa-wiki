@@ -20,7 +20,7 @@ Procedure
         dpkg --audit &&
         : look for dkms packages and make sure they are relevant, if not, purge. &&
         ( dpkg -l '*dkms' || true ) &&
-        : make sure backups are up to date
+        : make sure backups are up to date in Nagios
 
  2. Perform any pending upgrade and clear out old pins:
 
