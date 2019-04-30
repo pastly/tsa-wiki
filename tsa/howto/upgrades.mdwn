@@ -42,11 +42,11 @@ here. When the server returns, the encrypted partitions need to be
 unlocked as well, with the `tor-libvirt-luks-start` command. A full
 reboot procedure will look something like this:
 
-    host=unifolium.torproject.org
-    ssh -tt root@$host tor-libvirt-reboot &&
-    echo "waiting 2 minutes for host to come back" &&
-    ping -c 10 -w 120 $host &&
-    ssh -tt root@$host tor-libvirt-luks-start
+    HOST=unifolium.torproject.org
+    ssh -tt root@$HOST tor-libvirt-reboot &&
+    echo "waiting up to 2 minutes for $HOST to come back" &&
+    ping -c 10 -w 120 $HOST &&
+    ssh -tt root@$HOST tor-libvirt-luks-start
 
 ### Example runs
 
