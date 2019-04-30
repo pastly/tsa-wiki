@@ -29,11 +29,20 @@ this:
     WARNING: Kernel needs upgrade [linux-image-4.9.0-9-amd64 != linux-image-4.9.0-8-amd64]
 
 If this is only a virtual machine, and the only one affected, it can
-be rebooted directly. If the host has an encrypted filesystem and is
-hooked up with Mandos, it will return automatically. Otherwise it
-might need a password to be entered at boot time, either through the
-initramfs (if it has the `profile::fde` class in Puppet) or manually,
-after the boot.
+be rebooted directly. This is a useful pipeline that will reboot the
+host and make sure it comes back within a certain delay:
+
+    HOST=foo.torproject.org &&
+    ssh root@$HOST /sbin/shutdown -r +5 new kernel &&
+    sleep 5m &&
+    echo "waiting up to 2 minutes for $HOST to come back..." &&
+    ping -c 10 -w 120 $HOST &&
+    ssh $HOST
+
+If the host has an encrypted filesystem and is hooked up with Mandos, it
+will return automatically. Otherwise it might need a password to be
+entered at boot time, either through the initramfs (if it has the
+`profile::fde` class in Puppet) or manually, after the boot.
 
 Generally, KVM hosts are the latter case and need special attention,
 as the guests need to be individually rebooted. The
