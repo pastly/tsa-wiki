@@ -20,6 +20,36 @@ When a few pending upgrades have piled up, a batch of upgrades can be
 done with the `torproject-upgrade-prepare` command, which is available
 in the `admin/tor-misc.git` project in git-rw.
 
+### Kernel upgrades and reboots
+
+Sometimes it is necessary to perform a reboot on the hosts, when the
+kernel is updated. Nagios will warn about this, with something like
+this:
+
+    WARNING: Kernel needs upgrade [linux-image-4.9.0-9-amd64 != linux-image-4.9.0-8-amd64]
+
+If this is only a virtual machine, and the only one affected, it can
+be rebooted directly. If it has an encrypted filesystem and is hooked
+up with Mandos, it will return automatically. Otherwise it might need
+a password to be entered at boot time, either through the initramfs
+(if it has the `profile::fde` class in Puppet) or manually, after the
+boot.
+
+Generally, KVM hosts are the latter and need special attention, as the
+guests need to be individually rebooted. The `tor-libvirt-reboot`
+takes care of the hand-holding necessary here. When the server
+returns, the encrypted partitions need to be unlocked as well, with
+the `tor-libvirt-luks-start` command. A full reboot procedure will
+look something like this:
+
+    host=unifolium.torproject.org
+    ssh -tt root@$host tor-libvirt-reboot &&
+    echo "waiting 2 minutes for host to come back" && 
+    ping -c 10 -w 120 $host &&
+    ssh -tt root@$host tor-libvirt-luks-start 
+
+### Example run
+
 Here's an example run of the tool:
 
     weasel@orinoco:~$ torproject-upgrade-prepare                      
