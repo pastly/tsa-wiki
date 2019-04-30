@@ -48,9 +48,9 @@ look something like this:
     ping -c 10 -w 120 $host &&
     ssh -tt root@$host tor-libvirt-luks-start 
 
-### Example run
+### Example runs
 
-Here's an example run of the tool:
+Here's an example run of the upgrade tool:
 
     weasel@orinoco:~$ torproject-upgrade-prepare                      
     Agent pid 5384               
