@@ -444,7 +444,7 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
 
         curl -s -G http://localhost:8080/pdb/query/v4/nodes  | jq -r 'sort_by(.report_timestamp) | .[] | "\(.certname) \(.report_timestamp)"' | column -s\  -t
 
- * Using [Cumin][], see below
+ * Using [[cumin]]
 
  * Using LDAP:
  
@@ -456,7 +456,6 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
 
  [PuppetDB API]: https://puppet.com/docs/puppetdb/4.3/api/index.html
  [fact API]: https://puppet.com/docs/puppetdb/4.3/api/query/v4/facts.html
- [Cumin]: https://doc.wikimedia.org/cumin/master/introduction.html
 
 ## Batch jobs on all hosts
 
@@ -480,64 +479,12 @@ To run batch commands through sudo that requires a password, you will need to fo
 You should then type your password then Control-d. Warning: this will
 show your password on your terminal and probably in the logs as well. 
 
-### Using Cumin
+Batch jobs can also be ran on all Puppet hosts with Cumin:
 
-You can also use [Cumin][] to operate arbitrary shell commands on
-Puppet hosts or a subset of hosts. First, install Cumin and setup a
-tunnel to connect to the Puppet locally:
-
-    virtualenv --python=python3 ~/.virtualenvs/cumin
-    ~/.virtualenvs/cumin/bin/pip3 install cumin
-    ssh -L8080:localhost:8080 pauli.torproject.org
-
-Notice how Cumin is installed in a [Python virtualenv][]: it is not
-yet [in Debian][]. You'll also need a patch to enable plain HTTP
-access, see [this bug report][]. You might also want to disable the
-[root check][] as well. Then drop the following configuration in
-`~/.config/cumin/config.yaml`:
-
-    transport: clustershell
-    puppetdb:
-        host: localhost
-        scheme: http
-        port: 8080
-        api_version: 4  # Supported versions are v3 and v4. If not specified, v4 will be used.
-    log_file: cumin.log
-    default_backend: puppetdb
-
-From here on we'll assume you use the following alias:
-
-    alias cumin="~/.virtualenvs/cumin/bin/cumin --config ~/.config/cumin/config.yaml"
-
-This will run the `uptime` command on all hosts:
-
+    ssh -N -L8080:localhost:8080 pauli.torproject.org &
     cumin '*' uptime
 
-To run against only a subset, you need to use the Cumin grammar, which
-is [briefly described in the Wikimedia docs][]. For example, this
-will run the same command only on physical hosts:
-
-    cumin 'F:virtual=physical' uptime
-
-Just check the monitoring server:
-
-    cumin 'R:class=roles::monitoring' uptime
-
-Any Puppet fact or class can be queried that way. This also serves as
-a ad-hoc interface to query PuppetDB for certain facts, as you don't
-have to provide a command. In that case, `cumin` runs in "dry mode"
-and will simply show which hosts match the request:
-
-    $ cumin 'F:virtual=physical'
-    16 hosts will be targeted:
-    [...]
-
-[root check]: https://phabricator.wikimedia.org/T218440
-[this bug report]: https://phabricator.wikimedia.org/T218441
-[in Debian]: https://bugs.debian.org/924685
-[Python virtualenv]: https://virtualenv.pypa.io/
-[briefly described in the Wikimedia docs]: https://wikitech.wikimedia.org/wiki/Cumin#PuppetDB_host_selection
-[parallel-ssh]: https://code.google.com/archive/p/parallel-ssh/
+See [[cumin]] for more examples.
 
 ## Generating secrets
 
@@ -607,7 +554,8 @@ argument from Hiera. This is how the transition to a managed
  5. then this was added to two other hosts, and Puppet was ran there
 
  6. finally, all hosts were checked to see if the file was present on
-    hosts and had any content:
+    hosts and had any content, with [[cumin]] (see above for
+    alternative way of running a command on all hosts):
 
         cumin '*' 'du /etc/apt/sources.list'
 
