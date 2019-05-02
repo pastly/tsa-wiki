@@ -17,12 +17,10 @@ documented.
 
 ## Installation
 
-First, install Cumin and setup a tunnel to
-connect to the Puppet locally:
+First, install Cumin and some patches:
 
     virtualenv --python=python3 ~/.virtualenvs/cumin
     ~/.virtualenvs/cumin/bin/pip3 install cumin
-    ssh -L8080:localhost:8080 pauli.torproject.org
 
 Notice how Cumin is installed in a [Python virtualenv][]: it is not
 yet [in Debian][]. You'll also need a patch to enable plain HTTP
@@ -42,6 +40,11 @@ access, see [this bug report][]. You might also want to disable the
 From here on we'll assume you use the following alias:
 
     alias cumin="~/.virtualenvs/cumin/bin/cumin --config ~/.config/cumin/config.yaml"
+
+You should also make sure your machine has access to the PuppetDB
+server configured above, with:
+
+    ssh -L8080:localhost:8080 pauli.torproject.org
 
 ## Example commands
 
