@@ -37,8 +37,6 @@ also confirm this tutorial is what you actually need to do.
     you exit your editor, git should show you a diff that looks
     something like this:
 
-        diff --git a/modules/ferm/templates/defs.conf.erb b/modules/ferm/templates/defs.conf.erb
-        index 3c29630e..ee1ba710 100644
         --- a/modules/ferm/templates/defs.conf.erb
         +++ b/modules/ferm/templates/defs.conf.erb
         @@ -77,7 +77,10 @@ def $TPO_NET = (<%= networks.join(' ') %>);
@@ -47,8 +45,8 @@ also confirm this tutorial is what you actually need to do.
          @def $linus   = ($linus 2001:6b0:8::2/128); # kcmp@adbc
         -@def $ADMIN_IPS = ($weasel $linus);
         +@def $anarcat = ();
-        +@def $anarcat = ($anarcat 206.248.172.91/32); # home IP
-        +@def $anarcat = ($anarcat 2607:f2c0:8006::d0dc/128 2607:f2c0:f00f:8f00::/56); # home IPv6
+        +@def $anarcat = ($anarcat 203.0.113.1/32); # home IP
+        +@def $anarcat = ($anarcat 2001:DB8::DEAD/128 2001:DB8:F00F::/56); # home IPv6
         +@def $ADMIN_IPS = ($weasel $linus $anarcat);
          
          
