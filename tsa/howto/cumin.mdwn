@@ -1,7 +1,17 @@
 # Cumin
 
-You can use [Cumin][] to operate arbitrary shell commands on Puppet
-hosts or a subset of hosts.
+[Cumin][] is a tool to operate arbitrary shell commands on [[Puppet]]
+hosts that match a certain criteria. It can match classes, facts and
+other things stored in the PuppetDB.
+
+It is useful to do adhoc or emergency changes on a bunch of machines
+at once. It is especially useful to run Puppet itself on multiple
+machines at once to do progressive deployments.
+
+It should *not* be used as a replacement for Puppet itself: most
+configuration on server should *not* be done manually and should
+instead be done in Puppet manifests so they can be reproduced and
+documented.
 
  [Cumin]: https://doc.wikimedia.org/cumin/master/introduction.html
 
