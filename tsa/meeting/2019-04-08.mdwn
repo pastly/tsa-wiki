@@ -1,0 +1,145 @@
+Agenda:
+
+ * What has everyone been up to
+ * What we're up to in April
+ * Other discussions
+ * Next meeting
+
+What has everyone been up to
+============================
+
+anarcat
+-------
+
+ 1. lots of onboarding work, mostly complete
+ 2. learned a lot of stuff
+ 3. prometheus research and deployment as munin replacement, mostly
+    complete
+ 4. started work on puppet code cleanup for public release
+
+lots more smaller things:
+
+ 5. deployed caching on vineale to fix load issues
+ 6. silenced lots of cron job and nagios warnings, uninstalled logwatch
+ 7. puppet run monitoring, batch job configurations with cumin
+ 8. moly drive replacement help
+ 9. attended infracon 2019 meeting in barcelona (see report on ML)
+
+hiro
+----
+
+ 1. website redesign and deploy
+ 2. gettor refactoring and test
+ 3. on vacation for about 1 week
+ 4. IFF last week
+ 5. many small maintenance things
+
+ln5
+---
+
+ 1. nextcloud evaulation setup [wrapping up the setup]
+ 2. gitlab vm [complete]
+ 3. trying to move "put donated hw in use" forward [stalled]
+ 4. onboarding [mostly done i think]
+
+weasel
+------
+
+ 1. brulloi decommissionning [continued] 
+ 2. worked on getting encrypted VMs at hetzner
+ 3. first buster install for Mandos, made a buster dist on db.tpo,
+    cleaned up the makefile
+ 4. ... which required rotating our CAs
+ 5. security updates
+ 6. everyday fixes
+
+What we're up to in April
+=========================
+
+anarcat
+-------
+
+ 1. finishing the munin replacement with grafana, need to write some
+    dashboards and deploy some exporters (trac #30028). not doing
+    Nagios replacement in short term.
+ 2. puppet code refactoring for public release (trac #29387)
+ 3. hardware / cost inventory (trac #29816)
+
+hiro
+----
+
+ 1. community.tpo launch
+ 2. followup on tpo launch
+ 3. replace gettor with the refactored version
+ 4. usual small things: blog/git...
+
+ln5
+---
+
+ 1. nextcloud evaluation on Riseup server
+ 2. whatever people need help with?
+
+weasel
+------
+
+ 1. buster upgrades
+ 2. re-encrypt hetzner VMs
+ 3. finish brulloi decommissionning, canceled for april 25th
+ 4. mandos monitoring
+ 5. move spreadsheets from Google to Nextcloud
+
+Other discussion topics
+=======================
+
+Nextcloud status
+----------------
+
+We are using Riseup's Nextcloud as a test instance for replacing Google
+internally. Someone raised the question fo backups and availability: it
+was recognized that it's possible Riseup might be less reliable than
+Google, but that wasn't seen as a big limitation. The biggest concern is
+whether we can meaningfully backup the stuff that is hosted there,
+especially with regards to how we could migrate that data away in our
+own instance eventually.
+
+For now we'll treat this as being equivalent to Google in that we're
+tangled into the service and it will be hard to migrate away but the
+problem is limited in scope because we are testing the service only with
+some parts of the team for now.
+
+Weasel will migrate our Google spreadsheets to the Nextcloud for now and
+we'll think more about where to go next.
+
+Gitlab status
+-------------
+
+Migration has been on and off, sometimes blocked on TPA giving access
+(sudo, LDAP) although most of those seem to be resolved. Expecting
+service team to issue tickets if new blockers come up.
+
+Not migrating TPA there yet, concerns about fancy reports missing from 
+new site.
+
+Prometheus third-party monitoring
+---------------------------------
+
+Two tickets about monitoring external resources with Prometheus (#29863
+and #30006). Objections raised to monitoring third party stuff with the
+core instance so it was suggested to setup a separate instance for
+monitoring infrastructure outside of TPO.
+
+Concerns also expressed about extra noise on Trac about that instance,
+no good solution for Trac generated noise yet, there are hopes that
+GitLab might eventually solve that because it's easier to create Gitlab
+projects than Trac components.
+
+Next meeting
+============
+
+May 6, 2019, 1400UTC
+
+Meeting concluded within the planned hour. Notes for next meeting:
+
+ 1. first item on agenda should be the roll call
+ 2. think more about the possible discussion topics to bring up
+    (prometheus one could have been planned in advance)
