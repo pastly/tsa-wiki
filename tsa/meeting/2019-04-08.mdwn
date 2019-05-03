@@ -5,6 +5,8 @@ Agenda:
  * Other discussions
  * Next meeting
 
+[[!toc levels=2]]
+
 What has everyone been up to
 ============================
 
