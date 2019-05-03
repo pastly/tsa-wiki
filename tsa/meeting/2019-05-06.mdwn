@@ -1,8 +1,8 @@
-Agenda:
+[[!toc levels=2]]
 
- * roll call: who's there and emergencies
- * what has everyone been up to in march?
- * what will everyone do in april?
- * transfering ln5's temporary lead role to anarcat
- * other discussions
- * next meeting
+# Roll call: who's there and emergencies.
+# What has everyone been up to
+# What we're up to in April
+# Transfering ln5's temporary lead role to anarcat
+# Other discussions
+# Next meeting
