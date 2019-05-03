@@ -4,5 +4,6 @@
 # What has everyone been up to
 # What we're up to in April
 # Transfering ln5's temporary lead role to anarcat
+# Hardware inventory and followup
 # Other discussions
 # Next meeting
