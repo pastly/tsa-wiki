@@ -28,11 +28,11 @@ For a list of services and which servers they run on check
 * [[when using extra.tpo|doc/extra]]
 * [[sys admin and service admin tasks|doc/admins]]
 
+== howtos
+
+[[!map pages="howto/*" show=title]]
+
 == other, non TSA stuff
 
 * [[git repos and gitweb|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure/git.torproject.org]]
 * [[even more infrastructure|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure]]
-
-== internal documentation
-
-* [[howto/retire-a-host]]
