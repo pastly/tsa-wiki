@@ -27,7 +27,19 @@ For a list of services and which servers they run on check
 
 [[!map pages="tsa/howto/*" show=title]]
 
+== meetings
+
+We also keep our minutes here.
+
+[[!map pages="tsa/meeting/*" show=title]]
+
 == other, non TSA stuff
 
 * [[git repos and gitweb|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure/git.torproject.org]]
 * [[even more infrastructure|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure]]
+
+== old
+
+Those are old docs that should be destroyed or merged above.
+
+[[!map pages="tsa/old/*" show=title]]
