@@ -30,7 +30,7 @@ For a list of services and which servers they run on check
 
 == howtos
 
-[[!map pages="howto/*" show=title]]
+[[!map pages="tsa/howto/*" show=title]]
 
 == other, non TSA stuff
 
