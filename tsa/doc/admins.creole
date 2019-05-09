@@ -1,3 +1,5 @@
+[[!meta title="sys admin and service admin tasks"]]
+
 = torproject.org Admins =
 
 The admin team at the Tor project maintains our infrastructure and services.

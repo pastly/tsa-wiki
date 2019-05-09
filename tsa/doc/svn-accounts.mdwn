@@ -1,4 +1,4 @@
-# Getting an SVN account
+[[!meta title="Getting an SVN account"]]
 
 We still use SVN in some places. All public SVN repositories are available at [svn.torproject.org](https://svn.torproject.org). We host our presentations, check.torproject.org, website, and an number of older codebases in it.  The most frequently updated directories are the website and presentations. SVN is not tied to LDAP in any way.
 

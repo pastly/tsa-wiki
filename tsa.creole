@@ -21,12 +21,7 @@ For a list of services and which servers they run on check
 
 == documentation
 
-* [[git, shell, ldap, etc. accounts|doc/accounts]]
-* [[SVN accounts|doc/svn-accounts]]
-* [[ssh jump host|doc/ssh-jump-host]]
-* [[writing to www, extra, dist, cdn, and other websites|doc/static-sites]]
-* [[when using extra.tpo|doc/extra]]
-* [[sys admin and service admin tasks|doc/admins]]
+[[!map pages="tsa/doc/*" show=title]]
 
 == howtos
 

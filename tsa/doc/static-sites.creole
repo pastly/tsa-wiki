@@ -1,4 +1,4 @@
-= writing to www, extra, dist, cdn, and other websites =
+[[!meta title="writing to www, extra, dist, cdn, and other websites"]]
 
 (Please expand this documentation page!)
 

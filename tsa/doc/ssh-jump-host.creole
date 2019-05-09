@@ -1,4 +1,4 @@
-= learning how to do an ssh jump host on tpo =
+[[!meta title="learning how to do an ssh jump host on tpo"]]
 
 You need to use an ssh jump host to access internal machines at tpo.
 If you have a recent enough ssh (>= 2016 or so), then you can use the ProxyJump directive.  Else, use ProxyCommand.

@@ -1,4 +1,4 @@
-= When using extra.tpo =
+[[!meta title="When using extra.tpo"]]
 
 Extra is one of the sites hosted by "the www rotation". The www rotation uses several computers to host
 its websites and it is used within tpo for redundancy.
