@@ -131,7 +131,7 @@ projects than Trac components.
 Next meeting
 ============
 
-[May 6, 2019, 1400UTC](2019-05-06)
+[[May 6, 2019, 1400UTC|2019-05-06]]
 
 Meeting concluded within the planned hour. Notes for next meeting:
 
