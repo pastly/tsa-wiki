@@ -1,9 +1,155 @@
 [[!toc levels=2]]
 
 # Roll call: who's there and emergencies
+
+Present:
+
+ * anarcat
+ * hiro
+ * weasel
+
+ln5 announced he couldn't make it.
+
 # What has everyone been up to
-# What we're up to in April
+
+## Hiro
+
+ * websites (Again)
+ * dip.tp.o setup finished
+ * usual maintenance stuff
+
+## Weasel
+
+ * upgraded to buster bungei and hetzner-hel1-02 (also reinstalled
+   with an encrypted /), post-install config now all in Puppet, both
+   booting via Mandos now
+ * finished brulloi retirement, billing cleared up and back at the
+   expected monthly rate
+ * moved the hetzner kvm host list from google drive to NC and made a
+   TPA calendar in NC
+ * noticed issues with NC: no confitional formatting, TPA group not
+   available in calendar app, no per calendar timezone option
+
+## Anarcat
+
+ * prometheus + grafana completed: tweaked last dashboards and
+   exporters, rest of the job is in my backlog
+ * merge of Puppet Prometheus module patches upstream continued
+ * cleaned up remaining traces of munin in Puppet
+ * Hiera migration about 50% done
+ * hardware / cost inventory in spreadsheet (instead of Hiera, [Trac
+   29816](https://bugs.torproject.org/29816))
+ * misc support things ("break the glass" on a mailing list, notably,
+   documented [WebDAV + Nextcloud + 2FA](https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure/NextCloud#Desktopsupport) operation)
+
+# What we're up to next
+
+## Hiro
+
+ * community portal website
+ * document how to contribute to websites
+ * moving websites from Trac to Dip (just the git part), as separate
+   projects (see [web](https://dip.torproject.org/web))
+ * Grafana inside Docker
+ * more Puppet stuff
+
+## Weasel
+
+ * replace textile with newer hardware
+ * test smaller MTUs on Hetzner vswitch stuff to see if it would work
+   for publicly routed addresses
+ * more buster upgrades
+
+## Anarcat
+
+ * upstream merge of puppet code
+ * hiera migration completion, hopefully
+ * 3rd party monitoring server setup, blocked on approval
+ * grafana tor-guest auth
+ * pick up team lead role formally (more meetings, mostly)
+ * log host?
+
 # Transfering ln5's temporary lead role to anarcat
+
+This point on the agenda was a little awkward because ln5 wasn't
+here to introduce it, but people felt comfortable going anyways, so we
+did. 
+
+First, some context: ln5 had taken on the "team lead" (from TPI's
+perspective) inside the nascent "sysadmin team" last November. He
+didn't want to participate in the vegas team meetings because he was
+only part time and it would not make sense to take like a fifth of his
+time in meetings. The team has been mostly leaderless so far, although
+weasel did serve as a de-facto leader because he was the most
+busy. Then ln5 showed up and became the team leader.
+
+But now that anarcat is there full time, it may make sense to have a
+team lead in those meetings and delegate that responsability from ln5
+to anarcat. This was discussed during the hiring process and anarcat
+was open to the idea. For anarcat, leadership is not telling people
+what to do, it's showing the way and summarizing, helping people do
+things.
+
+Everyone supported the change. If there are problems with the move,
+there are resources in TPI (HR) and the community (CC) to deal with
+those problems, and they should be used. In any case, talk with
+anarcat if you feel there are problems, he's open. He'll continue
+using ln5 as a mentor.
+
+We don't expect much changes to come out of this, as anarcat has
+already taken on some of that work (like writing those minutes and
+coordinating meetings). It's possible more things come up from the
+Vegas team or we can bring them down issues as well. It could help us
+unblock funding problems, for example. In any case, anarcat will keep
+the rest of the team in the loop, of course. Hiro also had some
+exchanges with ln5 about formalizing her work in the team, which
+anarcat will followup on.
+
 # Hardware inventory and followup
+
+There's now a spreadsheet in Nextcloud that provides a rough inventory
+of the machines. It used to be only paid hardware hosting virtual
+machines, but anarcat expanded this to include donated hardware in the
+hope to get a clearer view of the hardware we're managing. This should
+allow us to better manage the life cycle of machines, depreciation and
+deal with failures.
+
+The spreadsheet was originally built to answer the "which machine do
+we put this new VM on" question and since `moly` was already too full
+and old by the time the spreadsheet was created, there was no sheet
+for `moly`. So anarcat added a sheet for `moly` and also entries for
+the VMs in Hetzner cloud and Scaleway to get a better idea of the
+costs and infrastructure present. There's also a
+"per-hosting-provider" sheet that details how much we pay to each
+entity.
+
+The spreadsheet should *not* provide a full inventory of all machines:
+this is better served by LDAP or Hiera (or both), but it *should*
+provide an inventory of all "physical" hosts we have (e.g. `moly`) or
+the VMs that we do not control the hardware underneath
+(e.g. `hetzner-nbg1-01`).
+
+Some machines were identified as missing from the spreadsheet:
+
+ * ipnet/sunet cloud
+ * nova
+ * listera
+ * maybe others
+
+Next time a machine is setup, it *should* generally be added to that
+sheet in some sense or another. If it's a standalone VM we do not
+control the host of (e.g. in Hetzner cloud), it goes in the first
+sheet. If it's a new KVM host, it desserves its own sheet, and if it's
+a VM in one of our hosts, it should be added to that host's sheet.
+
+WThe spreadsheet has been useful to figure out "where do we put that
+stuff now", but it's also useful for "where is that stuff and what
+stuff do we need next".
+
 # Other discussions
+
+None identified.
+
 # Next meeting
+
+[June 3 2019, 1400UTC](2019-06-03), in the Nextcloud / CalDAV calender.
