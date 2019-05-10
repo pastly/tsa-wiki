@@ -152,4 +152,4 @@ None identified.
 
 # Next meeting
 
-[June 3 2019, 1400UTC](2019-06-03), in the Nextcloud / CalDAV calender.
+[[June 3 2019, 1400UTC|2019-06-03]], in the Nextcloud / CalDAV calender.
