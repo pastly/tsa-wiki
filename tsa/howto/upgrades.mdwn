@@ -42,7 +42,9 @@ host and make sure it comes back within a certain delay:
 If the host has an encrypted filesystem and is hooked up with Mandos, it
 will return automatically. Otherwise it might need a password to be
 entered at boot time, either through the initramfs (if it has the
-`profile::fde` class in Puppet) or manually, after the boot.
+`profile::fde` class in Puppet) or manually, after the boot. That is
+the case for the `mandos-01` server itself, for example, as it
+currently can't unlock itself, naturally.
 
 Generally, KVM hosts are the latter case and need special attention,
 as the guests need to be individually rebooted. The
