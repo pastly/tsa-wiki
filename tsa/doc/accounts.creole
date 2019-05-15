@@ -48,7 +48,7 @@ Are they a Core Contributor?
 ** If they are not a staff member, then an existing Core Contributor should
    request an LDAP account, and explain why they need access.
 
-See <a href="new-account">New LDAP accounts</a> for details.
+See <a href="../../howto/create-a-new-user">New LDAP accounts</a> for details.
 
 === Email alias reasons ===
 
