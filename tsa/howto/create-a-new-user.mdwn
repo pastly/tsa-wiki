@@ -35,13 +35,13 @@ requestee, as detailed in [[doc/accounts]].
   2. add pgp key to the `account-keyring` repository:
 
          FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567
-         USER=alice
-         gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg"
+        USER=alice
+        gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg"
 
   3. push to both repositories:
   
          git push
-         git push alberti
+        git push alberti
 
 2. on the LDAP server (currently `alberti`), as a user with LDAP write access:
 
