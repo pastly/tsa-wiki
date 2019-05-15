@@ -34,20 +34,20 @@ requestee, as detailed in [[doc/accounts]].
 
   2. add pgp key to the `account-keyring` repository:
 
-        FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567
-        USER=alice
-        gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg"
+         FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567
+         USER=alice
+         gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg"
 
   3. push to both repositories:
   
-        git push
-        git push alberti
+         git push
+         git push alberti
 
 2. on the LDAP server (currently `alberti`), as a user with LDAP write access:
 
   1. create the user:
   
-        ud-useradd -n
+         ud-useradd -n
 
      `ud-useradd` asks a bunch of questions interactively that have
      good defaults, mostly taken from the OpenPGP key material, but
@@ -61,21 +61,21 @@ requestee, as detailed in [[doc/accounts]].
 
   2. synchronize the change:
   
-        sudo -u sshdist ud-generate && sudo -H ud-replicate
+          sudo -u sshdist ud-generate && sudo -H ud-replicate
 
 3. on the email server (currently `eugeni`):
 
   1. synchronize the change:
   
-        sudo -H ud-replicate
+         sudo -H ud-replicate
 
   2. verify the email alias was correctly created:
   
-        egrep -q "${USER}@torproject.org" /etc/postfix/debian || echo "new user missing, please fix"
+         egrep -q "${USER}@torproject.org" /etc/postfix/debian || echo "new user missing, please fix"
 
   3. run puppet:
-  
-        sudo puppet agent -t
+
+         sudo puppet agent -t
 
 # Creating a role acount and a group for it
 
