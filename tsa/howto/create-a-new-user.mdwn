@@ -49,7 +49,7 @@ requestee, as detailed in [[doc/accounts]].
   
          ud-useradd -n
 
-     `ud-useradd` asks a bunch of questions interactively that have
+     This command asks a bunch of questions interactively that have
      good defaults, mostly taken from the OpenPGP key material, but
      it's important to review them anyways. in particular:
      
