@@ -1,15 +1,81 @@
-# Creating a new user (for a human being)
-- on laptop
-  - verify pgp key
-  - add pgp key to admin/account-keyring and git push to both torgit and
-    alberti.torproject.org/srv/db.torproject.org/keyrings/keyring.git
-- on alberti, as a user with LDAP write access
-  - ud-useradd -n
-  - sudo -u sshdist ud-generate && sudo -H ud-replicate
-- on eugeni
-  - sudo -H ud-replicate
-  - egrep -q $new_login /etc/postfix/debian || echo "hmm, new user missing, please fix"
-  - sudo puppet agent -t
+[[!toc]]
+
+This document explains how to create new shell (and email) accounts.
+See also [[doc/accounts]] to evaluate new account requests.
+
+# Configuration
+
+This should be done only once.
+
+It downloads the git repository that manages the OpenPGP keyring. This
+keyring is essential as it allows users to interact with the LDAP
+database securely to perform password changes and is also used to send
+the initial password for new accounts.
+
+    git clone git@git-rw.torproject.org:admin/account-keyring.git
+    git -C account-keyring remote add alberti alberti.torproject.org:srv/db.torproject.org/keyrings/keyring.git
+
+# Creating a new user
+
+This procedure can be used to create a real account for a human
+being. If this is for a machine or another automated thing, create a
+role account (see below).
+
+To create a new user, specific information need to be provided by the
+requestee, as detailed in [[doc/accounts]].
+
+1. on your own machine (e.g. your laptop)
+
+  1. verify the OpenPGP key provided
+  
+     It should be signed by a trusted key in the keyring or in a
+     message signed by a trusted key. See [[doc/accounts]] when
+     unsure.
+
+  2. add pgp key to the `account-keyring` repository:
+
+        FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567
+        USER=alice
+        gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg"
+
+  3. push to both repositories:
+  
+        git push
+        git push alberti
+
+2. on the LDAP server (currently `alberti`), as a user with LDAP write access:
+
+  1. create the user:
+  
+        ud-useradd -n
+
+     `ud-useradd` asks a bunch of questions interactively that have
+     good defaults, mostly taken from the OpenPGP key material, but
+     it's important to review them anyways. in particular:
+     
+     * when prompted for whom to add (`a GPG search`), enter the full
+       `$FINGERPRINT` verified above
+
+     * the email forward is likely to be incorrect if the key has
+       multiple email address as UIDs
+
+  2. synchronize the change:
+  
+        sudo -u sshdist ud-generate && sudo -H ud-replicate
+
+3. on the email server (currently `eugeni`):
+
+  1. synchronize the change:
+  
+        sudo -H ud-replicate
+
+  2. verify the email alias was correctly created:
+  
+        egrep -q "${USER}@torproject.org" /etc/postfix/debian || echo "new user missing, please fix"
+
+  3. run puppet:
+  
+        sudo puppet agent -t
 
 # Creating a role acount and a group for it
 
