@@ -24,7 +24,9 @@ role account (see below).
 To create a new user, specific information need to be provided by the
 requestee, as detailed in [[doc/accounts]].
 
-1. on your own machine (e.g. your laptop)
+## on your own machine
+
+For example, your laptop.
 
   1. verify the OpenPGP key provided
   
@@ -43,7 +45,10 @@ requestee, as detailed in [[doc/accounts]].
          git push
         git push alberti
 
-2. on the LDAP server (currently `alberti`), as a user with LDAP write access:
+## on the LDAP server
+
+This is currently `alberti`. Make sure you run as a regular user with
+LDAP write access.
 
   1. create the user:
   
@@ -63,7 +68,9 @@ requestee, as detailed in [[doc/accounts]].
   
           sudo -u sshdist ud-generate && sudo -H ud-replicate
 
-3. on the email server (currently `eugeni`):
+## on the email server
+
+This is currently `eugeni`.
 
   1. synchronize the change:
   
