@@ -28,10 +28,11 @@ The short version is:
 
     # THIS KEY SHOULD BE CHECKED, SEE BELOW FOR DETAILS
     FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567 &&
-    USER=alice &&
-    gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg" && 
-    git add "${USER}-${FINGERPRINT}.gpg" &&
-    git commit -m"new user ${USER} requested by foo" &&
+    NEW_USER=alice &&
+    REQUESTOR=bob &&
+    gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${NEW_USER}-${FINGERPRINT}.gpg" && 
+    git add "${NEW_USER}-${FINGERPRINT}.gpg" &&
+    git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}" &&
     git push &&
     git push alberti &&
     ssh -tt alberti.torproject.org "ud-useradd -n && sudo -u sshdist ud-generate && sudo -H ud-replicate" &&
@@ -52,10 +53,11 @@ For example, your laptop.
   2. add pgp key to the `account-keyring` repository:
 
          FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567
-        USER=alice
-        gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg"
-        git add "${USER}-${FINGERPRINT}.gpg"
-        git commit -m"new user ${USER} requested by foo"
+        NEW_USER=alice
+        REQUESTOR=bob
+        gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${NEW_USER}-${FINGERPRINT}.gpg"
+        git add "${NEW_USER}-${FINGERPRINT}.gpg"
+        git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}"
 
   3. push to both repositories:
   
@@ -95,7 +97,7 @@ This is currently `eugeni`.
 
   2. verify the email alias was correctly created:
   
-         egrep -q "${USER}@torproject.org" /etc/postfix/debian || echo "new user missing, please fix"
+         egrep -q "${NEW_USER}@torproject.org" /etc/postfix/debian || echo "new user missing, please fix"
 
   3. run puppet:
 
