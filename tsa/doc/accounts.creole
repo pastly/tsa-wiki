@@ -1,5 +1,7 @@
 [[!meta title="git, shell, ldap, etc. accounts"]]
 
+[[!toc levels=3]]
+
 = torproject.org Accounts =
 
 The Tor project keeps all user information in a central LDAP database which
