@@ -89,10 +89,11 @@ in the {{{Tor Sysadmin Team}}} component:
   file for them.  Please enclose the OpenPGP clearsigned blob using
   {{{{{{}}} and {{{}}}}}}.
 
-The username should be checked for conflict with commonly used
-adminstrative aliases (`root`, `abuse`, ...) or abusive names
-(`killall*`, ...). In particular, the following have special meaning
-for various services and should be avoided:
+Usernames are allocated on a first-come, first-served basis. Usernames
+should be checked for conflict with commonly used adminstrative
+aliases (`root`, `abuse`, ...) or abusive names (`killall*`, ...). In
+particular, the following have special meaning for various services
+and should be avoided:
 
     root
     abuse
