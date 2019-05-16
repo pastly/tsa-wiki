@@ -1,6 +1,6 @@
 [[!meta title="git, shell, ldap, etc. accounts"]]
 
-[[!toc levels=3]]
+[[!toc levels=4]]
 
 = torproject.org Accounts =
 
@@ -90,6 +90,8 @@ in the {{{Tor Sysadmin Team}}} component:
 * should be OpenPGP signed by the sponsor using the OpenPGP key we have on
   file for them.  Please enclose the OpenPGP clearsigned blob using
   {{{{{{}}} and {{{}}}}}}.
+
+==== username policy ====
 
 Usernames are allocated on a first-come, first-served basis. Usernames
 should be checked for conflict with commonly used adminstrative
