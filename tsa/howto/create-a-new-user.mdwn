@@ -82,6 +82,14 @@ LDAP write access.
      * the email forward is likely to be incorrect if the key has
        multiple email address as UIDs
 
+     * if the user is a "guest" (ie. it needs to have access only to a
+       subset of machines), you should use the `-g` flag to
+       `ud-useradd`. this will put the user in the `guest` group. it
+       will also prompt for a list of allowed machines (which can be
+       left empty) and an expiry date for the account (which can be
+       set to zero to disable). then the group can be changed with
+       `ldapvi`.
+
   2. synchronize the change:
   
           sudo -u sshdist ud-generate && sudo -H ud-replicate
