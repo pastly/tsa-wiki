@@ -7,13 +7,13 @@ See also [[doc/accounts]] to evaluate new account requests.
 
 This should be done only once.
 
+    git clone git@git-rw.torproject.org:admin/account-keyring.git
+    git -C account-keyring remote add alberti alberti.torproject.org:srv/db.torproject.org/keyrings/keyring.git
+
 It downloads the git repository that manages the OpenPGP keyring. This
 keyring is essential as it allows users to interact with the LDAP
 database securely to perform password changes and is also used to send
 the initial password for new accounts.
-
-    git clone git@git-rw.torproject.org:admin/account-keyring.git
-    git -C account-keyring remote add alberti alberti.torproject.org:srv/db.torproject.org/keyrings/keyring.git
 
 # Creating a new user
 
