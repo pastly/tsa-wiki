@@ -35,8 +35,7 @@ The short version is:
     git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}" &&
     git push &&
     git push alberti &&
-    ssh -tt alberti.torproject.org "ud-useradd -n && sudo -u sshdist ud-generate && sudo -H ud-replicate" &&
-    ssh -tt eugeni.torproject.org "sudo -H ud-replicate && egrep -q "${USER}@torproject.org" /etc/postfix/debian || echo "new user missing, please fix" && sudo puppet agent -t
+    ssh -tt $USER@alberti.torproject.org "ud-useradd -n && sudo -u sshdist ud-generate && sudo -H ud-replicate"
 
 See below for detailed instructions.
 
@@ -87,9 +86,11 @@ LDAP write access.
   
           sudo -u sshdist ud-generate && sudo -H ud-replicate
 
-## on the email server
+## on other servers
 
-This is currently `eugeni`.
+This step is optional and can be used to force replication of the
+change to another server manually. In this case, we force the change
+to propagate to the email server, which is currently `eugeni`.
 
   1. synchronize the change:
   
