@@ -24,6 +24,21 @@ role account (see below).
 To create a new user, specific information need to be provided by the
 requestee, as detailed in [[doc/accounts]].
 
+The short version is:
+
+    # THIS KEY SHOULD BE CHECKED, SEE BELOW FOR DETAILS
+    FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567 &&
+    USER=alice &&
+    gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg" && 
+    git add "${USER}-${FINGERPRINT}.gpg" &&
+    git commit -m"new user ${USER} requested by foo" &&
+    git push &&
+    git push alberti &&
+    ssh -tt alberti.torproject.org "ud-useradd -n && sudo -u sshdist ud-generate && sudo -H ud-replicate" &&
+    ssh -tt eugeni.torproject.org "sudo -H ud-replicate && egrep -q "${USER}@torproject.org" /etc/postfix/debian || echo "new user missing, please fix" && sudo puppet agent -t
+
+See below for detailed instructions.
+
 ## on your own machine
 
 For example, your laptop.
@@ -39,6 +54,8 @@ For example, your laptop.
          FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567
         USER=alice
         gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${USER}-${FINGERPRINT}.gpg"
+        git add "${USER}-${FINGERPRINT}.gpg"
+        git commit -m"new user ${USER} requested by foo"
 
   3. push to both repositories:
   
