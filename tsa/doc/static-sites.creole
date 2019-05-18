@@ -30,3 +30,5 @@ time to time. But you can learn which websites are considered "static",
 i.e. you can use the above steps to edit them, via:
 
 * "ssh staticiforme cat /etc/static-components.conf"
+
+If you're a sysadmin and wondering how that stuff work or do anything back there, look at [[howto/static-component]].

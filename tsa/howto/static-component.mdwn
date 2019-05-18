@@ -1,5 +1,8 @@
 [[!meta title="Managing static site components"]]
 
+This documentation is about administrating the static site components,
+from a sysadmin perspective. User documentation lives in [[doc/static-sites]].
+
 Adding a new component
 ======================
 
