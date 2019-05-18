@@ -1,0 +1,23 @@
+[[!meta title="Managing static site components"]]
+
+Adding a new component
+======================
+
+ 1. add the component to Puppet, in `modules/roles/misc/static-components.yaml`:
+    
+        onionperf.torproject.org:
+          master: staticiforme.torproject.org
+          source: staticiforme.torproject.org:/srv/onionperf.torproject.org/htdocs/
+
+ 2. create the directory on `staticiforme`:
+ 
+        ssh staticiforme "mkdir /srv/onionperf.torproject.org/htdocs/ \
+            && chown torwww:torwww /srv/onionperf.torproject.org/htdocs/"
+
+ 3. run Puppet on the master and mirrors:
+ 
+        ssh staticiforme puppet agent -t
+        cumin 'C:roles::static_mirror_web' 'puppet agent -t'
+
+    The latter is done with [[cumin]], see also [[puppet]] for a way
+    to do jobs on all hosts.
