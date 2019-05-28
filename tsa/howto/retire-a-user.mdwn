@@ -23,3 +23,4 @@ This is done by removing all traces of the account:
     - run `sudo postmap virtual` to rebuild the virtual users table.
     - run `sudo remove_members <list names> <email address>`
  4. make sure they don't have keys and accounts in Puppet
+ 5. remove the key from `acccount-keyring.git`
