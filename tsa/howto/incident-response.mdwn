@@ -1,0 +1,30 @@
+[[!meta title="Incident and emergency response: what to do in case of fire"]]
+
+Server down
+===========
+
+If a server is non-responsive, you can first check if it is actually
+reachable over the network:
+
+    ping -c 10 server.torproject.org
+
+If it does respond, you can try to diagnose the issue by looking at
+[Nagios][] and/or [Grafana](https://grafana.torproject.org) and analyse what, exactly is going on.
+
+[Nagios]: https://nagios.torproject.org
+
+If it does *not* respond, you should see if it's a virtual machine,
+and in this case, which server is hosting it. This information is
+available in [[ldap]] (or [the web interface](https://db.torproject.org/machines.cgi), under the
+`physicalHost` field. Then login to that server to diagnose this
+issue.
+
+If the physical host is not responding or is empty (in which case it
+*is* a physical host), you need to file a ticket with the upstream
+provider. This information is available in [Nagios][]: 
+
+ 1. search for the server name in the search box
+ 2. click on the server
+ 3. drill down the "Parents" until you find something that ressembles
+    a hosting provider (e.g. `hetzner-hel1-01` is Hetzner, `gw-cymru`
+    is Cymru, `gw-scw-*` are at Scaleway, `gw-sunet` is Sunet)
