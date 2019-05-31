@@ -127,17 +127,31 @@ Here's how to create a role account:
    
        ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D uid=${USER},ou=users,dc=torproject,dc=org
 
+3. Create a new `group` role for the new account:
+
    * Copy-paste a previous `gid` that is also a `debianRoleAccount`
+   * Change the first word of the copy-pasted block to `add` instead
+     of the integer
    * Bump the `gidNumber` to the latest `gidNumber` in the file plus
      one
+
+4. Create the actual `user` role:
+
    * Copy-paste a previous `uid` role entry (with a `objectClass: debianRoleAccount`).
+   * Change the first word of the copy-pasted block to `add` instead
+     of the integer
+   * Change the `uid=`, `uid:`, `gecos:` and `cn:` lines.
    * Bump the `uidNumber` to the latest `uidNumber` in the file plus
      one.
    * Use the same `gidNumber` as the one generated in the first step.
-   * Change the `uid=`, `uid:`, `gecos:` and `cn:` lines.
+
+5. Add the role to the right host:
+
    * Add a `allowedGroups: NEW-GROUP` line to host entries that should
      have this role account deployed.
 
-3. propagate the changes from the LDAP host:
+6. Save the file, and accept the changes
+
+7. propagate the changes from the LDAP host:
 
        sudo -u sshdist ud-generate && sudo -H ud-replicate
