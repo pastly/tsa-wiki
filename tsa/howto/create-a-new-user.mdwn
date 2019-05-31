@@ -155,3 +155,51 @@ Here's how to create a role account:
 7. propagate the changes from the LDAP host:
 
        sudo -u sshdist ud-generate && sudo -H ud-replicate
+
+# Sudo configuration
+
+A user will often need to more permissions than its regular scope. For
+example, a user might need to be able to access a specific role
+account, as above, or run certain commands as root.
+
+We have a large `sudoers` file that contains per-host configuration
+snippets that enable us to give piecemeal accesses like this. We often
+give accesses to *groups* instead of specific users for easier
+maintenance.
+
+## Sudo primer
+
+As a reminder, the [sudoers](https://manpages.debian.org/sudoers) file syntax can be distilled to this:
+
+    FROMWHO HOST=(TOWHO) COMMAND
+
+For example, this allows the group `wheel` (`FROMWHO`) to run the
+`service apache reload` `COMMAND` as `root` (`TOWHO`) on the `HOST`
+`example`:
+
+    %wheel example=(root) service apache reload
+
+The `HOST`, `TOWHO` and `COMMAND` entries can be set to `ALL`. Aliases
+can also be defined and many more keywords. In particular, the
+`NOPASSWD:` prefix before a `COMMAND` will allow users to `sudo`
+without entering their password.
+
+## Granting access to a role account
+
+That being said, you can simply grant access to a role account by
+adding users in the role account's group (through LDAP) then adding a
+line like this in the `sudoers` file:
+
+    %roleGroup example=(roleAccount) ALL
+
+Multiple role accounts can be specified. This is a real-world example
+of the users in the `bridgedb` group having full access to the
+`bridgedb` and `bridgescan` user accounts:
+
+    %bridgedb		polyanthum=(bridgedb,bridgescan)			ALL
+
+Another real-world example, where members of the `%metrics` group can
+run two different commands, without password, on the `STATICMASTER`
+group of machines, as the `mirroradm` user:
+
+    %metrics		STATICMASTER=(mirroradm)	NOPASSWD: /usr/local/bin/static-master-update-component onionperf.torproject.org, /usr/local/bin/static-update-component onionperf.torproject.org
