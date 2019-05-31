@@ -21,9 +21,9 @@ automatically at boot.
 ## Adding a new service
 
 User-level services are deployed in `~/.config/systemd/user/`. Let's
-say we're deploying a `bridgescan` service. You'd need to craft a
+say we're deploying a service called `$SERVICE`. You'd need to craft a
 [.service file](https://manpages.debian.org/stretch/systemd/systemd.service.5.en.html) and drop it in
-`~/.config/systemd/user/bridgescan.service`. Then you can issue:
+`~/.config/systemd/user/$SERVICE.service`. Then you can run:
 
     systemctl --user daemon-reload
 
@@ -37,25 +37,25 @@ It's because your environment is not setup correctly and `systemctl`
 can't find the correct sockets. Try to set the `XDG_RUNTIME_DIR`
 environment to the right user directory:
 
-    export XDG_RUNTIME_DIR=/run/user/2136
+    export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
 Then the service can be enabled:
 
-    systemctl --user enable bridgescan
+    systemctl --user enable $SERVICE
 
 And then started:
 
-    systemctl --user start bridgescan
+    systemctl --user start $SERVICE
 
 ## sysadmin stuff
 
 On the sysadmin side, to enable `systemd --user` session, we need to
 run `loginctl enable-linger $USER`. For example, this will enable the
-session for the `bridgescan` user:
+session for the user $USER:
 
     exec {
-      'loginctl enable-linger bridgescan':
-        creates => '/var/lib/systemd/linger/bridgescan';
+      "loginctl enable-linger $USER":
+        creates => "/var/lib/systemd/linger/$USER";
     }
 
 This will create an empty file for the user in
