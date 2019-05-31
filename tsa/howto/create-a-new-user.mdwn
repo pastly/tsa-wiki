@@ -156,6 +156,16 @@ Here's how to create a role account:
 
        sudo -u sshdist ud-generate && sudo -H ud-replicate
 
+8. (sometimes) create the home directory on the server, in Puppet:
+
+        file {
+          '/home/bridgescan':
+            ensure => 'directory',
+            mode   => '0755',
+            owner  => 'bridgescan',
+            group  => 'bridgescan';
+         }
+
 # Sudo configuration
 
 A user will often need to more permissions than its regular scope. For
