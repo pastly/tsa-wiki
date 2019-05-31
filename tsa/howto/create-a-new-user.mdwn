@@ -112,14 +112,32 @@ to propagate to the email server, which is currently `eugeni`.
 
          sudo puppet agent -t
 
-# Creating a role acount and a group for it
+# Creating a role
+
+A "role" account is like a normal user, except it's for machines or
+services, not real people. It's useful to run different services with
+different privileges and isolation.
+
+Here's how to create a role account:
 
 1. Do _not_ use ud-groupadd and ud-roleadd. They are partly broken.
 
-2. On LDAP host (currently alberti.tpo), as a user with LDAP write access, do
-  - `ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D uid=${USER},ou=users,dc=torproject,dc=org`
-  - Cut and paste a gid entry, pick a nice gidNumber.
-  - Cut and paste a uid entry, pick a nice uidNumber.
-  - Add 'allowedGroups: NEW-GROUP' to host entry/ies that should have
-    this role account.
-3. `sudo -u sshdist ud-generate && sudo -H ud-replicate`
+2. On LDAP host (currently alberti.tpo), as a user with LDAP write
+   access, do:
+   
+       ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D uid=${USER},ou=users,dc=torproject,dc=org
+
+   * Copy-paste a previous `gid` that is also a `debianRoleAccount`
+   * Bump the `gidNumber` to the latest `gidNumber` in the file plus
+     one
+   * Copy-paste a previous `uid` role entry (with a `objectClass: debianRoleAccount`).
+   * Bump the `uidNumber` to the latest `uidNumber` in the file plus
+     one.
+   * Use the same `gidNumber` as the one generated in the first step.
+   * Change the `uid=`, `uid:`, `gecos:` and `cn:` lines.
+   * Add a `allowedGroups: NEW-GROUP` line to host entries that should
+     have this role account deployed.
+
+3. propagate the changes from the LDAP host:
+
+       sudo -u sshdist ud-generate && sudo -H ud-replicate
