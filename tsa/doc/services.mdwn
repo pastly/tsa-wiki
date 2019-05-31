@@ -1,6 +1,6 @@
 [[!meta title="Running non-root services"]]
 
-Service on TPO machines are often ran as regular users, from normal
+Service on TPO machines are often run as regular users, from normal
 sessions, instead of the usual `/etc/init.d` or `systemd`
 configuration provided by Debian packages. This is part of our
 [[service vs system admin distinction|admins]].
