@@ -166,6 +166,9 @@ Here's how to create a role account:
             group  => 'bridgescan';
          }
 
+Sometimes a role account is made to start services, see the
+[[doc/services]] page for instructions on how to do that.
+
 # Sudo configuration
 
 A user will often need to more permissions than its regular scope. For

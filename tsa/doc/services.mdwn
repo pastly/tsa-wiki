@@ -1,0 +1,84 @@
+[[!meta title="Running non-root services"]]
+
+Service on TPO machines are often ran as regular users, from normal
+sessions, instead of the usual `/etc/init.d` or `systemd`
+configuration provided by Debian packages. This is part of our
+[[service vs system admin distinction|admins]].
+
+This page aims at documenting how such services are started and
+managed. There are many ways this can be done: many services have been
+started as a `@reboot` cronjob in the past, but we're looking at using
+`systemd --user` as a more reasonable way to do this in the future.
+
+systemd startup
+===============
+
+Most Debian machines now run [systemd](http://manpages.debian.org/systemd) which allows all sorts of
+neat tricks. In particular, it allows us to start programs as a normal
+user through a `systemd --user` session that gets started
+automatically at boot.
+
+## Adding a new service
+
+User-level services are deployed in `~/.config/systemd/user/`. Let's
+say we're deploying a `bridgescan` service. You'd need to craft a
+[.service file](https://manpages.debian.org/stretch/systemd/systemd.service.5.en.html) and drop it in
+`~/.config/systemd/user/bridgescan.service`. Then you can issue:
+
+    systemctl --user daemon-reload
+
+For the new file to be notified.
+
+If you're getting an error like this:
+
+    Failed to connect to bus: No such file or directory
+
+It's because your environment is not setup correctly and `systemctl`
+can't find the correct sockets. Try to set the `XDG_RUNTIME_DIR`
+environment to the right user directory:
+
+    export XDG_RUNTIME_DIR=/run/user/2136
+
+Then the service can be enabled:
+
+    systemctl --user enable bridgescan
+
+And then started:
+
+    systemctl --user start bridgescan
+
+## sysadmin stuff
+
+On the sysadmin side, to enable `systemd --user` session, we need to
+run `loginctl enable-linger $USER`. For example, this will enable the
+session for the `bridgescan` user:
+
+    exec {
+      'loginctl enable-linger bridgescan':
+        creates => '/var/lib/systemd/linger/bridgescan';
+    }
+
+This will create an empty file for the user in
+`/var/lib/systemd/linger/` but it will *also* start the `systemd
+--user` session immediately, which can already be used to start other
+processes.
+
+cron startup
+============
+
+This method is now discouraged, but is still in use for older
+services.
+
+Failing `systemd` or admin support, you might be able to start
+services at boot time with a [cron](https://manpages.debian.org/cron) job.
+
+The trick is to edit the role account crontab with `sudo -u role
+crontab -e` and then adding a line like:
+
+    @reboot /home/role/bin/service start
+
+It is deprecated because `cron` is not a service manager and has no
+way to restart the service easily on upgrades. It also lacks features
+like socket activation or restart on failure that systemd
+provides. Plus it won't *actually* start the service until the machine
+is rebooted, that's just plain silly.
