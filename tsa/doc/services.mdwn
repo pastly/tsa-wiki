@@ -23,7 +23,19 @@ automatically at boot.
 User-level services are deployed in `~/.config/systemd/user/`. Let's
 say we're deploying a service called `$SERVICE`. You'd need to craft a
 [.service file](https://manpages.debian.org/stretch/systemd/systemd.service.5.en.html) and drop it in
-`~/.config/systemd/user/$SERVICE.service`. Then you can run:
+`~/.config/systemd/user/$SERVICE.service`:
+
+    [Unit]
+    Description=Run a program forever that does not fork
+
+    [Service]
+    Type=oneshot
+    ExecStart=/home/role/bin/service start
+
+    [Install]
+    WantedBy=multi-user.target
+
+Then you can run:
 
     systemctl --user daemon-reload
 
@@ -82,3 +94,6 @@ way to restart the service easily on upgrades. It also lacks features
 like socket activation or restart on failure that systemd
 provides. Plus it won't *actually* start the service until the machine
 is rebooted, that's just plain silly.
+
+The correct way to start the above service is to use the `.service`
+file documented in the previous section.x
