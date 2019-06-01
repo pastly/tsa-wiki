@@ -96,4 +96,4 @@ provides. Plus it won't *actually* start the service until the machine
 is rebooted, that's just plain silly.
 
 The correct way to start the above service is to use the `.service`
-file documented in the previous section.x
+file documented in the previous section.
