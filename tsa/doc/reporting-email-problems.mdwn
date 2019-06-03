@@ -21,6 +21,7 @@ headers. The simplest way to do so is forward it as an attachment or
 <https://share.riseup.net/>).
 
 Ideally, also include a copy of the original message in your report,
-also with full headers. If you can't send a copy of the original
-message for privacy reasons, at least include the headers of the
-email.
+also with full headers. 
+
+If you can't send a copy of the original message for privacy reasons,
+at least include the headers of the email.
