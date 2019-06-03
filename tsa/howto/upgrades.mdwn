@@ -59,6 +59,10 @@ reboot procedure will look something like this:
     ping -c 10 -w 120 $HOST &&
     ssh -tt root@$HOST tor-libvirt-luks-start
 
+If only the guests on the machine need a reboot, for example Nagios
+complains about `libvirt-qemu` processes, use the
+`tor-libvirt-stop-start` script.
+
 ### Example runs
 
 Here's an example run of the upgrade tool:
