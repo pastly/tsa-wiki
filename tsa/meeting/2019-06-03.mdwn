@@ -151,38 +151,37 @@ Point skipped, no new movement.
 
 # New mail service requests
 
-We discussed the [request to implement SMTP delivery][] for TPO
-users. It seems that many people have trouble delivering emails from
-third-party servers to gmail and others using their `@torproject.org`
-email address. Those specific problems have not been clearly
-documented yet, but there have been problems with mailing lists
-documented ([relaying problems to gmail.com][] and [spam filtering
-problems][]).
+We discussed the [request to run an outbound mailserver][] for TPO
+users.  Some people have trouble getting their email accepted at third
+party servers (in particular google) using their @torproject.org email
+address. However, specific problems have not been adequately
+documented yet.
 
-[spam filtering problems]: https://bugs.torproject.org/30699
-[relaying problems to gmail.com]: https://trac.torproject.org/projects/tor/ticket/29770
-[request to implement SMTP delivery]: https://bugs.torproject.org/30608
+[request to run an outbound mailserver]: https://bugs.torproject.org/30608
 
-Some people felt the request was reasonable, but others felt that we
-should not offer such email services to TPO users and that, instead, this
-service (if the community wants it) would be better done by a
-third-party provider like Microsoft, Google, mailbox.org, mailfence,
-or Riseup. We, as TPA, don't necesarily have to provide the email
-delivery service.
+While some people felt the request was reasonable, there were concerns
+that providing a new email service will introduce a new set of (hidden
+and not-so-hidden) issues, for instance possible abuse when people
+lose their password.
 
-There are concerns that running a relay/SMTP server is hard and that
-it will get abused because people lose their password or get
-hacked. On the other hand, we might be reaching a critical point where
-some people will stop using their `@torproject.org` email entirely
-which will make the forwarding setup we have now close to
-useless.
+Some also expressed the principle that e-mail is built with federation
+in mind, so we should not have to run a mail-server as people should
+be able to just use their own (provider's) mailserver to send mail,
+even if Google, Microsoft, and those who nowadays try to own the
+e-mail market, would like to disagree.
 
-We all agree that people need their emails to work. One way to frame
-this is whether TPI wants to provide email services or not, and if so,
-if that should be done internally or not. For now, anarcat will push
-back gently on the ticket to ask for more concrete failure examples to
-diagnose the issue further and possibly help our users. He will also
-bring up at the next Vegas meeting.
+Even if users don't have a reasonable outgoing mailserver to use,
+maybe it need not be TPA who provide this service. It was proposed
+that the service would be better handled by some trustworthy 3rd
+party, and TPO users may, but need not, use it.
+
+We all agree that people need their emails to work.  For now, we
+should try to properly document concrete failures. Anarcat will gently
+push back on the ticket to request more concrete examples
+
+One way to frame this is whether TPI wants to provide email services
+or not, and if so, if that should be done internally or not. Anarcat
+will bring this up at the next Vegas meeting.
 
 # Stockholm meeting planning
 
