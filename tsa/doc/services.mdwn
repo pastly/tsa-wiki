@@ -29,7 +29,7 @@ say we're deploying a service called `$SERVICE`. You'd need to craft a
     Description=Run a program forever that does not fork
 
     [Service]
-    Type=oneshot
+    Type=simple
     ExecStart=/home/role/bin/service start
 
     [Install]
