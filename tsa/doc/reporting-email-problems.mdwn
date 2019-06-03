@@ -1,0 +1,26 @@
+[[!meta title="How to report email problems"]]
+
+Email delivery problems are unfortunately quite common but there are
+often simple solutions to the problems once we know exactly what is
+going on.
+
+When reporting delivery problems on Email infrastructure, make sure
+you include at least the following information in your report:
+
+ 1. originating email address (e.g. `Alice <alice@torproject.org>`)
+ 2. destination email address (e.g. `Bob <bob@torproject.org>`)
+ 3. date and time the email was sent, with timezone, to the second
+    (e.g. `2019-06-03 13:52:30 +0400`)
+ 4. how the email was sent (e.g. from my laptop, over SMTP+TLS to my
+    email provider, `riseup.net`)
+ 5. what error did you get (e.g. a bounce, message not delivered)
+
+If you do get a bounced message, do include the entire bounce, with
+headers. The simplest way to do so is forward it as an attachment or
+"view source" and copy-paste it somewhere safe (like
+<https://share.riseup.net/>).
+
+Ideally, also include a copy of the original message in your report,
+also with full headers. If you can't send a copy of the original
+message for privacy reasons, at least include the headers of the
+email.
