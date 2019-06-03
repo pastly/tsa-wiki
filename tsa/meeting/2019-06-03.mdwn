@@ -1,10 +1,212 @@
 [[!toc levels=2]]
 
 # Roll call: who's there and emergencies
+
+No emergencies, anarcat, hiro, ln5 and weasel present, qbi joined
+halfway through the meeting.
+
 # What has everyone been up to
+
+## anarcat
+
+ * screwed up and exposed Apache's /server-status to the public,
+   details in [#30419][]. would be better to have that on a separate
+   port altogether, but that was audited on all servers and should be
+   fixed for now.
+
+   [#30419]: https://trac.torproject.org/projects/tor/ticket/30419
+
+ * moved into a new office which meant dealing with local hardware
+   issues like a monitors and laptops and so on (see a [review of the
+   Purism Librem 13v4][] and the [politics of the company][])
+
+   [politics of the company]: https://anarc.at/blog/2019-05-13-free-speech/
+   [review of the Purism Librem 13v4]: https://anarc.at/hardware/laptop/purism-librem13v4/
+
+ * did some research on docker container security and "docker content
+   trust" which we can think of "Secure APT" for containers. the
+   TL;DR: is that it's really complicated, hard to use, and the
+   tradeoffs are not so great
+
+ * did a bunch of vegas meetings
+
+ * brought up the idea of establishing a TPI-wide infrastructure
+   budget there as well, so i'll be collecting resource expenses from
+   other teams during the week to try and prepare something for those
+   sessions
+                   
+ * rang the bell on archive.tpo overflowing in [#29697][] but it
+   seems i'll be the one coordinating the archival work
+
+   [#29697]: https://bugs.torproject.org/29697
+ 
+ * pushed more on the hiera migration, now about 80% done, depending
+   on how you count (init.pp or local.yaml) 13/57 or 6/50 roles left
+
+ * tried to get hiro more familiar with puppet as part of the hiera
+   migration
+
+ * [deployed][] and [documented][] a better way to deploy user
+   services for the bridgesdb people using `systemd --user` and
+   `loginctl --enable-linger` instead of starting from `cron`
+
+   [documented]: https://help.torproject.org/tsa/doc/services/
+   [deployed]: https://trac.torproject.org/projects/tor/ticket/30472#comment:12
+
+ * usual tickets triage, support and security upgrades
+
+## hiro
+
+ * been helping a bit anarcat with Puppet to understand it better
+
+ * setup <https://community.torproject.org> from Puppet using that
+   knowledge and weasel's help
+
+ * busy with the usual website tasks, new website version going live
+   today (!)
+
+ * researched builds on Jenkins, particularly improved scripts and
+   jobs for Hugo and onionperf documentation
+
+ * deployed new version of gettor in production
+ 
+ * putting together website docs on dip
+
+ * setup synchronization of TBB packages to with GitlabCI downloading
+   from www.torproject.org/dist/ and pushing to the gitlab and github
+   repositories
+   
+## weasel
+
+ * usual helping out 
+ 
+ * day-to-day stuff like security things
+
+ * can't really go forward with any of the upgrades/migrations/testing without new hw.
+
+## ln5
+
+ * on vacation half of may
+
+ * decided, with Sue and Isa, to end the contract early which should
+   free up resources for our projects
+
+## qbi
+
+ * mostly trac tickets (remove attachments, adding people, etc.)
+ 
+ * list maintainership - one new list was created
+
 # What we're up to next
+
+## anarcat
+
+ * expense survey across the teams to do a project-wide infrastructure
+   budget/planning and long term plan
+
+ * finish the hiera migration
+
+ * need to get more familiar with backups, test restore of different
+   components to see how they behave, to not have to relearn how to
+   use bacula in an emergency
+
+ * talk with Software Heritage, OSL, and IA to see if they can help us
+   with archive.tpo, as i don't see us getting short-term "throw
+   hardware at the problem" fix for this
+
+## weasel
+
+ * somewhat busy again in June, at least a week away with limited
+   access
+
+ * work on Ganeti/KVM clustering when we get the money
+
+## ln5
+
+ * Stockholm meeting prepatations
+
+ * Tor project development, unrelated to TPA
+
+## hiro
+
+ * planning to get more involved with puppet
+ 
+ * more gettor tasks to finish and websites as usual
+ 
+ * finish the websites documentation in time for mandatory Lektor
+   training at the dev-meeting so that it's easy enough for people to
+   send PR via their preferred git provider, which includes for
+   example people responsible for the newsletter as lektor also have a
+   Mac app!
+
+## qbi
+
+ * react on new tickets or try to close some older tickets
+
+ * happy to do bite-sized tasks (<30min)
+
 # Cymru followup?
+
+Point skipped, no new movement.
+
 # New mail service requests
+
+We discussed the [request to implement SMTP delivery][] for TPO
+users. It seems that many people have trouble delivering emails from
+third-party servers to gmail and others using their `@torproject.org`
+email address. Those specific problems have not been clearly
+documented yet, but there have been problems with mailing lists
+documented ([relaying problems to gmail.com][] and [spam filtering
+problems][]).
+
+[spam filtering problems]: https://bugs.torproject.org/30699
+[relaying problems to gmail.com]: https://trac.torproject.org/projects/tor/ticket/29770
+[request to implement SMTP delivery]: https://bugs.torproject.org/30608
+
+Some people felt the request was reasonable, but others felt that we
+should not offer such email services to TPO users and that, instead, this
+service (if the community wants it) would be better done by a
+third-party provider like Microsoft, Google, mailbox.org, mailfence,
+or Riseup. We, as TPA, don't necesarily have to provide the email
+delivery service.
+
+There are concerns that running a relay/SMTP server is hard and that
+it will get abused because people lose their password or get
+hacked. On the other hand, we might be reaching a critical point where
+some people will stop using their `@torproject.org` email entirely
+which will make the forwarding setup we have now close to
+useless.
+
+We all agree that people need their emails to work. One way to frame
+this is whether TPI wants to provide email services or not, and if so,
+if that should be done internally or not. For now, anarcat will push
+back gently on the ticket to ask for more concrete failure examples to
+diagnose the issue further and possibly help our users. He will also
+bring up at the next Vegas meeting.
+
 # Stockholm meeting planning
+
+By july, anarcat should have produced an overview of our project-wide
+expenses to get a global view of our infrastructure needs. The idea
+would then be to do some real-time, in-person planning during the Tor
+meeting in July and make some longer-term plans. Questions like email
+hosting, GitLab vs Trac, Nextcloud, how many servers we want or need,
+etc.
+
+It was proposed we do like in Brussels, where we had a full day
+focused on the TPA team. We still have to figure out if we have the
+space for that, which anarcat will followup on. There's a possibility
+of hosting at Sunet's offices, but the 10 minutes walk would make this
+a little impractical. It's likely we'll be able to find space,
+fortunately, and we'll try to figure this out this week.
+
 # Other discussions
+
+No other discussion was brought up.
+
 # Next meeting
+
+Next meeting will be held on monday july 1st, same hour (1400UTC, 1000
+east coast, 1600 europe).
+
+Meeting agrees minutes will be sent without approval from now on.
