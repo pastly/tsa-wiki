@@ -400,8 +400,10 @@ to do so just yet. This problem is further discussed in [ticket #29387][].
 Also note that when you update code like this, the `Puppetfile` does
 not change, but the `Puppetfile.lock` file *does* change. The `GIT.sha`
 parameter needs to be updated. This can be done by hand, but since
-that is error-prone, you might want to simply run `librarian-puppet
-update prometheus-puppet` to update that module.
+that is error-prone, you might want to simply run this to update
+modules:
+
+    librarian-puppet update
 
 This will *also* update dependencies so make sure you audit those
 changes before committing and pushing.
