@@ -17,15 +17,22 @@ documented.
 
 ## Installation
 
-First, install Cumin and some patches:
+First, install dependencies, Cumin and some patches:
 
-    virtualenv --python=python3 ~/.virtualenvs/cumin
+    sudo apt install python3-colorama python3-clustershell python3-pyparsing python3-requests python3-tqdm python3-yaml
+    virtualenv --python=python3 --system-site-packages ~/.virtualenvs/cumin
     ~/.virtualenvs/cumin/bin/pip3 install cumin
+    ~/.virtualenvs/cumin/bin/pip3 uninstall pyparsing clustershell # force using trusted system packages
 
 Notice how Cumin is installed in a [Python virtualenv][]: it is not
 yet [in Debian][]. You'll also need a patch to enable plain HTTP
 access, see [this bug report][]. You might also want to disable the
-[root check][] as well. Then drop the following configuration in
+[root check][] as well:
+
+    git clone https://github.com/wikimedia/cumin/ &&
+    git -C cumin show 8e49a21f57583f5c229ba05a0828d810b3543088 26aaf06950cf22850252785d689b34c54acd9785 | ( cd ~/.virtualenvs/cumin/lib/python3.7/site-packages && patch -p1 -f )
+
+Then drop the following configuration in
 `~/.config/cumin/config.yaml`:
 
     transport: clustershell
