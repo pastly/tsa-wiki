@@ -1,7 +1,10 @@
 [[!meta title="Incident and emergency response: what to do in case of fire"]]
 
+Specific situations
+===================
+
 Server down
-===========
+-----------
 
 If a server is non-responsive, you can first check if it is actually
 reachable over the network:
@@ -28,3 +31,33 @@ provider. This information is available in [Nagios][]:
  3. drill down the "Parents" until you find something that ressembles
     a hosting provider (e.g. `hetzner-hel1-01` is Hetzner, `gw-cymru`
     is Cymru, `gw-scw-*` are at Scaleway, `gw-sunet` is Sunet)
+
+Emergency policies
+==================
+
+Those still need to be defined more clearly, but we can consider there
+are three "support levels" for emergencies:
+
+ * code red: house is on fire, go go go
+ * code yellow: houston, we have a problem, but we'll live for a day
+ * routine: file a bug report, we'll get to it soon!
+
+Code red
+--------
+
+A "code red" is a critical condition that requires immediate
+action. It's what we consider an "emergency".
+
+Code yellow
+-----------
+
+A "code yellow" is a situation where we are overwhelmed but there
+isn't exactly an immediate emergency to deal with. There's a separate
+process, called a "[code yellow](https://devops.com/code-yellow-when-operations-isnt-perfect/)" ([SRECON19 presentation](https://www.usenix.org/conference/srecon19americas/presentation/kehoe),
+[slides](https://www.usenix.org/sites/default/files/conference/protected-files/sre19amer_slides_kehoe.pdf)), as opposed to a code red, above, which we might want to
+consider for fixing longer term issues.
+
+Routine
+-------
+
+TBD.
