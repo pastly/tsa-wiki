@@ -34,10 +34,13 @@ host and make sure it comes back within a certain delay:
 
     HOST=foo.torproject.org &&
     ssh root@$HOST /sbin/shutdown -r +5 new kernel &&
+    echo "waiting 5 minutes for reboot to happen..."
     sleep 5m &&
+    echo "waiting for host to go down for 30 seconds..." &&
+    sleep 30 &&
     echo "waiting up to 2 minutes for $HOST to come back..." &&
-    ping -c 10 -w 120 $HOST &&
-    ssh $HOST
+    date &&
+    ping -c 10 -w 120 $HOST ; ssh $HOST uptime && echo "check uptime above"
 
 If the host has an encrypted filesystem and is hooked up with Mandos, it
 will return automatically. Otherwise it might need a password to be
@@ -54,9 +57,13 @@ unlocked as well, with the `tor-libvirt-luks-start` command. A full
 reboot procedure will look something like this:
 
     HOST=unifolium.torproject.org
-    ssh -tt root@$HOST tor-libvirt-reboot &&
+    echo "showing motd to see affected guests" &&
+    ssh $HOST cat /etc/motd &&
+    ssh -tt root@$HOST tor-libvirt-reboot ; \
+    echo "waiting 30 seconds for host to go down..." &&
+    sleep 30 &&
     echo "waiting up to 2 minutes for $HOST to come back" &&
-    ping -c 10 -w 120 $HOST &&
+    ping -c 10 -w 120 $HOST ; \
     ssh -tt root@$HOST tor-libvirt-luks-start
 
 If only the guests on the machine need a reboot, for example Nagios
