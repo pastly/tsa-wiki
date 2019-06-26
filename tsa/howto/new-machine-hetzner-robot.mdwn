@@ -1,0 +1,62 @@
+How to install a new bare metal server at Hetzner
+=================================================
+
+Order
+-----
+
+ 1. get approval for the server, picking the specs from the [main
+ website](https://www.hetzner.com/)
+
+ 2. head to the [order page](https://robot.your-server.de/order) and pick the right server. pay close
+    attention to the location, you might want to put it alongside
+    other TPO servers (or not!) depending on redundancy or traffic
+    requirements. Click `Add to shopping cart`, leaving all other
+    fields as default.
+
+ 3. in the `Server login details` page, you should leave `Type` set to
+    `Public key`. If you do not recognize your public SSH key in
+    there, head to the [server list](https://robot.your-server.de/server) and click on [key
+    management](https://robot.your-server.de/key/index) to add your public keys
+
+ 4. when you're certain of everything, click `Checkout` in the cart,
+    review the order again and click `Order in obligation`.
+
+A confirmation email will be sent by Hetzner at the TPA alias when the
+order is filed. Then you wait for the order to complete before being
+able to proceed with the install.
+
+Ordering physical servers from Hetzner can be very fast: we've seen 2
+minutes turn around times.
+
+Install
+-------
+
+At this point you should have received an email from Hetzner with a
+subject like:
+
+    Subject: Your ordered SX62 server
+
+It should contain the SSH fingerprint, and IP address of the new host
+which we'll use below.
+
+ 1. login to the server using the IP address and host key hash
+    provided above:
+ 
+        ssh -o FingerprintHash=md5 -o UserKnownHostsFile=/dev/null root@159.69.63.226
+
+    Note: the `FingerprintHash` parameter above is to make sure we
+    match the hashing algorithm used by Hetzner in their email, which
+    is, at the time of writing, MD5 (!). Newer versions of SSH will
+    also encode the hash as base64 instead of hexadecimal, so you
+    might want to decode the base64 into the latter using this: The
+    `UserKnownHostsFile` is to make sure we don't store the
+    (temporary) SSH host key.
+    
+        perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'
+
+ 2. magic.
+
+Configuration
+-------------
+
+See [[new-machine]] for post-install configuration steps.
