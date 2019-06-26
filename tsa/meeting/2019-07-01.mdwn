@@ -4,5 +4,6 @@
 # What has everyone been up to
 # What we're up to next
 # Holidays and availability
+# Stockholm meeting prep
 # Other discussions
 # Next meeting
