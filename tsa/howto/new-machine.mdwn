@@ -1,14 +1,17 @@
-
-All commands to be run as root unless otherwise noted.
+Installation
+============
 
 This document assumes the machine is already installed with a Debian
 operating system. We preferably install stable or, when close to the
 release, testing. Here are site-specific installs:
 
 * [[new-machine-hetzner-cloud]]
+* [[new-machine-hetzner-robot]]
 
 Configuration procedure
 =======================
+
+All commands to be run as root unless otherwise noted.
 
 * set a hostname - pick an unused one from the [[doc/naming-scheme]]
 
