@@ -15,6 +15,19 @@ All commands to be run as root unless otherwise noted.
 
 * set a hostname - pick an unused one from the [[doc/naming-scheme]]
 
+* set new root password, and document it
+
+* swap and tmp
+
+        grep tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
+
+        ! grep swap /etc/fstab && \
+        dd if=/dev/zero bs=1024k count=1024 of=/swapfile && \
+        chmod 0 /swapfile && \
+        mkswap /swapfile && \
+        echo '/swapfile none swap sw 0 0' >> /etc/fstab && \
+        swapon -a
+
 * sanitize DNS configuration:
 
         grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf
@@ -111,19 +124,6 @@ All commands to be run as root unless otherwise noted.
 
         ( ! grep '^root:' /etc/aliases && echo 'root: torproject-admin@torproject.org' >> /etc/aliases ) &&
         sed -i -e 's/^root:.*/root: torproject-admin@torproject.org/' /etc/aliases && newaliases
-
-* set new root password, and document it
-
-* swap and tmp
-
-        grep tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
-
-        ! grep swap /etc/fstab && \
-        dd if=/dev/zero bs=1024k count=1024 of=/swapfile && \
-        chmod 0 /swapfile && \
-        mkswap /swapfile && \
-        echo '/swapfile none swap sw 0 0' >> /etc/fstab && \
-        swapon -a
 
 * add to [[nagios]]
 
