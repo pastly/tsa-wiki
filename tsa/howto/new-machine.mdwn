@@ -125,6 +125,6 @@ All commands to be run as root unless otherwise noted.
         ( ! grep '^root:' /etc/aliases && echo 'root: torproject-admin@torproject.org' >> /etc/aliases ) &&
         sed -i -e 's/^root:.*/root: torproject-admin@torproject.org/' /etc/aliases && newaliases
 
-* add to [[nagios]]
+* add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
 
-* document the machine in the evil Google spreadsheet (!)
+* document the machine in the [Nextcloud spreadsheet](https://nc.riseup.net/remote.php/webdav/tpa/Tor%20VM%20Hosts.xlsx)
