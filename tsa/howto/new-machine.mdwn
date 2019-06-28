@@ -37,13 +37,13 @@ All commands to be run as root unless otherwise noted.
 
         ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
 
-  Copy-paste the host block of another similar host, and change the
-  leading number to an `add`. See also the [ldapvi manual](http://www.lichteblau.com/ldapvi/manual/) for more
-  help. To generate the ssh host key block, use:
+  To generate the LDAP block, you can use the
+  `tor-install-generate-ldap` script in `tsa-misc`. Make sure you
+  review all fields, in particular `location` (`l`), `physicalHost`,
+  `description` and `purpose` which do not have good defaults.
 
-        for i in /etc/ssh/ssh_host_rsa_key.pub /etc/ssh/ssh_host_ed25519_key.pub; do
-            echo "sshRSAHostKey: `cat $i`"
-        done
+  See also the [ldapvi manual](http://www.lichteblau.com/ldapvi/manual/) for more
+  information.
 
 * then:
   * on alberti:
