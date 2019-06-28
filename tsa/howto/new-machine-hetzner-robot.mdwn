@@ -80,6 +80,9 @@ which we'll use below.
             --mirror https://mirror.hetzner.de/debian/packages/ \
             --remove-configs --defaultinterfaces
 
+    Note: last time this was ran, `udev` was not installed which led
+    to some problems, see [Debian #931235](https://bugs.debian.org/931235).
+
  4. Once the bootstrapping is complete, you still need to make sure
     the system can boot as, the above doesn't (unfortunately)
     configure everything for you. First, fix the mountpoints:
