@@ -41,15 +41,15 @@ Then
 
 To setup autoboot using mandos:
 
- 1. install mandos-client
- 1. `echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf`
  1. add a new key to the LUKS partition and prepare mandos snippet:
 
-        (apt install haveged &&
+        (DEVICE=/dev/sda2 &&
+         apt install -y haveged mandos-client &&
+         echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf
          umask 077 &&
          t=`tempfile` &&
          dd if=/dev/random bs=1 count=128 of="$t" &&
-         cryptsetup luksAddKey /dev/sda2 "$t" &&
+         cryptsetup luksAddKey $DEVICE "$t" &&
          mandos-keygen --passfile "$t"
         )
 
