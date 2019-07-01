@@ -1,9 +1,120 @@
 [[!toc levels=2]]
 
 # Roll call: who's there and emergencies
+
+Anarcat, Hiro, Qbi and Weasel present. No emergencies.
+
 # What has everyone been up to
+
+## anarcat
+
+ * scraping collection patch was merged in prometheus puppet module,
+   finally! still 3 pending patches that need unit tests, mostly
+ * more vegas meeting and followup, in particular with
+   email. discussions punted to stockholm for now
+ * reviewed the hardware inventory survey results, not very effective,
+   as people just put what we already know and didn't provide specs
+ * more hiera migration, static sync stuff left
+ * documented possible gitlab migration path and opened #30857 to
+   discuss the next steps
+ * expanded storage for prometheus to 30 days (from 15) landed at 80%
+   disk usage (from 50%) so doubling up the retention only added 30%
+   of disk usage, which is pretty good.
+ * archive.tpo ran out of space, reached out to software heritage and
+   archive.org to store our stuff, both which responded well, but
+   requires more engineering to move our stuff off to IA. heritage are
+   now crawling our git repos. and setup a new machine with larger
+   disks (archive-01) to handle the service. tried to document install
+   procedures in the hope to eventually automate this or at least get
+   consistent setups for new machines
+ * usbguard and secureboot on local setup to ensure slightly better
+   security in my new office 
+ * started reading up on the PSNA (see below)
+ * regular tickets and security upgrades work
+
+## qbi
+
+Created a new list and other list admin stuff, also some trac tickets.
+
+## hiro
+
+ * continued documenting and developing websites. we now have a
+   secondary repository with shared assets that can be imported at
+   build time
+ * almost done with setting up a second monitoring server
+ * did some hiera migrations
+ * finished torbrowser packages syncing on github and gitlab for gettor
+ * went to rightscon 
+
+## weasel
+
+Was busy with work and work trips a lot. Haven't really gotten to any
+big projects.
+
 # What we're up to next
+## anarcat
+
+ * Vacation! Mostly unavailable all of july, but will work
+   sporadically just to catchup, mostly around Stockholm. Will also be
+   available for emergencies in the last week of july.  Availabilities
+   in the Nextcloud calendar.
+ * Need to delegate bungei resize/space management (#31051) and
+   security updates. archive-01 will need some oversight, as I haven't
+   had time to make sure it behaves.
+ * Will keep on reading the PSNA book and come up with recommendations.
+
+## hiro
+
+ * more website mainteinance
+ * would like to finish setup this second monitoring server
+ * documentation updates about setting up new machines
+ * need to cleanup logging on dip
+ * need to figure out how to manage guest users and a possibly
+   anonymous shared account
+ * following up the migration discussion, but unsure if we're still on
+   the same goal as the three-year-old survey we did back then
+ * need to post july/august vacations
+
+## qbi
+
+Mostly traveling and on holidays in july and beginning of august
+
+## weasel
+
+Maybe july will finally see ganeti stuff, now that we have
+funding. Will be in Stockholm.
+
 # Holidays and availability
+
+We've reviewed the various holidays and made sure we don't have
+overlap so we have people available to respond to emergencies if they
+come up. We're not sure if the vacations should be announced in pili's
+"Vacation tracker" calendar or in weasel's "TPA" calendar.
+
 # Stockholm meeting prep
+
+We managed to get a full roadmapping day set aside for us. We can make
+a spreadsheet to brainstorm what we'll talk about or we can just do it
+ad-hoc on the first day.
+
+There's also a "Email or not email" session that we should attend,
+hosted by anarcat and gaba.
+
+Finally, anarcat can present our work to the "State of the onion"
+session on the first day.
+
 # Other discussions
+
+Weasel noted the meeting was a bit long, with lots of time spent
+waiting for people to comment or respond, and asked if we could speed
+it up by reducing that latency.
+
+Hiro also proposed to dump our "previous/next" sections in a pad
+*before* the meeting so we don't have to waste synchronized time to
+collectively write those up. This is how vegas proceeds and it's very
+effective, so we'll try that next time.
+
 # Next meeting
+
+August 5th, 1400UTC. We will try to make the meeting faster and
+prepare the first two points in a pad beforehand.
