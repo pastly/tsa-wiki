@@ -5,9 +5,15 @@ Caveats
 
  * Warning: upgrading(restarting) openvswitch will mean all guests lose network.
 
- * At least on kvm5, I had to reorder inet6 and inet4 stanzas in /etc/network/interfaces
-   for brpub to have an ipv6 address and route to the guest network after the
-   upgrade.
+ * At least on kvm5, brpub was having issues.  Either ipv4 or ipv6 address was missing,
+   or the v6 route to the guests was missing.  Probably because the ipv6 route
+   setting failed since we set a prefsrc and that was only brought up later?
+
+
+   Rewrote network/interfaces to set things up more manually.
+   On your host, check if brpub has both ipv4 and ipv6 addresses after boot before
+   launching VMs, and that is has an ipv6 route into brpub with the configured
+   prefsrc addr.  If not, fiddle likewise.
 
  * On physical hosts witch /etc/sysfs.d/local-io-schedulers.conf, note that 'deadline' no
    longer existsts.  Probably it is also not necessary as Linux might pick the right
