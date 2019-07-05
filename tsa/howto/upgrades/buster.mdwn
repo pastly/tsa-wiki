@@ -56,6 +56,7 @@ Procedure
         sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec.2
 
  6. Actual upgrade run:
+
         apt install -y dpkg apt &&
         apt install ferm &&
         apt dist-upgrade &&
