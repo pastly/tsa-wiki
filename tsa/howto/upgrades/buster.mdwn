@@ -44,7 +44,7 @@ Procedure
 
  3. Perform any pending upgrade and clear out old pins:
 
-        : Check for pinned (on hold) packages, and possibly disable &&
+        : Check for pinned, on hold, packages, and possibly disable &&
         rm -f /etc/apt/preferences /etc/apt/preferences.d/* &&
         rm -f /etc/apt/sources.list.d/testing.list &&
         rm -f /etc/apt/sources.list.d/stretch-backports.list &&
