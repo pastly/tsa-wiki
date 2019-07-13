@@ -41,7 +41,7 @@ which we'll use below.
 
  1. login to the server using the IP address and host key hash
     provided above:
- 
+
         ssh -o FingerprintHash=md5 -o UserKnownHostsFile=/dev/null root@159.69.63.226
 
     Note: the `FingerprintHash` parameter above is to make sure we
@@ -51,7 +51,7 @@ which we'll use below.
     might want to decode the base64 into the latter using this: The
     `UserKnownHostsFile` is to make sure we don't store the
     (temporary) SSH host key.
-    
+
         perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'
 
  2. Partition disks. This might vary wildly between hosts, but in
@@ -73,7 +73,7 @@ which we'll use below.
     will also configure grub, a root password and so on. This should
     get you started, assuming the formatted root disk is mounted on
     `/mnt`:
-        
+
         ROOTPASSWORD=\$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) \
         grml-debootstrap --grub /dev/sda --target /mnt \
             --hostname $hostname \--release buster \
@@ -86,18 +86,18 @@ which we'll use below.
  4. Once the bootstrapping is complete, you still need to make sure
     the system can boot as, the above doesn't (unfortunately)
     configure everything for you. First, fix the mountpoints:
-    
+
         editor /mnt/etc/fstab
 
     For example:
-    
+
         /dev/mapper/archive01-hdd       /       ext4    defaults,errors=remount-ro      0       1
         UUID=aef7c53c-ed2e-4b9e-b23a-b70a701a2dcb /boot ext4    defaults        0       2
-        /dev/mapper/archive01-swap      none    swap    defaults        0       0 
+        /dev/mapper/archive01-swap      none    swap    defaults        0       0
         proc           /proc        proc    defaults                      0   0
 
  5. Review the crypto configuration:
- 
+
         editor /mnt/etc/crypttab
 
  6. Do the same with the RAID configuration, probably with something like:
@@ -105,19 +105,19 @@ which we'll use below.
         chroot /mnt sh -c "/usr/share/mdadm/mkconf > /etc/mdadm/mdadm.conf"
 
  7. Review the network configuration:
- 
+
         editor /mnt/etc/network/interfaces
 
     An example safe configuration is:
-    
+
         iface lo inet loopback
-        
+
         allow-hotplug eth0
         iface eth0 inet dhcp
 
  8. Copy paste your key into the root's authorized keys, just to make
     sure you can login:
- 
+
         cat > /mnt/root/.ssh/authorized_keys
 
  9. If any of those latter things changed, you need to regenerate the
