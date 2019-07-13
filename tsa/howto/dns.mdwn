@@ -1,0 +1,92 @@
+[[!meta title="DNS procedures"]]
+
+How to
+======
+
+Most operations on DNS happens in the `admin/dns/domains` repository
+(`git@git-rw.torproject.org:admin/dns/domains`). Those zones contains
+the master copy of the zone files, stored as standard Bind zonefiles
+([RFC 1034](https://tools.ietf.org/html/rfc1034)).
+
+Tor's DNS support is fully authenticated with DNS, both to the outside
+world but also internally, where all TPO hosts use DNSSEC in their
+resolvers.
+
+Adding and editing a zone
+-------------------------
+
+A new zone or zone records can be added or modified to a zone in the
+`domains` git and a push. DNSSEC records are managed automatically by
+`manage-dnssec-keys` in the `dns/dns-helpers` git repository. through
+a cron job in the `dnsadm` user on the master DNS server (currently
+nevii).
+
+Serial numbers are managed automatically by the git repository hooks.
+
+Removing a zone
+---------------
+
+ * git grep the domain in the `tor-nagios` git repository
+ * remove the zone in the `dns/domains` git repo
+ * on nevii, remove the generated zonefiles and keys:
+
+       cd /srv/dns.torproject.org/var/keys/
+       mv generated/torproject.fr* OLD-generated/
+       mv keys/torproject.fr OLD-KEYS/
+
+DS records expiry and renewal
+-----------------------------
+
+A special case is the rotation of the `DNSKEY` / `DS` records. Those
+rotate about once every two years, and require manual operation on the
+registrar (currently <https://joker.com>). 
+
+A Nagios hook is in `/srv/dns.torproject.org/bin/dsa-check-and-extend-DS`, and
+basically wraps `manage-dnssec-keys` with some Nagios status codes. It
+will warn when the key is about to expire and extend it before it
+expires (while still flagging a critical warning in Nagios).
+
+To fix this error, you need to [visit joker.com](https://joker.com/) and authenticate
+with the password in `hosts-extra-info` in tor-passwords, along with
+the 2FA dance. Then:
+
+ 1. click on the gear next to the domain affected
+ 2. edit the DNSSEC section
+ 3. click "more" to add a record
+
+The new key should already be present in:
+
+    /srv/dns.torproject.org/var/keys/$DOMAIN/dsset
+
+It is in the format:
+
+    KEYTAG ALGO TYPE DIGEST
+
+For example:
+
+    torproject.net.  IN DS 53722 8 2 6d3d2be639594ffe34d4c5b9214fe5ddf81b8ee1c8505f5ec1a800dc4a809a91; Pub: 2019-05-25 17:40:08;  Act: 2019-05-25 17:40:08;  Inact: 2021-09-11 17:40:08;  Del: 2021-09-11 17:40:08;  Rev: 2021-08-12 17:40:08
+
+With the above, you would have the following in Joker:
+
+ * `alg`: 8
+ * `digest`: 6d3d2be639594ffe34d4c5b9214fe5ddf81b8ee1c8505f5ec1a800dc4a809a91
+ * `type`: 2
+ * `keytag`: 53722
+
+And click "save".
+
+After a little while, you should be able to check if the new DS record
+works on [DNSviz.net](http://dnsviz.net/), for example, the [DNSviz.net view of
+torproject.net](http://dnsviz.net/d/torproject.net/dnssec/) should be sane.
+
+Eventually, Nagios will complain about the old keys, and we can remove
+them. Make sure to remoce the *old* key, not the new key. Be careful
+because the web interface might sort the keys in an unexpected
+way. check the keytag and compare with the expiration specified in the
+`dsset` file.
+
+Note: this procedure could be automated by talking with the
+registrar's API, for example [Joker.com's DMAPI domain modification
+API](https://joker.com/faq/content/27/24/en/domain_modify.html) (see also [those docs](https://dmapi.joker.com/docs/DMAPI-ext.txt)). There are also proposals at the
+IETF to allow delegation from the parent zone to allow the child zone
+to perform those updates on its own.
