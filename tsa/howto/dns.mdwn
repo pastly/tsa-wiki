@@ -58,9 +58,9 @@ The new key should already be present in:
 
     /srv/dns.torproject.org/var/keys/$DOMAIN/dsset
 
-It is in the format:
+It is in the format (from [rfc4034](https://tools.ietf.org/html/rfc4034)):
 
-    KEYTAG ALGO TYPE DIGEST
+    domain IN DS keytag algo type digest
 
 For example:
 
