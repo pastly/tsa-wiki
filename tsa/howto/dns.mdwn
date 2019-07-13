@@ -5,12 +5,12 @@ How to
 
 Most operations on DNS happens in the `admin/dns/domains` repository
 (`git@git-rw.torproject.org:admin/dns/domains`). Those zones contains
-the master copy of the zone files, stored as standard Bind zonefiles
-([RFC 1034](https://tools.ietf.org/html/rfc1034)).
+the master copy of the zone files, stored as (mostly) standard Bind zonefiles
+([RFC 1034](https://tools.ietf.org/html/rfc1034)), but notably without a SOA.
 
-Tor's DNS support is fully authenticated with DNS, both to the outside
-world but also internally, where all TPO hosts use DNSSEC in their
-resolvers.
+Tor's DNS support is fully authenticated with DNSSEC, both to the
+outside world but also internally, where all TPO hosts use DNSSEC in
+their resolvers.
 
 Adding and editing a zone
 -------------------------
@@ -33,6 +33,15 @@ Removing a zone
        cd /srv/dns.torproject.org/var/keys/
        mv generated/torproject.fr* OLD-generated/
        mv keys/torproject.fr OLD-KEYS/
+ * remove the zone from the secondaries (Netnod and our own
+   servers). this means visiting the Netnod web interface for that
+   side, and Puppet
+   (`modules/bind/templates/named.conf.torproject-zones.erb`) for our
+   own
+ * the domains will probably be listed in other locations, grep Puppet
+   for Apache virtual hosts and email aliases
+ * the domains will also probably exist in the `letsencrypt-domains`
+   repository
 
 DS records expiry and renewal
 -----------------------------
