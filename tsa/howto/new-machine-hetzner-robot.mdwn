@@ -96,6 +96,10 @@ which we'll use below.
         /dev/mapper/archive01-swap      none    swap    defaults        0       0
         proc           /proc        proc    defaults                      0   0
 
+ 5. setup dropbear-initramfs to unlock the filesystem on boot. this
+    can be done with the `tor-install-luks-setup` in the `tsa-misc`
+    repository.
+
  5. Review the crypto configuration:
 
         editor /mnt/etc/crypttab
