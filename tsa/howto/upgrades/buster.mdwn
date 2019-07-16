@@ -84,6 +84,7 @@ Procedure
 
  7. Post-upgrade procedures:
 
+        apt-get update --allow-releaseinfo-change &&
         apt-mark manual git &&
         apt --purge autoremove &&
         apt purge $(for i in apt-transport-https dh-python emacs24-nox gnupg-agent libbind9-140 libcryptsetup4 libdns-export162 libdns162 libevent-2.0-5 libevtlog0 libgdbm3 libicu57 libisc-export160 libisc160 libisccc140 libisccfg140 liblvm2app2.2 liblvm2cmd2.02 liblwres141 libmpfr4 libncurses5 libperl5.24 libprocps6 libpython3.5 libpython3.5-minimal libpython3.5-stdlib libruby2.3 libssl1.0.2 libunbound2 libunistring0 python3-distutils python3-lib2to3 python3.5 python3.5-minimal ruby-nokogiri ruby-pkg-config ruby-rgen ruby-safe-yaml ruby2.3 sgml-base xml-core git-core gcc-6-base:amd64 nagios-plugins-basic perl-modules-5.24 libsensors4:amd64 grub2 iproute libncursesw5 libustr-1.0-1; do dpkg -l "$i" 2>/dev/null | grep -q '^ii' && echo "$i"; done) &&
@@ -154,6 +155,19 @@ Pending
  * The official list of [known issues][]
 
 [known issues]: https://www.debian.org/releases/buster/amd64/release-notes/ch-information.en.html
+
+Resolved
+--------
+
+ * `apt-get` complains like this after upgrade ([bug #929248](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=929248)):
+
+        E: Repository 'https://mirrors.wikimedia.org/debian buster InRelease' changed its 'Suite' value from 'testing' to 'stable'
+
+   the following workaround was added to the upgrade instructions,
+   above, but might be necessary on machines where this procedure was
+   followed before the note was added:
+
+        apt-get update --allow-releaseinfo-change
 
 References
 ==========
