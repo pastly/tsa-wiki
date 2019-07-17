@@ -13,7 +13,7 @@ updates are pushed to the repo on alberti, a hook will rebuild the keyring,
 rebuild the wkd directory tree, and push updates to the static mirrors.
 Note that only keys with `@torproject.org` UIDs are included.
 
-To build the tree, we currently use [Debian's script][debian-keyring].
+To build the tree, we currently use [Debian's][debian-keyring] [build-wkd script][debian-keyring-build-wkd].
 
 Key retrivals can be tested using gpg's wks client:
 
@@ -25,3 +25,4 @@ Key retrivals can be tested using gpg's wks client:
 
 [keyring]: ssh://git@git-rw.torproject.org/admin/account-keyring
 [debian-keyring]: https://salsa.debian.org/debian-keyring/keyring
+[debian-keyring-build-wkd]: https://salsa.debian.org/debian-keyring/keyring/blob/master/scripts/build-wkd
