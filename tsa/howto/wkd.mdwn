@@ -8,20 +8,19 @@ See https://wiki.gnupg.org/WKD for details from upstream.
 Torproject only implements key retrieval, which works using https GET
 requests, and not any of the update mechanisms.
 
-The directory is populated from the tor keyring[keyring].  When updates
-are pushed to the repo on alberti, a hook will rebuild the keyring,
+The directory is populated from the tor [account-keyring][keyring].  When
+updates are pushed to the repo on alberti, a hook will rebuild the keyring,
 rebuild the wkd directory tree, and push updates to the static mirrors.
 
-To build the tree, we currently use [debian-keyring][Debian's script].
+To build the tree, we currently use [Debian's script][debian-keyring].
 
 Key retrivals can be tested using gpg's wks client:
 
-
-  weasel@orinoco:~$ systemctl --user stop dirmngr.service
-  Warning: Stopping dirmngr.service, but it can still be activated by:
-    dirmngr.socket
-  weasel@orinoco:~$ /usr/lib/gnupg/gpg-wks-client --check al@torproject.org && echo yay || echo boo
-  yay
+    weasel@orinoco:~$ systemctl --user stop dirmngr.service
+    Warning: Stopping dirmngr.service, but it can still be activated by:
+      dirmngr.socket
+    weasel@orinoco:~$ /usr/lib/gnupg/gpg-wks-client --check al@torproject.org && echo yay || echo boo
+    yay
 
 [keyring]: ssh://git@git-rw.torproject.org/admin/account-keyring
 [debian-keyring]: https://salsa.debian.org/debian-keyring/keyring
