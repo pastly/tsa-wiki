@@ -1,0 +1,27 @@
+# Web Key Directory
+
+WKD is a protocol to ship PGP keys to users.  GnuPG implements it as of at
+least 2019.
+
+See https://wiki.gnupg.org/WKD for details from upstream.
+
+Torproject only implements key retrieval, which works using https GET
+requests, and not any of the update mechanisms.
+
+The directory is populated from the tor keyring[keyring].  When updates
+are pushed to the repo on alberti, a hook will rebuild the keyring,
+rebuild the wkd directory tree, and push updates to the static mirrors.
+
+To build the tree, we currently use [debian-keyring][Debian's script].
+
+Key retrivals can be tested using gpg's wks client:
+
+
+  weasel@orinoco:~$ systemctl --user stop dirmngr.service
+  Warning: Stopping dirmngr.service, but it can still be activated by:
+    dirmngr.socket
+  weasel@orinoco:~$ /usr/lib/gnupg/gpg-wks-client --check al@torproject.org && echo yay || echo boo
+  yay
+
+[keyring]: ssh://git@git-rw.torproject.org/admin/account-keyring
+[debian-keyring]: https://salsa.debian.org/debian-keyring/keyring
