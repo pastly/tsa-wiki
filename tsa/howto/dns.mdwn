@@ -63,7 +63,8 @@ the 2FA dance. Then:
  2. edit the DNSSEC section
  3. click "more" to add a record
 
-The new key should already be present in:
+The new key should already be present on the DNS master (currently
+`nevii`) in:
 
     /srv/dns.torproject.org/var/keys/$DOMAIN/dsset
 
