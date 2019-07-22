@@ -89,6 +89,9 @@ After a little while, you should be able to check if the new DS record
 works on [DNSviz.net](http://dnsviz.net/), for example, the [DNSviz.net view of
 torproject.net](http://dnsviz.net/d/torproject.net/dnssec/) should be sane.
 
+The changes will take a while (~10 hours?) to trickle out into all
+caches, so it might take a while for the Nagios check to return green.
+
 Eventually, Nagios will complain about the old keys, and we can remove
 them. Make sure to remoce the *old* key, not the new key. Be careful
 because the web interface might sort the keys in an unexpected
