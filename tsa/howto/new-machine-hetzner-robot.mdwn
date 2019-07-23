@@ -1,6 +1,8 @@
 How to install a new bare metal server at Hetzner
 =================================================
 
+This is for setting up physical metal at Hetzner.
+
 Order
 -----
 
@@ -69,48 +71,85 @@ which we'll use below.
     `tsa-misc` repository, which should be carefully checked and
     configured before running.
 
+    To get the scripts onto the host, you can clone them using
+     `git clone https://git.torproject.org/admin/tsa-misc`.
+
+    Check that the master hash matches what you expect
+     `(cd tsa-misc && git show-ref master)`.
+
  3. Install the system. This can be done with `grml-debootstrap` which
     will also configure grub, a root password and so on. This should
     get you started, assuming the formatted root disk is mounted on
-    `/mnt`:
+    `/target`:
+
+        # make target/run stay clean
+        mkdir /target/run && mount -t tmpfs tgt-run /target/run
+        # grml-debootstrap hangs for weasel in vgs without this:
+        mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev
 
         ROOTPASSWORD=\$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) \
-        grml-debootstrap --grub /dev/sda --target /mnt \
-            --hostname $hostname \--release buster \
+        echo -n "boot disk device: " && read bootdisk &&
+        sed -e 's/postfix//;
+                s/vlan//;
+                s/bridge-utils//;
+                s/ifenslave//;
+                s/resolvconf//;
+                s/zsh//;
+                s/strace//;
+                s/os-prober//;
+                s/bzip2//;
+                s/file//;
+                s/lsof//;
+                s/most//;
+                $adbus
+                $acryptsetup-initramfs
+                ' /etc/debootstrap/packages > /root/grml-packages
+        apt-get install -y grml-debootstrap && \
+        grml-debootstrap --grub "$bootdisk" --target /target \
+            --hostname `hostname` --release buster \
             --mirror https://mirror.hetzner.de/debian/packages/ \
+            --packages /root/grml-packages \
+            --password "$ROOTPASSWORD" \
             --remove-configs --defaultinterfaces
-
-    Note: last time this was ran, `udev` was not installed which led
-    to some problems, see [Debian #931235](https://bugs.debian.org/931235).
 
  4. Once the bootstrapping is complete, you still need to make sure
     the system can boot as, the above doesn't (unfortunately)
-    configure everything for you. First, fix the mountpoints:
+    configure everything for you. First, make a reasonable etc/fstab:
 
-        editor /mnt/etc/fstab
+        sed -e 's/^[[:space:]]*//' > /target/etc/fstab << EOF
+        /dev/$vg/root / ext4 errors=remount-ro 0 1
+        /dev/md/boot /boot ext4 defaults 0 2
 
-    For example:
-
-        /dev/mapper/archive01-hdd       /       ext4    defaults,errors=remount-ro      0       1
-        UUID=aef7c53c-ed2e-4b9e-b23a-b70a701a2dcb /boot ext4    defaults        0       2
-        /dev/mapper/archive01-swap      none    swap    defaults        0       0
-        proc           /proc        proc    defaults                      0   0
+        /dev/$vg/swap none swap sw 0 0
+        tmpfs /tmp tmpfs defaults,size=512m 0 0
+        EOF
 
  5. setup dropbear-initramfs to unlock the filesystem on boot. this
     can be done with the `tor-install-luks-setup` in the `tsa-misc`
     repository.
+    cd /target && bash /root/tsa-misc/scripts/tor-install-luks-setup
 
  5. Review the crypto configuration:
 
-        editor /mnt/etc/crypttab
+        cat /target/etc/crypttab
 
- 6. Do the same with the RAID configuration, probably with something like:
+ 6. mount the helper filesystems once more
 
-        chroot /mnt sh -c "/usr/share/mdadm/mkconf > /etc/mdadm/mdadm.conf"
+        for fs in dev proc run sys  ; do
+          mount -o bind /$fs "/target/$fs";
+        done
 
- 7. Review the network configuration:
+ 7. Do the same with the RAID configuration, probably with something like:
 
-        editor /mnt/etc/network/interfaces
+        chroot /target sh -c "/usr/share/mdadm/mkconf > /etc/mdadm/mdadm.conf"
+
+ 8. install grub on any secondary disk, for instance
+
+        chroot /target grub-install /dev/nvme1n1
+
+ 9. Review the network configuration:
+
+        cat /target/etc/network/interfaces
 
     An example safe configuration is:
 
@@ -119,26 +158,35 @@ which we'll use below.
         allow-hotplug eth0
         iface eth0 inet dhcp
 
- 8. Copy paste your key into the root's authorized keys, just to make
+ 10. Copy paste your key into the root's authorized keys, just to make
     sure you can login:
 
-        cat > /mnt/root/.ssh/authorized_keys
+        mkdir -p /target/root/.ssh/ &&
+        cp /root/.ssh/authorized_keys /target/root/.ssh/authorized_keys
 
- 9. If any of those latter things changed, you need to regenerate the
+ 11. If any of those latter things changed, you need to regenerate the
     initramfs:
 
-        for fs in dev proc run sys  ; do
-            mount -o bind /$fs /mnt/$fs
-        done
-        chroot /mnt update-initramfs -u
-        chroot /mnt update-grub
-        for fs in dev proc run sys  ; do
-            umount /mnt/$fs
-        done
+        chroot /target update-initramfs -u
+        chroot /target update-grub
 
- 10. Document the LUKS passphrase and root password in `tor-passwords`
+ 12. umount things
+        umount /target/run/udev
+        for fs in dev proc run sys  ; do
+            umount /target/$fs
+        done
+        umount /target/boot
+        cd / && umount /target
 
- 11. Cross fingers and reboot:
+ 13. close things
+
+        vgchange -a n
+        cryptsetup luksClose cpv_nvme
+        for i in /dev/md/*; do mdadm --stop $i; done
+
+ 14. Document the LUKS passphrase and root password in `tor-passwords`
+
+ 15. Cross fingers and reboot:
 
         reboot
 
