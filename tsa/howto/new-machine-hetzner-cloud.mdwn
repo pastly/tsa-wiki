@@ -41,17 +41,4 @@ Then
 
 To setup autoboot using mandos:
 
- 1. add a new key to the LUKS partition and prepare mandos snippet:
-
-        (DEVICE=/dev/sda2 &&
-         apt install -y haveged mandos-client &&
-         echo '--options-for=mandos-client:--connect=116.203.128.207:16283' >> /etc/mandos/plugin-runner.conf
-         umask 077 &&
-         t=`tempfile` &&
-         dd if=/dev/random bs=1 count=128 of="$t" &&
-         cryptsetup luksAddKey $DEVICE "$t" &&
-         mandos-keygen --passfile "$t"
-        )
-
- 1. add the output of `mandos-keygen` from above to `/etc/mandos/clients.conf` on the mandos-server and `service mandos restart` and `puppet agent -t` (to update the firewall after you added the host to ldap)
- 1. rebuild the initrd on the new host `update-initramfs -u` and reboot
+See [[new-machine-mandos]] for setting up the mandos client on this host.

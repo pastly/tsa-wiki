@@ -195,4 +195,5 @@ which we'll use below.
 Configuration
 -------------
 
-See [[new-machine]] for post-install configuration steps.
+See [[new-machine]] for post-install configuration steps, then
+follow [[new-machine-mandos]] for setting up the mandos client on this host.

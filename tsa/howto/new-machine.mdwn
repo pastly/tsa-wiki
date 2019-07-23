@@ -30,7 +30,8 @@ All commands to be run as root unless otherwise noted.
 
 * sanitize DNS configuration:
 
-        grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf
+        # grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf
+        grep torproject.org /etc/resolv.conf || ( echo 'domain torproject.org'; echo 'nameserver 8.8.8.8' ) > /etc/resolv.conf
         vi /etc/hosts # make sure the local host is there with both FQDN and just hostname
 
 * add to ldap on `alberti` using:
