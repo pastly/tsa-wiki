@@ -89,6 +89,7 @@ which we'll use below.
 
         ROOTPASSWORD=\$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) \
         echo -n "boot disk device: " && read bootdisk &&
+        apt-get install -y grml-debootstrap && \
         sed -e 's/postfix//;
                 s/vlan//;
                 s/bridge-utils//;
@@ -103,8 +104,7 @@ which we'll use below.
                 s/most//;
                 $adbus
                 $acryptsetup-initramfs
-                ' /etc/debootstrap/packages > /root/grml-packages
-        apt-get install -y grml-debootstrap && \
+                ' /etc/debootstrap/packages > /root/grml-packages &&
         grml-debootstrap --grub "$bootdisk" --target /target \
             --hostname `hostname` --release buster \
             --mirror https://mirror.hetzner.de/debian/packages/ \
