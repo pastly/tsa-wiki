@@ -36,6 +36,7 @@ continue with:
 
 Then
 
+ 1. Set the reverse DNS using hetzner's website.  It's in the networking section for each virtual server.  Set both ipv4 and ipv6 reverse entries.
  1. Document the LUKS passphrase and root password in tor-passwords,
  1. follow the rest of [[new-machine]].
 
