@@ -103,3 +103,9 @@ registrar's API, for example [Joker.com's DMAPI domain modification
 API](https://joker.com/faq/content/27/24/en/domain_modify.html) (see also [those docs](https://dmapi.joker.com/docs/DMAPI-ext.txt)). There are also proposals at the
 IETF to allow delegation from the parent zone to allow the child zone
 to perform those updates on its own.
+
+Further, puppet ships trust anchors for some of our zones to our unbounds.  If
+you updated the DS for one of those, update the corresponding file in
+`tsa-puppet/modules/unbound/files`.  Existing machines don't need that (since
+we do slow, RFC5011-style rolling of KSKs), but new instances will be sad if we
+ship them obsolete trust anchors.
