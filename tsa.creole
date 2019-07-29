@@ -8,7 +8,7 @@ It has mostly documentation mainly targeted for the team members, but
 may also have useful information for people with torproject.org
 accounts.
 
-To contact us, mail [[torproject-admin@torproject.org|mailto:torproject-admin@torproject.org]].
+To contact us, see, [[doc/how-to-get-help]].
 
 For a list of services and which servers they run on check
 [[ud-ldap|https://db.torproject.org/machines.cgi]].

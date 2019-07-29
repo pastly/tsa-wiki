@@ -1,0 +1,27 @@
+How to get help
+===============
+
+Quick question: IRC
+-------------------
+
+If you have "just a quick question" or some quick thing we can help
+you with, ask us on IRC: you can find us in `#tpo-admin` on
+`irc.oftc.net` and in other tor channels.
+
+It's possible we ask you to create a ticket if we're in a pinch. It's
+also a good way to bring your attention to some emergency or ticket
+that was filed elsewhere.
+
+Bug reports, feature requests and others: Trac
+----------------------------------------------
+
+Most requests and questions should go into [Trac](https://trac.torproject.org) ([direct link to
+a new ticket form](https://trac.torproject.org/projects/tor/newticket). Try to find the right component, but when in
+doubt, pick [Internal Services/Tor Sysadmin Team](https://trac.torproject.org/projects/tor/newticket?component=Internal+Services%2FTor+Sysadmin+Team).
+
+Private question and fallback: email
+------------------------------------
+
+If you want to discuss a sensitive matter that requires privacy or are
+unsure how to reach us, you can always write to us by email, at
+[torproject-admin@torproject.org](mailto:torproject-admin@torproject.org).
