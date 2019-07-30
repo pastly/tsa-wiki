@@ -25,3 +25,6 @@ also with full headers.
 
 If you can't send a copy of the original message for privacy reasons,
 at least include the headers of the email.
+
+Send us the message using the regular methods, as appropriate, see
+[[how-to-get-help]] for details.
