@@ -32,3 +32,11 @@ We did run the following on fsn-node-01:
       --no-node-setup \
       fsn-node-02.torproject.org
 
+## cluster config
+
+These could probably be merged into the cluster init, but just to document what has been done:
+
+    gnt-cluster modify -H kvm:kernel_path=,initrd_path=,
+    gnt-cluster modify -H kvm:security_model=pool
+    gnt-cluster modify --uid-pool 4000-4019
+    gnt-cluster modify --nic-parameters mode=openvswitch,link=br0,vlan=4000
