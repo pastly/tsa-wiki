@@ -121,22 +121,130 @@ A simple way of restoring a given client to a given point in time is
 to use the  option. So:
 
  1. enter `bconsole` in a shell on the director
- 2. call the `restore` command
+ 
+ 2. call the `restore` command:
+
+        *restore
+        Automatically selected Catalog: MyCatalog
+        Using Catalog "MyCatalog"
+        
+        First you select one or more JobIds that contain files
+        to be restored. You will be presented several methods
+        of specifying the JobIds. Then you will be allowed to
+        select which files from those JobIds are to be restored.
+
  3. you now have a list of possible ways of restoring, choose: `5:
-    Select the most recent backup for a client`
+    Select the most recent backup for a client`:
+
+        To select the JobIds, you have the following choices:
+             1: List last 20 Jobs run
+             2: List Jobs where a given File is saved
+             3: Enter list of comma separated JobIds to select
+             4: Enter SQL list command
+             5: Select the most recent backup for a client
+             6: Select backup for a client before a specified time
+             7: Enter a list of files to restore
+             8: Enter a list of files to restore before a specified time
+             9: Find the JobIds of the most recent backup for a client
+            10: Find the JobIds for a backup for a client before a specified time
+            11: Enter a list of directories to restore for found JobIds
+            12: Select full restore to a specified Job date
+            13: Cancel
+        Select item:  (1-13): 5
+
  4. you will see a list of machines, pick the machine you want to
-    restore from by entering its number
+    restore from by entering its number:
+
+        Defined Clients:
+             1: alberti.torproject.org-fd
+        [...]
+           117: yatei.torproject.org-fd
+        Select the Client (1-117): 87
+
  5. you now get dropped in a file browser where you use the `mark` and
     `unmark` commands to mark and unmark files for restore. the
     commands support wildcards like `*`. use `mark *` to mark all
     files in the current directory, see also the [full list of
-    commands](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html#SECTION0026130000000000000000). do not use the `estimate` command as it can take a
-    long time to run and will freeze the shell.
+    commands](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html#SECTION0026130000000000000000):
+
+        Automatically selected FileSet: Standard Set
+        +---------+-------+----------+-----------------+---------------------+----------------------------------------------------------+
+        | jobid   | level | jobfiles | jobbytes        | starttime           | volumename                                               |
+        +---------+-------+----------+-----------------+---------------------+----------------------------------------------------------+
+        | 106,348 | F     |  363,125 | 157,545,039,843 | 2019-07-16 09:42:43 | torproject-full-perdulce.torproject.org.2019-07-16_09:42 |
+        | 107,033 | D     |    9,136 |     691,803,964 | 2019-07-25 06:30:15 | torproject-diff-perdulce.torproject.org.2019-07-25_06:30 |
+        | 107,107 | I     |    4,244 |     214,271,791 | 2019-07-26 06:11:30 | torproject-inc-perdulce.torproject.org.2019-07-26_06:11  |
+        | 107,181 | I     |    4,285 |     197,548,921 | 2019-07-27 05:30:51 | torproject-inc-perdulce.torproject.org.2019-07-27_05:30  |
+        | 107,257 | I     |    4,273 |     197,739,452 | 2019-07-28 04:52:15 | torproject-inc-perdulce.torproject.org.2019-07-28_04:52  |
+        | 107,334 | I     |    4,302 |     218,259,369 | 2019-07-29 04:58:23 | torproject-inc-perdulce.torproject.org.2019-07-29_04:58  |
+        | 107,423 | I     |    4,400 |     287,819,534 | 2019-07-30 05:42:09 | torproject-inc-perdulce.torproject.org.2019-07-30_05:42  |
+        | 107,504 | I     |    4,278 |     413,289,422 | 2019-07-31 06:11:49 | torproject-inc-perdulce.torproject.org.2019-07-31_06:11  |
+        | 107,587 | I     |    4,401 |     700,613,429 | 2019-08-01 07:51:52 | torproject-inc-perdulce.torproject.org.2019-08-01_07:51  |
+        | 107,653 | I     |      471 |      63,370,161 | 2019-08-02 06:01:35 | torproject-inc-perdulce.torproject.org.2019-08-02_06:01  |
+        +---------+-------+----------+-----------------+---------------------+----------------------------------------------------------+
+        You have selected the following JobIds: 106348,107033,107107,107181,107257,107334,107423,107504,107587,107653
+
+        Building directory tree for JobId(s) 106348,107033,107107,107181,107257,107334,107423,107504,107587,107653 ...  mark etc
+        ++++++++++++++++++++++++++++++++++++++++++++++
+        335,060 files inserted into the tree.
+
+        You are now entering file selection mode where you add (mark) and
+        remove (unmark) files to be restored. No files are initially added, unless
+        you used the "all" keyword on the command line.
+        Enter "done" to leave this mode.
+
+        cwd is: /
+        $ mark etc
+        1,921 files marked.
+
+
+    Do **not** use the `estimate` command as it can take a long time
+    to run and will freeze the shell.
+
  6. when done selecting files, call the `done` command
+
+        $ done
+
  7. this will drop you in a confirmation dialog showing what will
     happen. note the `Where` parameter which shows where the files
     will be restored, on the `RestoreClient`. Make sure that location
     has enough space for the restore to complete.
+
+        Bootstrap records written to /var/lib/bacula/torproject-dir.restore.6.bsr
+
+        The Job will require the following (*=>InChanger):
+           Volume(s)                 Storage(s)                SD Device(s)
+        ===========================================================================
+           
+            torproject-full-perdulce.torproject.org.2019-07-16_09:42 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+            torproject-diff-perdulce.torproject.org.2019-07-25_06:30 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+            torproject-inc-perdulce.torproject.org.2019-07-26_06:11 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+            torproject-inc-perdulce.torproject.org.2019-07-27_05:30 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+            torproject-inc-perdulce.torproject.org.2019-07-29_04:58 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+            torproject-inc-perdulce.torproject.org.2019-07-31_06:11 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+            torproject-inc-perdulce.torproject.org.2019-08-01_07:51 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+            torproject-inc-perdulce.torproject.org.2019-08-02_06:01 File-perdulce.torproject.org FileStorage-perdulce.torproject.org
+
+        Volumes marked with "*" are in the Autochanger.
+
+
+        1,921 files selected to be restored.
+
+        Using Catalog "MyCatalog"
+        Run Restore job
+        JobName:         RestoreFiles
+        Bootstrap:       /var/lib/bacula/torproject-dir.restore.6.bsr
+        Where:           /var/tmp/bacula-restores
+        Replace:         Always
+        FileSet:         Standard Set
+        Backup Client:   perdulce.torproject.org-fd
+        Restore Client:  perdulce.torproject.org-fd
+        Storage:         File-perdulce.torproject.org
+        When:            2019-08-02 16:43:08
+        Catalog:         MyCatalog
+        Priority:        10
+        Plugin Options:  *None*
+
  8. this doesn't restore the backup immediately, but schedules a *job*
     that does so, like such:
     
@@ -145,15 +253,72 @@ to use the  option. So:
 
 You can see the status of the jobs on the director with the `status
 director`, but also see specifically the status of that job with
-`llist jobid=107693`. The `JobStatus` column is an internal database
-field that will show `T` ("terminated normally") when completed or `R`
-or `C` when still running or not started, and anything else if, well,
-anything else is happening. The full list of possible statuses is
-[hidden deep in the developer documentation](https://www.bacula.org/9.4.x-manuals/en/developers/Catalog_Services.html#SECTION001015000000000000000), obviously.
+`llist jobid=107693`:
+
+*llist JobId=107697
+           jobid: 107,697
+             job: RestoreFiles.2019-08-02_16.43.40_17
+            name: RestoreFiles
+     purgedfiles: 0
+            type: R
+           level: F
+        clientid: 9
+      clientname: dictyotum.torproject.org-fd
+       jobstatus: R
+       schedtime: 2019-08-02 16:43:08
+       starttime: 2019-08-02 16:43:42
+         endtime: 
+     realendtime: 
+        jobtdate: 1,564,764,222
+    volsessionid: 0
+  volsessiontime: 0
+        jobfiles: 0
+        jobbytes: 0
+       readbytes: 0
+       joberrors: 0
+ jobmissingfiles: 0
+          poolid: 0
+        poolname: 
+      priorjobid: 0
+       filesetid: 0
+         fileset: 
+         hasbase: 0
+        hascache: 0
+         comment: 
+
+The `JobStatus` column is an internal database field that will show
+`T` ("terminated normally") when completed or `R` or `C` when still
+running or not started, and anything else if, well, anything else is
+happening. The full list of possible statuses is [hidden deep in the
+developer documentation](https://www.bacula.org/9.4.x-manuals/en/developers/Catalog_Services.html#SECTION001015000000000000000), obviously.
 
 The `messages` command also provides for a good way of showing the
 latest status, although it will flood your terminal if it wasn't ran
 for a long time. You can hit "enter" to see if there are new messages.
+
+    *messages
+    [...]
+    02-Aug 16:43 torproject-sd JobId 107697: Ready to read from volume "torproject-inc-perdulce.torproject.org.2019-08-02_06:01" on File device "FileStorage-perdulce.torproject.org" (/srv/backups/bacula/perdulce.torproject.org).
+    02-Aug 16:43 torproject-sd JobId 107697: Forward spacing Volume "torproject-inc-perdulce.torproject.org.2019-08-02_06:01" to addr=328
+    02-Aug 16:43 torproject-sd JobId 107697: Elapsed time=00:00:03, Transfer rate=914.8 K Bytes/second
+    02-Aug 16:43 torproject-dir JobId 107697: Bacula torproject-dir 9.4.2 (04Feb19):
+      Build OS:               x86_64-pc-linux-gnu debian 9.7
+      JobId:                  107697
+      Job:                    RestoreFiles.2019-08-02_16.43.40_17
+      Restore Client:         dictyotum.torproject.org-fd
+      Where:                  /var/tmp/bacula-restores
+      Replace:                Always
+      Start time:             02-Aug-2019 16:43:42
+      End time:               02-Aug-2019 16:43:50
+      Elapsed time:           8 secs
+      Files Expected:         1,921
+      Files Restored:         1,921
+      Bytes Restored:         2,528,685 (2.528 MB)
+      Rate:                   316.1 KB/s
+      FD Errors:              0
+      FD termination status:  OK
+      SD termination status:  OK
+      Termination:            Restore OK
 
 Once the job is done, the files will be present in the chosen location
 (`Where`) on the given server (`RestoreClient`).
