@@ -1,0 +1,147 @@
+[[!meta title="Backup and restore procedures"]]
+
+Design
+======
+
+Backups are configured automatically by Puppet on all nodes, and use
+[Bacula](https://www.bacula.org/) with TLS encryption over the wire. 
+
+Backups are *pulled* from machines to the backup server, which means a
+compromise on a machine shouldn't allow an attacker to delete backups
+from the backup server.
+
+Bacula splits the different responsabilities of the backup system
+among multiple components, namely:
+
+ * storage daemon (`bacula::storage` in Puppet, currently `bungei`)
+ * director (`bacula::director` in Puppet, currently `dictyotum`)
+ * file daemon (`bacula::client`, on all nodes)
+
+<img src="https://www.bacula.org/9.4.x-manuals/en/images/bacula-applications.png" />
+
+See the [introductio to Bacula](https://www.bacula.org/9.4.x-manuals/en/main/What_is_Bacula.html#SECTION00220000000000000000) for more information on those
+distinctions.
+
+Basic commands
+==============
+
+Most work on Bacula happens on the **director**, which is where
+backups are coordinated. Actual data is stored on the **storage
+daemon**, but the director is where we can issue commands and
+everything. 
+
+All commands below are ran from the `bconsole` shell, which can be ran
+on the director with:
+
+```
+root@dictyotum:~# bconsole 
+Connecting to Director dictyotum.torproject.org:9101
+1000 OK: 103 torproject-dir Version: 9.4.2 (04 February 2019)
+Enter a period to cancel a command.
+*
+```
+
+Then you end up with a shell with `*` as a prompt where you can issue
+commands.
+
+## Last jobs
+
+To see the last jobs ran, you can check the status of the director:
+
+```
+*status director
+torproject-dir Version: 9.4.2 (04 February 2019) x86_64-pc-linux-gnu debian 9.7
+Daemon started 22-Jul-19 10:30, conf reloaded 23-Jul-2019 12:43:41
+ Jobs: run=868, running=1 mode=0,0
+ Heap: heap=7,536,640 smbytes=701,360 max_bytes=21,391,382 bufs=4,518 max_bufs=8,576
+ Res: njobs=74 nclients=72 nstores=73 npools=291 ncats=1 nfsets=2 nscheds=2
+
+Scheduled Jobs:
+Level          Type     Pri  Scheduled          Job Name           Volume
+===================================================================================
+Full           Backup    15  03-Aug-19 02:10    BackupCatalog      *unknown*
+====
+
+Running Jobs:
+Console connected using TLS at 02-Aug-19 15:41
+ JobId  Type Level     Files     Bytes  Name              Status
+======================================================================
+107689  Back Full          0         0  chiwui.torproject.org is waiting for its start time (02-Aug 19:32)
+====
+
+Terminated Jobs:
+ JobId  Level      Files    Bytes   Status   Finished        Name 
+====================================================================
+107680  Incr      51,879    2.408 G  OK       02-Aug-19 13:16 rouyi.torproject.org
+107682  Incr         355    361.2 M  OK       02-Aug-19 13:33 henryi.torproject.org
+107681  Diff      12,864    715.9 M  OK       02-Aug-19 13:34 pauli.torproject.org
+107683  Incr         274    30.78 M  OK       02-Aug-19 13:50 forrestii.torproject.org
+107684  Incr       3,423    2.398 G  OK       02-Aug-19 13:55 meronense.torproject.org
+107685  Incr         288    32.24 M  OK       02-Aug-19 14:12 nevii.torproject.org
+107686  Incr         341    69.64 M  OK       02-Aug-19 14:51 getulum.torproject.org
+107687  Incr         289    26.24 M  OK       02-Aug-19 15:11 dictyotum.torproject.org
+107688  Incr         376    57.62 M  OK       02-Aug-19 15:22 kvm5.torproject.org
+107690  Incr         238    20.88 M  OK       02-Aug-19 15:32 opacum.torproject.org
+
+====
+```
+
+Here we see that no backups are running, and the last ones succeeded correctly.
+
+You can also check the status of individual clients with `status
+client`.
+
+Restore procedures
+==================
+
+The `bconsole` program has a pretty good interactive restore mode
+which you can just call with `restore`. It needs to know which "jobs"
+you want to restore from. As a given backup job is typically an
+incremental job, you normally mean multiple jobs to restore to a given
+point in time.
+
+A simple way of restoring a given client to a given point in time is
+to use the  option. So:
+
+ 1. enter `bconsole` in a shell on the director
+ 2. call the `restore` command
+ 3. you now have a list of possible ways of restoring, choose: `5:
+    Select the most recent backup for a client`
+ 4. you will see a list of machines, pick the machine you want to
+    restore from by entering its number
+ 5. you now get dropped in a file browser where you use the `mark` and
+    `unmark` commands to mark and unmark files for restore. the
+    commands support wildcards like `*`. use `mark *` to mark all
+    files in the current directory, see also the [full list of
+    commands](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html#SECTION0026130000000000000000). do not use the `estimate` command as it can take a
+    long time to run and will freeze the shell.
+ 6. when done selecting files, call the `done` command
+ 7. this will drop you in a confirmation dialog showing what will
+    happen. note the `Where` parameter which shows where the files
+    will be restored, on the server running the `bconsole` command.
+ 8. this doesn't restore the backup immediately, but schedules a *job*
+    that does so, like such:
+    
+        OK to run? (yes/mod/no): yes
+        Job queued. JobId=107693
+
+You can see the status of the jobs on the director with the `status
+director`, but also see specifically the status of that job with
+`llist jobid=107693`. The `JobStatus` column is an internal database
+field that will show `T` ("terminated normally") when completed or `R`
+or `C` when still running or not started, and anything else if, well,
+anything else is happening. The full list of possible statuses is
+[hidden deep in the developer documentation](https://www.bacula.org/9.4.x-manuals/en/developers/Catalog_Services.html#SECTION001015000000000000000), obviously.
+
+Once the job is done, rsync the files over the right server. This
+requires the director to have enough space to host the files, of
+course.
+
+See the [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html) more information about the [restore
+command](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html).
+
+References
+==========
+
+ * [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/index.html)
+ * [bacula cheat sheet](https://workaround.org/bacula-cheatsheet/)
