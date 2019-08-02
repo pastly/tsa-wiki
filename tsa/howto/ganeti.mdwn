@@ -38,5 +38,8 @@ These could probably be merged into the cluster init, but just to document what 
 
     gnt-cluster modify -H kvm:kernel_path=,initrd_path=,
     gnt-cluster modify -H kvm:security_model=pool
+    gnt-cluster modify -H kvm:kvm_extra='-device virtio-rng-pci\,bus=pci.0\,addr=0x1e\,max-bytes=1024\,period=1000'
+    gnt-cluster modify -H kvm:disk_cache=none
     gnt-cluster modify --uid-pool 4000-4019
     gnt-cluster modify --nic-parameters mode=openvswitch,link=br0,vlan=4000
+    gnt-cluster modify -D drbd:c-plan-ahead=0,disk-custom='--c-plan-ahead 0'
