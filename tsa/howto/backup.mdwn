@@ -19,6 +19,9 @@ among multiple components, namely:
 
 <img src="https://www.bacula.org/9.4.x-manuals/en/images/bacula-applications.png" />
 
+In our configuration, the *Admin workstation*, *Database server*and
+*Backup server* are all on the same machine, the `bacula::director`.
+
 See the [introductio to Bacula](https://www.bacula.org/9.4.x-manuals/en/main/What_is_Bacula.html#SECTION00220000000000000000) for more information on those
 distinctions.
 
@@ -91,6 +94,15 @@ Here we see that no backups are running, and the last ones succeeded correctly.
 You can also check the status of individual clients with `status
 client`.
 
+Messages
+--------
+
+The `messages` command shows the latest messages on the
+`bconsole`. It's useful to run this command when you start your
+session as it will flush the (usually quite long) buffer of
+messages. That way the next time you call the command, you will only
+see the result of your latest jobs.
+
 Restore procedures
 ==================
 
@@ -99,6 +111,11 @@ which you can just call with `restore`. It needs to know which "jobs"
 you want to restore from. As a given backup job is typically an
 incremental job, you normally mean multiple jobs to restore to a given
 point in time.
+
+The first thing to know is that restores are done from the server to
+the client, ie. they are restored directly on the machine that is
+backed up. This means it can overwrite existing files and are
+therefore pretty powerful.
 
 A simple way of restoring a given client to a given point in time is
 to use the  option. So:
@@ -118,7 +135,8 @@ to use the  option. So:
  6. when done selecting files, call the `done` command
  7. this will drop you in a confirmation dialog showing what will
     happen. note the `Where` parameter which shows where the files
-    will be restored, on the server running the `bconsole` command.
+    will be restored, on the `RestoreClient`. Make sure that location
+    has enough space for the restore to complete.
  8. this doesn't restore the backup immediately, but schedules a *job*
     that does so, like such:
     
@@ -133,9 +151,12 @@ or `C` when still running or not started, and anything else if, well,
 anything else is happening. The full list of possible statuses is
 [hidden deep in the developer documentation](https://www.bacula.org/9.4.x-manuals/en/developers/Catalog_Services.html#SECTION001015000000000000000), obviously.
 
-Once the job is done, rsync the files over the right server. This
-requires the director to have enough space to host the files, of
-course.
+The `messages` command also provides for a good way of showing the
+latest status, although it will flood your terminal if it wasn't ran
+for a long time. You can hit "enter" to see if there are new messages.
+
+Once the job is done, the files will be present in the chosen location
+(`Where`) on the given server (`RestoreClient`).
 
 See the [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html) more information about the [restore
 command](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html).
@@ -144,4 +165,6 @@ References
 ==========
 
  * [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/index.html)
+ * [console command manual](https://www.bacula.org/9.4.x-manuals/en/console/Bacula_Console.html)
+ * [other bacula documentation](https://www.bacula.org/documentation/documentation/)
  * [bacula cheat sheet](https://workaround.org/bacula-cheatsheet/)
