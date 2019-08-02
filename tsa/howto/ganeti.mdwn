@@ -36,6 +36,7 @@ We did run the following on fsn-node-01:
 
 These could probably be merged into the cluster init, but just to document what has been done:
 
+    gnt-cluster modify --reserved-lvs vg_ganeti/root,vg_ganeti/swap
     gnt-cluster modify -H kvm:kernel_path=,initrd_path=,
     gnt-cluster modify -H kvm:security_model=pool
     gnt-cluster modify -H kvm:kvm_extra='-device virtio-rng-pci\,bus=pci.0\,addr=0x1e\,max-bytes=1024\,period=1000'
