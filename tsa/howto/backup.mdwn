@@ -106,6 +106,15 @@ see the result of your latest jobs.
 Restore procedures
 ==================
 
+Short version:
+
+    $ ssh -tt dictyotum.torproject.org bconsole
+    *restore
+
+... and follow instructions. Reminder: by default, backups are
+restored on the originating server. `llist jobid=N` and `messages` to
+follow progress.
+
 The `bconsole` program has a pretty good interactive restore mode
 which you can just call with `restore`. It needs to know which "jobs"
 you want to restore from. As a given backup job is typically an
