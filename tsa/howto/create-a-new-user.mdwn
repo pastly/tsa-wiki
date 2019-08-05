@@ -30,7 +30,7 @@ The short version is:
     FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567 &&
     NEW_USER=alice &&
     REQUESTOR=bob &&
-    gpg --export-options export-minimal --no-armor --export "$FINGERPRINT" > "${NEW_USER}-${FINGERPRINT}.gpg" && 
+    ./NEW "$NEW_USER" "$FINGERPRINT" && 
     git add "${NEW_USER}-${FINGERPRINT}.gpg" &&
     git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}" &&
     git push &&
