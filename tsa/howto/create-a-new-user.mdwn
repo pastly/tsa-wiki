@@ -82,6 +82,11 @@ LDAP write access.
      * the email forward is likely to be incorrect if the key has
        multiple email address as UIDs
 
+     * the user might already be present in the Postfix alias file
+       (`tor-puppet/modules/postfix/files/virtual`) - in that case,
+       use that email as the `Email forwarding address` if present and
+       remove it from Puppet
+
      * if the user is a "guest" (ie. it needs to have access only to a
        subset of machines), you should use the `-g` flag to
        `ud-useradd`. this will put the user in the `guest` group. it
