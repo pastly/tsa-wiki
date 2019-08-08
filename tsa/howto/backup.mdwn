@@ -1,5 +1,7 @@
 [[!meta title="Backup and restore procedures"]]
 
+[[!toc levels=3]]
+
 Design
 ======
 
