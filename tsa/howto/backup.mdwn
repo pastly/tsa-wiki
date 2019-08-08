@@ -46,8 +46,10 @@ this:
 That is a site-specific script which reads a config file in
 `/etc/dsa/pg-backup-file.conf` where the backup host is specified
 (currently `torbackup@bungei.torproject.org`). That command passes the
-WAL logs, which rotate at least every 6h (`archive_timeout`), onto the
-backup server, over SSH. On the backup server, the `command` is set to
+WAL logs onto the backup server, over SSH. A WAL file is shipped
+immediately when it is full (16MB of data by default) but no later
+than 6 hours (varies, see `archive_timeout` on each host) after it was
+first written to. On the backup server, the `command` is set to
 `debbackup-ssh-wrap` in the `authorized_keys` file and takes the
 `store-file pg` argument to write the file to the right location.
 
@@ -74,9 +76,16 @@ named using the template:
 
     main.BASE.bungei.torproject.org-20190804-214510-troodi.torproject.org-main-9.6-backup.tar.gz
 
+All of this works because SSH public keys and postgres credentials are
+passed around between servers. That is handled in the Puppet
+`postgresql` module for the most part, but some bits might still be
+configured manually on some servers.
+
 Backups are checked for freshness in Nagios using the
 `dsa-check-backuppg` plugin with its configuration stored in
-`/etc/dsa/postgresql-backup/dsa-check-backuppg.conf.d/`, per cluster.
+`/etc/dsa/postgresql-backup/dsa-check-backuppg.conf.d/`, per
+cluster. The Nagios plugin also takes care of expiring backups when
+they are healthy.
 
 Basic commands
 ==============
