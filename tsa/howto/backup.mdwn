@@ -36,31 +36,33 @@ all our servers.
 
 One mechanism we use is upstream's [Continuous Archiving and
 Point-in-Time Recovery (PITR)](https://www.postgresql.org/docs/9.3/continuous-archiving.html) which relies on postgres's
-"write-ahead log" (WAL) to write regular "snapshots" of the database
-to the backup host. This is configured in `postgresql.conf`, using a
-line like this:
+"write-ahead log" (WAL) to write regular "transaction logs" of the
+cluster to the backup host. (Think of transaction logs as incremental
+backups.) This is configured in `postgresql.conf`, using a line like
+this:
 
     archive_command = '/usr/local/bin/pg-backup-file main WAL %p'
 
 That is a site-specific script which reads a config file in
 `/etc/dsa/pg-backup-file.conf` where the backup host is specified
 (currently `torbackup@bungei.torproject.org`). That command passes the
-WAL logs, which rotate at most every 6h (`archive_timeout`), onto the
+WAL logs, which rotate at least every 6h (`archive_timeout`), onto the
 backup server, over SSH. On the backup server, the `command` is set to
 `debbackup-ssh-wrap` in the `authorized_keys` file and takes the
 `store-file pg` argument to write the file to the right location.
 
 WAL files are written to `/srv/backups/pg/$HOSTNAME` where `$HOSTNAME`
 (without `.torproject.org`). WAL files are prefixed with `main.WAL.`
-with a long unique string after,
+(where `main` is the cluster name) with a long unique string after,
 e.g. `main.WAL.00000001000000A40000007F`.
 
 For that system to work, we also need *full* backups to happen on a
 regular basis. This happens straight from the backup server (still
 `bungei`) which connects to the various postgres servers and runs a
-[pg_basebackup](https://manpages.debian.org/pg_basebackup) to get a complete snapshot of the database. This
-happens *weekly* in the wrapper `postgres-make-base-backups`, which is
-a wrapper (based on a Puppet `concat::fragment` template) that calls
+[pg_basebackup](https://manpages.debian.org/pg_basebackup) to get a complete snapshot of the cluster. This
+happens *weekly* (every 7 to 10 days) in the wrapper
+`postgres-make-base-backups`, which is a wrapper (based on a Puppet
+`concat::fragment` template) that calls
 `postgres-make-one-base-backup` for each postgres server.
 
 The base files are written to the same directory as WAL file and are
