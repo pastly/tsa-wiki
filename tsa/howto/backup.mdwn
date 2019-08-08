@@ -397,6 +397,75 @@ Once the job is done, the files will be present in the chosen location
 See the [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html) more information about the [restore
 command](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html).
 
+## PostgreSQL restore procedures
+
+This is an adaptation of the [official recovery procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY). 
+
+Here we'll assume the backup server has access to the server we'll
+restore files into. If not, you can do the following, on the backup
+server, assuming `$IP` is the IP of the client and `$HOSTKEY` is its
+hostkey (the `cat /etc/ssh/ssh_host_rsa_key.pub` on the client,
+below):
+
+    ssh-agent bash
+    ssh-add /etc/ssh/ssh_host_rsa_key
+    mkdir -p ~/.ssh
+    echo "$IP $HOSTKEY" >> ~/.ssh/known_hosts
+    cat /etc/ssh/ssh_host_rsa_key.pub
+
+And on the client, allow the server `$HOSTKEY` (the above `cat
+/etc/ssh/ssh_host_rsa_key.pub` on the backup server):
+
+    cat /etc/ssh/ssh_host_rsa_key.pub
+    echo "$HOSTKEY" >> /etc/ssh/userkeys/root
+
+Once the backup server has access to the client, we can transfer files
+over:
+
+    cd /srv/backups/pg
+    rsync -aP $CLIENT $CLIENT:restore
+
+Then, on the client, install the software, stop the server and move
+the template cluster out of the way:
+
+    apt install postgres rsync
+    service postgresql stop
+    mv /var/lib/postgresql/*/main{,.orig}
+    su -c 'mkdir -m 0700 /var/lib/postgresql/*/main' postgres
+
+We'll be restoring files in that directory.
+
+Make sure you run the SAME MAJOR VERSION of PostgreSQL than the
+backup! You cannot restore across versions. This might mean installing
+from backports or an older version of Debian.
+
+Then you need to find the right `BASE` file to restore from. Each
+`BASE` file has a timestamp in its filename, so just sorting them by
+name should be enough to find the latest one. Uncompress the `BASE`
+file in place:
+
+    cat ~/$CLIENT/main.BASE.bungei.torproject.org-20190805-145239-$CLIENT.torproject.org-main-9.6-backup.tar.gz | su -c 'tar -C /var/lib/postgresql/11/main -x -z -f -'
+
+(Use `pv` instead of `cat` for a progress bar with large backups.)
+
+Make sure the `pg_xlog` directory doesn't contain any files.
+
+From here on, you could start the server and it will resume from that
+`BASE` backup. Since those are ran less frequently, however, you will
+probably also want to restore transaction logs to get the most recent
+version of the database. 
+
+If you are restoring to the latest point in time, you can dump the WAL
+files in the `pg_xlog` directory:
+
+    cd ~/$CLIENT &&& tar -f -c main.WAL.* | su -c 'tar -f - -x -C /var/lib/postgresql/11/main/pg_xlog/' postgres 
+
+Then start the server and look at the logs to follow the recovery
+process:
+
+    service postgresql start
+    tail -f /var/log/postgresql/*
+
 References
 ==========
 
