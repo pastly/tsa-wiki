@@ -56,11 +56,13 @@ create this network with:
 
 Then we associate the new network to the default node group:
 
-    gnt-network connect --nic-parameters=link=br0,vlan=4000,mode=openvswitch fsn-node-01-network default
+    gnt-network connect --nic-parameters=link=br0,vlan=4000,mode=openvswitch example-network default
 
 The arguments to `--nic-parameters` come from the values configured in
 the cluster, above. The current values can be found with `gnt-cluster
 info`.
+
+TODO: create a private network.
 
 # Regular maintenance
 
@@ -76,6 +78,8 @@ vocabulary:
       --backend-parameters memory=2g,vcpus=2 \
       --net 0:ip=pool,network=gnt-fsn --no-name-check --no-ip-check \
       test01.torproject.org
+
+TODO: the above doesn't include the private network configuration.
 
 This configures the following:
 
@@ -94,6 +98,15 @@ To find the root password, run this on the node where the instance was created:
 Note that you need to use the `--node` parameter to pick on which
 machines you want the machine to end up, otherwise Ganeti will choose
 for you.`
+
+## Adding and removing addresses on instances
+
+Say you created an instance but forgot to assign a private IP. You can
+still do so with:
+
+    gnt-instance modify --net -1:add,ip=172.30.135.3,network=internal test01.torproject.org
+
+TODO: the internal network hasn't been created yet.
 
 ## Listing instances
 
