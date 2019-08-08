@@ -44,3 +44,64 @@ These could probably be merged into the cluster init, but just to document what 
     gnt-cluster modify --uid-pool 4000-4019
     gnt-cluster modify --nic-parameters mode=openvswitch,link=br0,vlan=4000
     gnt-cluster modify -D drbd:c-plan-ahead=0,disk-custom='--c-plan-ahead 0'
+
+### Network configuration
+
+IP allocation is managed by Ganeti through the `gnt-network(8)`
+system. Say we have `192.0.2.0/24` reserved for the cluster, with
+the host IP `192.0.2.100`` and the gateway on `192.0.2.1`. You will
+create this network with:
+
+    gnt-network add --network 192.0.2.0/24 --gateway 192.0.2.1 --network6 2001:db8::/32 --gateway6 fe80::1 example-network
+
+Then we associate the new network to the default node group:
+
+    gnt-network connect --nic-parameters=link=br0,vlan=4000,mode=openvswitch fsn-node-01-network default
+
+The arguments to `--nic-parameters` come from the values configured in
+the cluster, above. The current values can be found with `gnt-cluster
+info`.
+
+# Regular maintenance
+
+## Adding a new instance
+
+This command creates a new guest, or "instance" in Ganeti's
+vocabulary:
+
+    gnt-instance add \
+      -o debootstrap+buster \
+      -t drbd --no-wait-for-sync \
+      --disk 0:size=10G --disk 1:size=10G,vg=vg_ganeti_hdd --disk 2:size=1G,name=swap \
+      --backend-parameters memory=2g,vcpus=2 \
+      --net 0:ip=pool,network=gnt-fsn --no-name-check --no-ip-check \
+      test01.torproject.org
+
+This configures the following:
+
+ * redundant disks in a DRBD mirror, use `-t plain` for tests
+ * three partitions: one on the default VG (SSD), one on another (HDD)
+   and a swap file on the default VG, if you don't specify a swap device,
+   a 512MB swapfile is created in `/swapfile`
+ * 2GB of RAM with 2 virtual CPUs
+ * an IP allocated from the public gnt-fsn pool
+ * with the `test01.torproject.org` hostname
+
+To find the root password, run this on the node where the instance was created:
+
+    grep 'root password' $(ls -tr /var/log/ganeti/os/* | tail -1)
+
+Note that you need to use the `--node` parameter to pick on which
+machines you want the machine to end up, otherwise Ganeti will choose
+for you.`
+
+## Listing instances
+
+    gnt-instance list
+
+## Destroying an instance
+
+This totally deletes the instance, including all mirrors and
+everything, be very careful with it:
+
+    gnt-instance remove test01.torproject.org
