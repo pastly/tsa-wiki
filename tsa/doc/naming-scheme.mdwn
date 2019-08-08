@@ -13,12 +13,15 @@ but they should eventually point to one of those, generally
 `torproject.org`.
 
 All TPA-managed machines and services on those machines should be
-under `torproject.org`. The name of the individual machines is
-detailed below.
+under `torproject.org`. The naming scheme of the individual machines
+is detailed below. This is managed by TPA directly through
+[[howto/dns]].
 
 External services and machines *can* be hosted under
 `torproject.net`. In that case, the only association is a `CNAME` or
-`A` record pointing to the other machine.
+`A` record pointing to the other machine. To get such a record,
+contact TPA using the normal communication channels detailed in
+[[how-to-get-help]].
 
 Machine naming scheme
 =====================
