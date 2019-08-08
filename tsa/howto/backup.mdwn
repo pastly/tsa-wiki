@@ -419,6 +419,14 @@ And on the client, allow the server `$HOSTKEY` (the above `cat
     cat /etc/ssh/ssh_host_rsa_key.pub
     echo "$HOSTKEY" >> /etc/ssh/userkeys/root
 
+TODO: the above gives the backup server access to the client, but if
+we give access the *client* access to the backup server, we could
+avoid copying the WAL files altogether and instead use:
+
+    restore_command = '/usr/local/bin/pg-receive-file-from-backup $CLIENT main.WAL.%f %p'
+
+... to restore the WAL files.
+
 Once the backup server has access to the client, we can transfer files
 over:
 
@@ -465,6 +473,9 @@ process:
 
     service postgresql start
     tail -f /var/log/postgresql/*
+
+TODO: describe how to use a `restore.conf` file to restore
+transactions only to a certain point.
 
 References
 ==========
