@@ -31,7 +31,7 @@ The short version is:
     NEW_USER=alice &&
     REQUESTOR=bob &&
     ./NEW "$FINGERPRINT" "$NEW_USER" && 
-    git add "${NEW_USER}-${FINGERPRINT}.gpg" &&
+    git add torproject-keyring/"${NEW_USER}-${FINGERPRINT}.gpg" &&
     git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}" &&
     git push &&
     git push alberti &&
@@ -55,7 +55,7 @@ For example, your laptop.
         NEW_USER=alice
         REQUESTOR=bob
         ./NEW "$FINGERPRINT" "$NEW_USER" && 
-        git add "${NEW_USER}-${FINGERPRINT}.gpg" &&
+        git add torproject-keyring/"${NEW_USER}-${FINGERPRINT}.gpg" &&
         git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}"
 
   3. push to both repositories:
