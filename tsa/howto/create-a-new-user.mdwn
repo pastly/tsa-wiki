@@ -30,7 +30,7 @@ The short version is:
     FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567 &&
     NEW_USER=alice &&
     REQUESTOR=bob &&
-    ./NEW "$NEW_USER" "$FINGERPRINT" && 
+    ./NEW "$FINGERPRINT" "$NEW_USER" && 
     git add "${NEW_USER}-${FINGERPRINT}.gpg" &&
     git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}" &&
     git push &&
@@ -54,7 +54,7 @@ For example, your laptop.
          FINGERPRINT=0123456789ABCDEF0123456789ABCDEF01234567
         NEW_USER=alice
         REQUESTOR=bob
-        ./NEW "$NEW_USER" "$FINGERPRINT" && 
+        ./NEW "$FINGERPRINT" "$NEW_USER" && 
         git add "${NEW_USER}-${FINGERPRINT}.gpg" &&
         git commit -m"new user ${NEW_USER} requested by ${REQUESTOR}"
 
