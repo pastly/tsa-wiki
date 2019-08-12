@@ -1,6 +1,10 @@
 How to get help
 ===============
 
+Those instructions concern mostly internal Tor matters. For users of
+Tor software, you will be better served by visiting
+[support.torproject.org](https://support.torproject.org/) or [mailing lists](https://lists.torproject.org/).
+
 Quick question: IRC
 -------------------
 
