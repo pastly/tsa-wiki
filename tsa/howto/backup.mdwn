@@ -87,6 +87,23 @@ Backups are checked for freshness in Nagios using the
 cluster. The Nagios plugin also takes care of expiring backups when
 they are healthy.
 
+## MySQL backup system
+
+MySQL also requires special handling, and it's done in the
+`mariadb::server` Puppet class. It deploys a script (`backup-mysql`)
+which runs every hour and calls `mysqldump` to store plaintext copies
+of all databases in `/var/backups/local/mysql`.
+
+It also stores the SHA256 checksum of the backup file as a hardlink to
+the file, for example:
+
+    1184448 -rw-r----- 2 root    154820 aug 12 21:03 SHA256-665fac68c0537eda149b22445fb8bca1985ee96eb5f145019987bdf398be33e7
+    1184448 -rw-r----- 2 root    154820 aug 12 21:03 20190812-210301-mysql.xz
+
+Those both point to the same file, inode 1184448.
+
+Those backups then get included in the normal Bacula backups.
+
 Basic commands
 ==============
 
@@ -499,6 +516,18 @@ When the restore succeeds, the `recovery.conf` file will be renamed to
 
 Ignore the error from `cp` complaining about the `.history` file, it's
 harmless.
+
+## MySQL restore procedures
+
+MySQL restoration should be fairly straightforward. Install MySQL:
+
+    apt install mysql-server
+
+Load each database dump:
+
+    for dump in 20190812-220301-mysql.xz 20190812-220301-torcrm_prod.xz; do
+        mysql < /var/backups/local/mysql/$dump
+    done
 
 References
 ==========
