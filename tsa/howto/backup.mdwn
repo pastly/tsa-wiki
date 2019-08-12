@@ -431,7 +431,7 @@ Once the backup server has access to the client, we can transfer files
 over:
 
     cd /srv/backups/pg
-    rsync -aP $CLIENT $CLIENT:restore
+    rsync -aP $CLIENT $CLIENT:/var/lib/postgresql/restore
 
 Then, on the client, install the software, stop the server and move
 the template cluster out of the way:
@@ -452,21 +452,21 @@ Then you need to find the right `BASE` file to restore from. Each
 name should be enough to find the latest one. Uncompress the `BASE`
 file in place:
 
-    cat ~/$CLIENT/main.BASE.bungei.torproject.org-20190805-145239-$CLIENT.torproject.org-main-9.6-backup.tar.gz | su -c 'tar -C /var/lib/postgresql/11/main -x -z -f -'
+    cat ~postgres/restore/$CLIENT/main.BASE.bungei.torproject.org-20190805-145239-$CLIENT.torproject.org-main-9.6-backup.tar.gz | su -c 'tar -C /var/lib/postgresql/11/main -x -z -f -'
 
 (Use `pv` instead of `cat` for a progress bar with large backups.)
 
 Make sure the `pg_xlog` directory doesn't contain any files.
 
-From here on, you could start the server and it will resume from that
-`BASE` backup. Since those are ran less frequently, however, you will
-probably also want to restore transaction logs to get the most recent
-version of the database. 
+Then you need to create a `recovery.conf` file in
+`/var/lib/postgresql/9.6/main` that will tell postgres where to find
+the WAL files. At least the `restore_command` need to be
+specified. Something like this should work:
 
-If you are restoring to the latest point in time, you can dump the WAL
-files in the `pg_xlog` directory:
+    restore_command = 'cp /var/lib/postgresql/restore/subnotablie/main.WAL.%f %p'
 
-    cd ~/$CLIENT &&& tar -f -c main.WAL.* | su -c 'tar -f - -x -C /var/lib/postgresql/11/main/pg_xlog/' postgres 
+You can specify a specific recovery point in the `recovery.conf`, see
+the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for more information.
 
 Then start the server and look at the logs to follow the recovery
 process:
@@ -474,8 +474,31 @@ process:
     service postgresql start
     tail -f /var/log/postgresql/*
 
-TODO: describe how to use a `restore.conf` file to restore
-transactions only to a certain point.
+If you find the following error in the logs:
+
+    FATAL:  could not locate required checkpoint record
+
+It's because postgres cannot find the WAL logs to restore from. There
+could be many causes for this, but the ones I stumbled upon were:
+
+ * wrong location for `recovery.conf` (it's in `/var`, not `/etc`),
+   probably the case if you don't see an error from `cp`
+ * wrong permissions on the archive (put the WAL files in `~postgres`,
+   not `~root`)
+ * wrong path or pattern for `restore_command` (double-check the path
+   and make sure to include the right prefix, e.g. `main.WAL`)
+
+When the restore succeeds, the `recovery.conf` file will be renamed to
+`recovery.done` and you will see something like:
+
+    2019-08-12 21:36:53.453 UTC [16901] LOG:  selected new timeline ID: 2
+    2019-08-12 21:36:53.470 UTC [16901] LOG:  archive recovery complete
+    cp: cannot stat '/var/lib/postgresql/restore/subnotablie/main.WAL.00000001.history': No such file or directory
+    2019-08-12 21:36:53.577 UTC [16901] LOG:  MultiXact member wraparound protections are now enabled
+    2019-08-12 21:36:53.584 UTC [16900] LOG:  database system is ready to accept connections
+
+Ignore the error from `cp` complaining about the `.history` file, it's
+harmless.
 
 References
 ==========
