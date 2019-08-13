@@ -118,3 +118,10 @@ This totally deletes the instance, including all mirrors and
 everything, be very careful with it:
 
     gnt-instance remove test01.torproject.org
+
+## Disk operations (DRBD)
+
+Instances should be setup using the DRBD backend, in which case you
+should probably take a look at [[drbd]] if you have problems with
+that. Ganeti handles most of the logic there so that should generally
+not be necessary.

@@ -1,0 +1,53 @@
+[DRBD](http://drbd.org/) is basically "RAID over the network", the ability to
+replicate block devices over multiple machines. It's used extensively
+in our [[ganeti]] configuration to replicate virtual machines across
+multiple hosts.
+
+Common tasks
+============
+
+Checking status
+---------------
+
+Just like `mdadm`, there's a device in `/proc` which shows the status
+of the RAID configuration. This is a healthy configuration:
+
+    # cat /proc/drbd
+    version: 8.4.10 (api:1/proto:86-101)
+    srcversion: 9B4D87C5E865DF526864868 
+     0: cs:Connected ro:Secondary/Primary ds:UpToDate/UpToDate C r-----
+        ns:0 nr:10821208 dw:10821208 dr:0 al:8 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+     1: cs:Connected ro:Secondary/Primary ds:UpToDate/UpToDate C r-----
+        ns:0 nr:10485760 dw:10485760 dr:0 al:8 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+     2: cs:Connected ro:Secondary/Primary ds:UpToDate/UpToDate C r-----
+        ns:0 nr:1048580 dw:1048580 dr:0 al:8 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+
+Keyword: `UpToDate`. This is a configuration that is being resync'd:
+
+    version: 8.4.10 (api:1/proto:86-101)
+    srcversion: 9B4D87C5E865DF526864868 
+     0: cs:SyncTarget ro:Secondary/Primary ds:Inconsistent/UpToDate C r-----
+        ns:0 nr:9352840 dw:9352840 dr:0 al:8 bm:0 lo:1 pe:3 ua:0 ap:0 ep:1 wo:f oos:1468352
+    	[================>...] sync'ed: 86.1% (1432/10240)M
+    	finish: 0:00:36 speed: 40,436 (38,368) want: 61,440 K/sec
+     1: cs:SyncTarget ro:Secondary/Primary ds:Inconsistent/UpToDate C r-----
+        ns:0 nr:8439808 dw:8439808 dr:0 al:8 bm:0 lo:1 pe:3 ua:0 ap:0 ep:1 wo:f oos:2045952
+    	[===============>....] sync'ed: 80.6% (1996/10240)M
+    	finish: 0:00:52 speed: 39,056 (37,508) want: 61,440 K/sec
+     2: cs:Connected ro:Secondary/Primary ds:UpToDate/UpToDate C r-----
+        ns:0 nr:1048580 dw:1048580 dr:0 al:8 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+
+See [the upstream documentation](https://docs.linbit.com/docs/users-guide-8.3/p-work/) for details on this output.
+
+The [drbdmon](http://manpages.debian.org/drbdmon) command also provides a similar view but, in my
+opinion, less readable.
+
+Because DRBD is built with kernel modules, you can also see activity
+in the `dmesg` logs
+
+References
+==========
+
+ * [User guide](https://docs.linbit.com/docs/users-guide-8.3/)
+ * [upstream intro](https://docs.linbit.com/docs/users-guide-8.3/p-intro/)
+ * [troubleshooting](https://docs.linbit.com/docs/users-guide-8.3/p-work/#ch-troubleshooting)
