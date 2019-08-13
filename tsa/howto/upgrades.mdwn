@@ -42,6 +42,8 @@ host and make sure it comes back within a certain delay:
     date &&
     ping -c 10 -w 120 $HOST ; ssh $HOST uptime && echo "check uptime above"
 
+(Update: the above script is now in `tsa-misc/reboot-guest`.)
+
 If the host has an encrypted filesystem and is hooked up with Mandos, it
 will return automatically. Otherwise it might need a password to be
 entered at boot time, either through the initramfs (if it has the
@@ -65,6 +67,8 @@ reboot procedure will look something like this:
     echo "waiting up to 2 minutes for $HOST to come back" &&
     ping -c 10 -w 120 $HOST ; \
     ssh -tt root@$HOST tor-libvirt-luks-start
+
+(Update: the above script is now in `tsa-misc/reboot-host`.)
 
 If only the guests on the machine need a reboot, for example Nagios
 complains about `libvirt-qemu` processes, use the
