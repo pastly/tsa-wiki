@@ -343,36 +343,36 @@ You can see the status of the jobs on the director with the `status
 director`, but also see specifically the status of that job with
 `llist jobid=107693`:
 
-*llist JobId=107697
-           jobid: 107,697
-             job: RestoreFiles.2019-08-02_16.43.40_17
-            name: RestoreFiles
-     purgedfiles: 0
-            type: R
-           level: F
-        clientid: 9
-      clientname: dictyotum.torproject.org-fd
-       jobstatus: R
-       schedtime: 2019-08-02 16:43:08
-       starttime: 2019-08-02 16:43:42
-         endtime: 
-     realendtime: 
-        jobtdate: 1,564,764,222
-    volsessionid: 0
-  volsessiontime: 0
-        jobfiles: 0
-        jobbytes: 0
-       readbytes: 0
-       joberrors: 0
- jobmissingfiles: 0
-          poolid: 0
-        poolname: 
-      priorjobid: 0
-       filesetid: 0
-         fileset: 
-         hasbase: 0
-        hascache: 0
-         comment: 
+    *llist JobId=107697
+               jobid: 107,697
+                 job: RestoreFiles.2019-08-02_16.43.40_17
+                name: RestoreFiles
+         purgedfiles: 0
+                type: R
+               level: F
+            clientid: 9
+          clientname: dictyotum.torproject.org-fd
+           jobstatus: R
+           schedtime: 2019-08-02 16:43:08
+           starttime: 2019-08-02 16:43:42
+             endtime: 
+         realendtime: 
+            jobtdate: 1,564,764,222
+        volsessionid: 0
+      volsessiontime: 0
+            jobfiles: 0
+            jobbytes: 0
+           readbytes: 0
+           joberrors: 0
+     jobmissingfiles: 0
+              poolid: 0
+            poolname: 
+          priorjobid: 0
+           filesetid: 0
+             fileset: 
+             hasbase: 0
+            hascache: 0
+             comment:
 
 The `JobStatus` column is an internal database field that will show
 `T` ("terminated normally") when completed or `R` or `C` when still
