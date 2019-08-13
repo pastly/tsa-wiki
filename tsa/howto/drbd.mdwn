@@ -3,6 +3,19 @@ replicate block devices over multiple machines. It's used extensively
 in our [[ganeti]] configuration to replicate virtual machines across
 multiple hosts.
 
+Configuration
+=============
+
+The `ganeti` Puppet module takes care of basic DRBD configuration, by
+installing the right software (`drbd-utils`) and kernel
+modules. Everything else is handled automatically by Ganeti itself.
+
+There's a Nagios check for the DRBD service that ensures devices are
+synchronized. It will yield an `UNKNOWN` status when no device is
+created, so it's expected that new nodes are flagged until they host
+some content. The check is shipped as part of `tor-nagios-checks`, as
+`dsa-check-drbd`, see [dsa-check-drbd](https://gitweb.torproject.org/admin/tor-nagios.git/plain/tor-nagios-checks/checks/dsa-check-drbd).
+
 Common tasks
 ============
 
