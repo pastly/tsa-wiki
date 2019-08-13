@@ -129,7 +129,8 @@ which we'll use below.
  5. setup dropbear-initramfs to unlock the filesystem on boot. this
     can be done with the `tor-install-luks-setup` in the `tsa-misc`
     repository.
-    cd /target && bash /root/tsa-misc/scripts/tor-install-luks-setup
+
+        cd /target && bash /root/tsa-misc/installer/tor-install-luks-setup
 
  6. Review the crypto configuration:
 
