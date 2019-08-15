@@ -429,6 +429,10 @@ query:
 
 The currently known values are: `kvm`, `physical`, and `xenu`.
 
+As a bonus, this query will show the number of hosts running each os release:
+
+    SELECT COUNT(c.certname), value_string FROM factsets fs INNER JOIN facts f ON f.factset_id = fs.id INNER JOIN fact_values fv ON fv.id = f.fact_value_id INNER JOIN fact_paths fp ON fp.id = f.fact_path_id INNER JOIN certnames c ON c.certname = fs.certname WHERE fp.name = 'lsbdistcodename' AND c.deactivated IS NULL GROUP BY value_string;
+
 ### Other ways of extracting a host list
 
  * Using the [PuppetDB API][]:
@@ -445,6 +449,14 @@ The currently known values are: `kvm`, `physical`, and `xenu`.
    followed by the timestamp, space-separated:
 
         curl -s -G http://localhost:8080/pdb/query/v4/nodes  | jq -r 'sort_by(.report_timestamp) | .[] | "\(.certname) \(.report_timestamp)"' | column -s\  -t
+
+   This will list all hosts with the `roles::static_mirror` class:
+
+        curl -s -G http://localhost:8080/pdb/query/v4 --data-urlencode 'query=inventory[certname] { resources { type = "Class" and title = "Roles::Static_mirror" }} ' | jq .[].certname
+
+   This will show all hosts running Debian buster:
+
+        curl -s -G http://localhost:8080/pdb/query/v4 --data-urlencode 'query=nodes { facts { name = "lsbdistcodename" and value = "buster" }}' | jq .[].certname
 
  * Using [[cumin]]
 
