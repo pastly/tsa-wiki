@@ -1,0 +1,24 @@
+Agenda
+======
+
+ * Introductions
+ * Pointers for new peopple
+   * https://help.torproject.org/tsa/
+   * nagios https://nagios.torproject.org/cgi-bin/icinga/status.cgi?allunhandledproblems&sortobject=services
+   * open tickets https://trac.torproject.org/projects/tor/report/44
+   * git repos
+     * https://gitweb.torproject.org/admin
+     * ssh://pauli.torproject.org/srv/puppet.torproject.org/git/tor-puppet
+ * What we've been working on in Feb
+ * What's up for March
+ * Any other business
+   * the cymru hw
+ * Onboarding tasks
+   * trying to answer a gazillion questions from anarcat
+ * Next meeting is April 1, 16:00 UTC
+ * Ending meeting no later than 17:00 UTC
+
+Report
+======
+
+Posted on the [tor-project mailing list](https://lists.torproject.org/pipermail/tor-project/2019-March/002246.html).
