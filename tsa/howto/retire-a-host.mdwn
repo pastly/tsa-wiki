@@ -4,8 +4,8 @@
  2. if applicable, stop the VM: `virsh destroy $host`
  3. if applicable, undefine it: `virsh undefine $host`
  4. if applicable, remove the LVM logical volumes or virtual disk files
- 5. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any sudo passwords users might have configured for that host
- 6. if it has any associated records in tor-dns/domains or auto-dns, or upstream's reverse dns thing, remove it from there too
+ 5. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any `sudo` passwords users might have configured for that host
+ 6. if it has any associated records in `tor-dns/domains` or `auto-dns`, or upstream's reverse dns thing, remove it from there too
  7. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
  8. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up
  9. clean host from `tor-passwords`
