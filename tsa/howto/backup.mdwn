@@ -34,58 +34,8 @@ everywhere apart from a few rare exceptions (currently only CiviCRM)
 and therefore use postgres-specific configurations to do backups of
 all our servers.
 
-One mechanism we use is upstream's [Continuous Archiving and
-Point-in-Time Recovery (PITR)](https://www.postgresql.org/docs/9.3/continuous-archiving.html) which relies on postgres's
-"write-ahead log" (WAL) to write regular "transaction logs" of the
-cluster to the backup host. (Think of transaction logs as incremental
-backups.) This is configured in `postgresql.conf`, using a line like
-this:
-
-    archive_command = '/usr/local/bin/pg-backup-file main WAL %p'
-
-That is a site-specific script which reads a config file in
-`/etc/dsa/pg-backup-file.conf` where the backup host is specified
-(currently `torbackup@bungei.torproject.org`). That command passes the
-WAL logs onto the backup server, over SSH. A WAL file is shipped
-immediately when it is full (16MB of data by default) but no later
-than 6 hours (varies, see `archive_timeout` on each host) after it was
-first written to. On the backup server, the `command` is set to
-`debbackup-ssh-wrap` in the `authorized_keys` file and takes the
-`store-file pg` argument to write the file to the right location.
-
-WAL files are written to `/srv/backups/pg/$HOSTNAME` where `$HOSTNAME`
-(without `.torproject.org`). WAL files are prefixed with `main.WAL.`
-(where `main` is the cluster name) with a long unique string after,
-e.g. `main.WAL.00000001000000A40000007F`.
-
-For that system to work, we also need *full* backups to happen on a
-regular basis. This happens straight from the backup server (still
-`bungei`) which connects to the various postgres servers and runs a
-[pg_basebackup](https://manpages.debian.org/pg_basebackup) to get a complete snapshot of the cluster. This
-happens *weekly* (every 7 to 10 days) in the wrapper
-`postgres-make-base-backups`, which is a wrapper (based on a Puppet
-`concat::fragment` template) that calls
-`postgres-make-one-base-backup` for each postgres server.
-
-The base files are written to the same directory as WAL file and are
-named using the template:
-
-    $CLUSTER.BASE.$SERVER_FQDN-$DATE-$ID-$CLIENT_FQDN-$CLUSTER-$VERSION-backup.tar.gz
-
-... for example:
-
-    main.BASE.bungei.torproject.org-20190804-214510-troodi.torproject.org-main-9.6-backup.tar.gz
-
-All of this works because SSH public keys and postgres credentials are
-passed around between servers. That is handled in the Puppet
-`postgresql` module for the most part, but some bits might still be
-configured manually on some servers.
-
-Backups are checked for freshness in Nagios using the
-`dsa-check-backuppg` plugin with its configuration stored in
-`/etc/dsa/postgresql-backup/dsa-check-backuppg.conf.d/`, per
-cluster. The Nagios plugin also takes care of expiring backups when
-they are healthy.
+See [[postgresql]] for that server's specific backup/restore
+instructions.
 
 ## MySQL backup system
 
@@ -416,106 +366,7 @@ command](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html).
 
 ## PostgreSQL restore procedures
 
-This is an adaptation of the [official recovery procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY). 
-
-Here we'll assume the backup server has access to the server we'll
-restore files into. If not, you can do the following, on the backup
-server, assuming `$IP` is the IP of the client and `$HOSTKEY` is its
-hostkey (the `cat /etc/ssh/ssh_host_rsa_key.pub` on the client,
-below):
-
-    ssh-agent bash
-    ssh-add /etc/ssh/ssh_host_rsa_key
-    mkdir -p ~/.ssh
-    echo "$IP $HOSTKEY" >> ~/.ssh/known_hosts
-    cat /etc/ssh/ssh_host_rsa_key.pub
-
-And on the client, allow the server `$HOSTKEY` (the above `cat
-/etc/ssh/ssh_host_rsa_key.pub` on the backup server):
-
-    cat /etc/ssh/ssh_host_rsa_key.pub
-    echo "$HOSTKEY" >> /etc/ssh/userkeys/root
-
-TODO: the above gives the backup server access to the client, but if
-we give access the *client* access to the backup server, we could
-avoid copying the WAL files altogether and instead use:
-
-    restore_command = '/usr/local/bin/pg-receive-file-from-backup $CLIENT main.WAL.%f %p'
-
-... to restore the WAL files.
-
-Once the backup server has access to the client, we can transfer files
-over:
-
-    cd /srv/backups/pg
-    rsync -aP $CLIENT $CLIENT:/var/lib/postgresql/restore
-
-Then, on the client, install the software, stop the server and move
-the template cluster out of the way:
-
-    apt install postgres rsync
-    service postgresql stop
-    mv /var/lib/postgresql/*/main{,.orig}
-    su -c 'mkdir -m 0700 /var/lib/postgresql/*/main' postgres
-
-We'll be restoring files in that directory.
-
-Make sure you run the SAME MAJOR VERSION of PostgreSQL than the
-backup! You cannot restore across versions. This might mean installing
-from backports or an older version of Debian.
-
-Then you need to find the right `BASE` file to restore from. Each
-`BASE` file has a timestamp in its filename, so just sorting them by
-name should be enough to find the latest one. Uncompress the `BASE`
-file in place:
-
-    cat ~postgres/restore/$CLIENT/main.BASE.bungei.torproject.org-20190805-145239-$CLIENT.torproject.org-main-9.6-backup.tar.gz | su -c 'tar -C /var/lib/postgresql/11/main -x -z -f -'
-
-(Use `pv` instead of `cat` for a progress bar with large backups.)
-
-Make sure the `pg_xlog` directory doesn't contain any files.
-
-Then you need to create a `recovery.conf` file in
-`/var/lib/postgresql/9.6/main` that will tell postgres where to find
-the WAL files. At least the `restore_command` need to be
-specified. Something like this should work:
-
-    restore_command = 'cp /var/lib/postgresql/restore/subnotablie/main.WAL.%f %p'
-
-You can specify a specific recovery point in the `recovery.conf`, see
-the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for more information.
-
-Then start the server and look at the logs to follow the recovery
-process:
-
-    service postgresql start
-    tail -f /var/log/postgresql/*
-
-If you find the following error in the logs:
-
-    FATAL:  could not locate required checkpoint record
-
-It's because postgres cannot find the WAL logs to restore from. There
-could be many causes for this, but the ones I stumbled upon were:
-
- * wrong location for `recovery.conf` (it's in `/var`, not `/etc`),
-   probably the case if you don't see an error from `cp`
- * wrong permissions on the archive (put the WAL files in `~postgres`,
-   not `~root`)
- * wrong path or pattern for `restore_command` (double-check the path
-   and make sure to include the right prefix, e.g. `main.WAL`)
-
-When the restore succeeds, the `recovery.conf` file will be renamed to
-`recovery.done` and you will see something like:
-
-    2019-08-12 21:36:53.453 UTC [16901] LOG:  selected new timeline ID: 2
-    2019-08-12 21:36:53.470 UTC [16901] LOG:  archive recovery complete
-    cp: cannot stat '/var/lib/postgresql/restore/subnotablie/main.WAL.00000001.history': No such file or directory
-    2019-08-12 21:36:53.577 UTC [16901] LOG:  MultiXact member wraparound protections are now enabled
-    2019-08-12 21:36:53.584 UTC [16900] LOG:  database system is ready to accept connections
-
-Ignore the error from `cp` complaining about the `.history` file, it's
-harmless.
+See [[postgresql]] for restore instructions on PostgreSQL databases.
 
 ## MySQL restore procedures
 
