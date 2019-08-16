@@ -1,7 +1,42 @@
 [[!toc levels=3]]
 
+[PostgreSQL](https://www.postgresql.org/) is an advanced database server that is robust and
+fast, although possibly less well-known and popular than it's eternal
+rival in the free software world, MySQL.
+
+Tutorial
+========
+
+Those are quick reminders on easy things to do in a cluster.
+
+Connecting
+----------
+
+Our PostgreSQL setup is fairly standard so connecting to the database
+is like any other Debian machine:
+
+    sudo -u postres psql
+
+This drops you in a [psql shell](https://www.postgresql.org/docs/9.6/app-psql.html) where you can issue SQL queries
+and so on.
+
 Howto
 =====
+
+Deployment
+----------
+
+A PostgreSQL server should be deployed with puppet, using the
+`postgresql` module. Make sure you also include the
+`postgres::backup_source` class so that it's registered with the
+backup server, see the `dip::database` class for an example on how to
+deploy a server.
+
+See the [[puppet]] documentation for more information on how to deploy
+Puppet things.
+
+TODO: turn this in a Tutorial by making it more straightforward to
+deploy a cluster, for example just by including a single class.
 
 Find what is taking up space
 ----------------------------
@@ -204,4 +239,3 @@ Backups are checked for freshness in Nagios using the
 `/etc/dsa/postgresql-backup/dsa-check-backuppg.conf.d/`, per
 cluster. The Nagios plugin also takes care of expiring backups when
 they are healthy.
-
