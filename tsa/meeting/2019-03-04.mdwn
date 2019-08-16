@@ -22,3 +22,28 @@ Report
 ======
 
 Posted on the [tor-project mailing list](https://lists.torproject.org/pipermail/tor-project/2019-March/002246.html).
+
+What happened in feb
+--------------------
+
+ * roger: would like prios from team and people and project manage it
+ * ln5: upgrading stuff, gitlab setup, civicrm, ticketing
+ * hiro: website redesign, prometheus test (munin replacement)
+ * weasel: FDE on hetzner hosts, maybe with mandos
+ * qbi: website translation, trac fixing
+
+Anarcat Q&A
+-----------
+
+### Main pain points
+
+ 1. trac gets overwhelmed
+ 2. cymru doesn't do tech support well
+ 3. nobody knows when services stop working
+
+### Machine locations
+
+  1. cymru (one machine with multiple and one VM in their cluster)
+  2. hetzner
+  3. greenhost
+  4. linus' org (sunet.se)
