@@ -181,6 +181,12 @@ When the restore succeeds, the `recovery.conf` file will be renamed to
 Ignore the error from `cp` complaining about the `.history` file, it's
 harmless.
 
+Dealing with Nagios warnings
+----------------------------
+
+TODO: there's some information about backup handling in the [Debian
+DSA documentation](https://dsa.debian.org/howto/postgres-backup/).
+
 Reference
 =========
 
@@ -239,3 +245,12 @@ Backups are checked for freshness in Nagios using the
 `/etc/dsa/postgresql-backup/dsa-check-backuppg.conf.d/`, per
 cluster. The Nagios plugin also takes care of expiring backups when
 they are healthy.
+
+Other documentation
+-------------------
+
+See also:
+
+ * [PostgreSQL official documentation](https://www.postgresql.org/docs/manuals/)
+ * [PostgreSQL wiki](https://wiki.postgresql.org/wiki/Main_Page)
+ * [Debian DSA documentation](https://dsa.debian.org/howto/postgres-backup/)
