@@ -9,3 +9,5 @@
  7. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
  8. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up
  9. clean host from `tor-passwords`
+
+TODO: deal with backups, see <https://trac.torproject.org/projects/tor/ticket/30880>.
