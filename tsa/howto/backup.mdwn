@@ -16,7 +16,8 @@ Bacula splits the different responsabilities of the backup system
 among multiple components, namely:
 
  * storage daemon (`bacula::storage` in Puppet, currently `bungei`)
- * director (`bacula::director` in Puppet, currently `dictyotum`)
+ * director (`bacula::director` in Puppet, currently `dictyotum`,
+   PostgreSQL configured by hand)
  * file daemon (`bacula::client`, on all nodes)
 
 <img src="https://www.bacula.org/9.4.x-manuals/en/images/bacula-applications.png" />
@@ -363,6 +364,73 @@ Once the job is done, the files will be present in the chosen location
 
 See the [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html) more information about the [restore
 command](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html).
+
+## Director recovery procedure
+
+If the storage daemon disappears catastrophically, there's nothing we
+can do: the data is lost. But if the *director* disappears, we can
+still restore from backups. Those instructions should cover the case
+where we need to rebuild the director from backups.
+
+The director is, essentially, a PostgreSQL database. Therefore, the
+restore procedure is to restore that database, along with some
+configuration.
+
+The first step is therefore to run Puppet with the `bacula::director`
+class applied to the node. This should restore a basic Bacula
+configuration, along with all client jobs. This will not,
+unfortunately, configure the PostgreSQL server, which is configured by
+hand.
+
+TODO: Do consider deploying it with Puppet, as discussed in
+[[postgresql]].
+
+TODO: Document how to setup PostgreSQL by hand.
+
+Then you need to restore the actual database. This can be done by
+extracting the database file from the catalog backup. The catalog
+backup is on the storage server (currently `bungei`), in
+`/srv/backups/bacula/Catalog/`. You can find the latest file and list
+its contents with this oneliner:
+
+    bls $(ls /srv/backups/bacula/Catalog/* | tail -1)
+
+This is necessary because [bls](https://www.bacula.org/7.2.x-manuals/en/utility/Volume_Utility_Tools.html#115) only takes absolute paths. It should
+show something like this:
+
+    root@bungei:~# bls $(ls /srv/backups/bacula/Catalog/* | tail -1)
+    bls: butil.c:292-0 Using device: "/srv/backups/bacula/Catalog" for reading.
+    19-aoû 19:53 bls JobId 0: Ready to read from volume "torproject-catalog.2019-08-19_10:57" on File device "FileStorage-catalog" (/srv/backups/bacula/Catalog).
+    bls JobId 0: -rw-------   1 systemd- systemd-        14880261463 2019-08-19 10:57:32  /var/lib/bacula/bacula.sql.gz
+    19-aoû 19:53 bls JobId 0: End of Volume "torproject-catalog.2019-08-19_10:57" at addr=14891296413 on device "FileStorage-catalog" (/srv/backups/bacula/Catalog).
+    1 files found.
+
+You can then extract this entire "catalog" (which is really a
+compressed SQL dumped stored inside a Bacula-specific archive) using
+[bextract](https://www.bacula.org/7.2.x-manuals/en/utility/Volume_Utility_Tools.html#SECTION00260000000000000000):
+
+    bextract /srv/backups/bacula/Catalog/torproject-catalog.2019-08-19_10:57 /var/tmp/restore
+
+The second argument should be a previously-created directory where the
+file should be stored. You now have an SQL dump of the
+database. Create an actual database in postgres to restore the file
+into, if it doesn't already exist:
+
+    sudo -u postgres psql -c 'CREATE DATABASE bacula;'
+
+Finally, the database can be restored with this command.
+
+WARNING: that will *OVERWRITE* any existing Bacula catalog. Make sure
+you run this on the right machine!
+
+    gunzip -c /var/tmp/restore/var/lib/bacula/bacula.sql.gz | sudo -u postgres psql bacula
+
+Then everything should be fairies and magic and happiness all over
+again. Check that everything works with:
+
+    bconsole
+
+Run a few of the "Basic commands", above just to make sure.
 
 ## PostgreSQL restore procedures
 
