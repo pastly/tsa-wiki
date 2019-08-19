@@ -442,6 +442,18 @@ among multiple components, namely:
 In our configuration, the *Admin workstation*, *Database server*and
 *Backup server* are all on the same machine, the `bacula::director`.
 
+Volumes are stored in the storage daemon, in
+`/srv/backups/bacula/`. Each client stores its volumes in a separate
+directory, which makes it easier to purge offline clients and evaluate
+disk usage.
+
+We do not have a [bootstrap file](https://www.bacula.org/5.0.x-manuals/en/main/main/Bootstrap_File.html) as advised by the upstream
+documentation because we do not use tapes or tape libraries, which
+make it harder to find volumes. Instead, our catalog is backed up in
+`/srv/backups/bacula/Catalog` and each backup contains a single file,
+the compressed database dump, which is sufficient to re-bootstrap the
+director.
+
 See the [introductio to Bacula](https://www.bacula.org/9.4.x-manuals/en/main/What_is_Bacula.html#SECTION00220000000000000000) for more information on those
 distinctions.
 
