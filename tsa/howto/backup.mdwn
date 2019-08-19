@@ -328,7 +328,7 @@ Once the job is done, the files will be present in the chosen location
 See the [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html) more information about the [restore
 command](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html).
 
-Recover the directory server
+Restore the directory server
 ----------------------------
 
 If the storage daemon disappears catastrophically, there's nothing we
@@ -396,12 +396,12 @@ again. Check that everything works with:
 
 Run a few of the "Basic commands", above just to make sure.
 
-Recover PostgreSQL databases
+Restore PostgreSQL databases
 ----------------------------
 
 See [[postgresql]] for restore instructions on PostgreSQL databases.
 
-Recover MySQL databases
+Restore MySQL databases
 -----------------------
 
 MySQL restoration should be fairly straightforward. Install MySQL:
