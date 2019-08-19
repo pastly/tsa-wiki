@@ -340,6 +340,8 @@ The director is, essentially, a PostgreSQL database. Therefore, the
 restore procedure is to restore that database, along with some
 configuration.
 
+TODO: this procecure is untested.
+
 The first step is therefore to run Puppet with the `bacula::director`
 class applied to the node. This should restore a basic Bacula
 configuration, along with all client jobs. This will not,
