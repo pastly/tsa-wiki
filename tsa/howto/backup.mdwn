@@ -451,7 +451,7 @@ Load each database dump:
 References
 ==========
 
- * [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/index.html)
- * [console command manual](https://www.bacula.org/9.4.x-manuals/en/console/Bacula_Console.html)
+ * [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/index.html) (has formatting problems, the [PDF](https://www.bacula.org/9.4.x-manuals/en/main/main.pdf) looks better)
+ * [console command manual](https://www.bacula.org/9.4.x-manuals/en/console/Bacula_Console.html) ([PDF](http://www.bacula.org/9.4.x-manuals/en/console/console.pdf))
  * [other bacula documentation](https://www.bacula.org/documentation/documentation/)
  * [bacula cheat sheet](https://workaround.org/bacula-cheatsheet/)
