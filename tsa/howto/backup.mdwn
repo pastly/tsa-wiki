@@ -2,61 +2,8 @@
 
 [[!toc levels=3]]
 
-Design
-======
-
-Backups are configured automatically by Puppet on all nodes, and use
-[Bacula](https://www.bacula.org/) with TLS encryption over the wire. 
-
-Backups are *pulled* from machines to the backup server, which means a
-compromise on a machine shouldn't allow an attacker to delete backups
-from the backup server.
-
-Bacula splits the different responsabilities of the backup system
-among multiple components, namely:
-
- * storage daemon (`bacula::storage` in Puppet, currently `bungei`)
- * director (`bacula::director` in Puppet, currently `dictyotum`,
-   PostgreSQL configured by hand)
- * file daemon (`bacula::client`, on all nodes)
-
-<img src="https://www.bacula.org/9.4.x-manuals/en/images/bacula-applications.png" />
-
-In our configuration, the *Admin workstation*, *Database server*and
-*Backup server* are all on the same machine, the `bacula::director`.
-
-See the [introductio to Bacula](https://www.bacula.org/9.4.x-manuals/en/main/What_is_Bacula.html#SECTION00220000000000000000) for more information on those
-distinctions.
-
-## PostgreSQL backup system
-
-Database backups are handled specially. We use PostgreSQL (postgres)
-everywhere apart from a few rare exceptions (currently only CiviCRM)
-and therefore use postgres-specific configurations to do backups of
-all our servers.
-
-See [[postgresql]] for that server's specific backup/restore
-instructions.
-
-## MySQL backup system
-
-MySQL also requires special handling, and it's done in the
-`mariadb::server` Puppet class. It deploys a script (`backup-mysql`)
-which runs every hour and calls `mysqldump` to store plaintext copies
-of all databases in `/var/backups/local/mysql`.
-
-It also stores the SHA256 checksum of the backup file as a hardlink to
-the file, for example:
-
-    1184448 -rw-r----- 2 root    154820 aug 12 21:03 SHA256-665fac68c0537eda149b22445fb8bca1985ee96eb5f145019987bdf398be33e7
-    1184448 -rw-r----- 2 root    154820 aug 12 21:03 20190812-210301-mysql.xz
-
-Those both point to the same file, inode 1184448.
-
-Those backups then get included in the normal Bacula backups.
-
-Basic commands
-==============
+Tutorial
+========
 
 Most work on Bacula happens on the **director**, which is where
 backups are coordinated. Actual data is stored on the **storage
@@ -77,7 +24,7 @@ Enter a period to cancel a command.
 Then you end up with a shell with `*` as a prompt where you can issue
 commands.
 
-## Last jobs
+## Checking last jobs
 
 To see the last jobs ran, you can check the status of the director:
 
@@ -124,8 +71,8 @@ Here we see that no backups are running, and the last ones succeeded correctly.
 You can also check the status of individual clients with `status
 client`.
 
-Messages
---------
+Checking messages
+-----------------
 
 The `messages` command shows the latest messages on the
 `bconsole`. It's useful to run this command when you start your
@@ -133,8 +80,24 @@ session as it will flush the (usually quite long) buffer of
 messages. That way the next time you call the command, you will only
 see the result of your latest jobs.
 
-Restore procedures
-==================
+How to...
+==========
+
+This section is more in-depths and will explain more concepts as we
+go. Relax, take a deep breath, it should go fine.
+
+Configure backups on new machines
+---------------------------------
+
+Backups for new machines should be automatically configured by Puppet
+using the `bacula::client` class, included everywhere (through
+`hiera/common.yaml`).
+
+There are special configurations required for MySQL and PostgreSQL
+databases, see the design section for more information on those.
+
+Restore files
+-------------
 
 Short version:
 
@@ -365,7 +328,8 @@ Once the job is done, the files will be present in the chosen location
 See the [upstream manual](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html) more information about the [restore
 command](https://www.bacula.org/9.4.x-manuals/en/main/Restore_Command.html).
 
-## Director recovery procedure
+Recover the directory server
+----------------------------
 
 If the storage daemon disappears catastrophically, there's nothing we
 can do: the data is lost. But if the *director* disappears, we can
@@ -432,11 +396,13 @@ again. Check that everything works with:
 
 Run a few of the "Basic commands", above just to make sure.
 
-## PostgreSQL restore procedures
+Recover PostgreSQL databases
+----------------------------
 
 See [[postgresql]] for restore instructions on PostgreSQL databases.
 
-## MySQL restore procedures
+Recover MySQL databases
+-----------------------
 
 MySQL restoration should be fairly straightforward. Install MySQL:
 
@@ -447,6 +413,62 @@ Load each database dump:
     for dump in 20190812-220301-mysql.xz 20190812-220301-torcrm_prod.xz; do
         mysql < /var/backups/local/mysql/$dump
     done
+
+Design
+======
+
+This section documents how backups are setup at Tor. It should be
+useful if you wish to recreate or understand the architecture.
+
+Backups are configured automatically by Puppet on all nodes, and use
+[Bacula](https://www.bacula.org/) with TLS encryption over the wire. 
+
+Backups are *pulled* from machines to the backup server, which means a
+compromise on a machine shouldn't allow an attacker to delete backups
+from the backup server.
+
+Bacula splits the different responsabilities of the backup system
+among multiple components, namely:
+
+ * storage daemon (`bacula::storage` in Puppet, currently `bungei`)
+ * director (`bacula::director` in Puppet, currently `dictyotum`,
+   PostgreSQL configured by hand)
+ * file daemon (`bacula::client`, on all nodes)
+
+<img src="https://www.bacula.org/9.4.x-manuals/en/images/bacula-applications.png" />
+
+In our configuration, the *Admin workstation*, *Database server*and
+*Backup server* are all on the same machine, the `bacula::director`.
+
+See the [introductio to Bacula](https://www.bacula.org/9.4.x-manuals/en/main/What_is_Bacula.html#SECTION00220000000000000000) for more information on those
+distinctions.
+
+## PostgreSQL backup system
+
+Database backups are handled specially. We use PostgreSQL (postgres)
+everywhere apart from a few rare exceptions (currently only CiviCRM)
+and therefore use postgres-specific configurations to do backups of
+all our servers.
+
+See [[postgresql]] for that server's specific backup/restore
+instructions.
+
+## MySQL backup system
+
+MySQL also requires special handling, and it's done in the
+`mariadb::server` Puppet class. It deploys a script (`backup-mysql`)
+which runs every hour and calls `mysqldump` to store plaintext copies
+of all databases in `/var/backups/local/mysql`.
+
+It also stores the SHA256 checksum of the backup file as a hardlink to
+the file, for example:
+
+    1184448 -rw-r----- 2 root    154820 aug 12 21:03 SHA256-665fac68c0537eda149b22445fb8bca1985ee96eb5f145019987bdf398be33e7
+    1184448 -rw-r----- 2 root    154820 aug 12 21:03 20190812-210301-mysql.xz
+
+Those both point to the same file, inode 1184448.
+
+Those backups then get included in the normal Bacula backups.
 
 References
 ==========
