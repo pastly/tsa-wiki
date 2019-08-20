@@ -603,3 +603,19 @@ see why they do not work correctly (a common problem):
 
 Finally, some errors show up only on the Puppetmaster: you can look in
 `/var/log/daemon.log` there for errors that will only show up there.
+
+Connecting to the PuppetDB database itself can sometimes be easier
+than trying to operate the API. There you can inspect the entire thing
+as a normal SQL database, use this to connect:
+
+    sudo -u postgres psql puppetdb
+
+It's possible exported resources do surprising things sometimes. It is
+useful to look at the actual PuppetDB to figure out which tags
+exported resources have. For example, this query lists all exported
+resources with `troodi` in the name:
+
+    SELECT certname_id,type,title,file,line,tags FROM catalog_resources WHERE exported = 't' AND title LIKE '%troodi%';
+
+Keep in mind that there are [automatic tags](https://puppet.com/docs/puppet/6.4/lang_tags.html) in exported resources
+which can complicate things.
