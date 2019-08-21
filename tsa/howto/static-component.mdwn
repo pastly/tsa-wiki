@@ -24,3 +24,42 @@ Adding a new component
 
     The latter is done with [[cumin]], see also [[puppet]] for a way
     to do jobs on all hosts.
+
+ 4. add an Apache virtual host, by adding a line like this in
+    [[puppet]] to
+    `modules/roles/templates/static-mirroring/vhost/static-vhosts.erb`:
+
+        vhost(lines, 'onionperf.torproject.org')
+
+ 5. add an SSL service, by adding a line in [[puppet]] to
+    `modules/roles/manifests/static_mirror_web.pp`:
+
+        ssl::service { onionperf.torproject.org': ensure => 'ifstatic', notify  => Exec['service apache2 reload'], key => true, }
+
+ 6. add an onion service, by adding another `onion::service` line in
+    [[puppet]] to `modules/roles/manifests/static_mirror_onion.pp`:
+
+        onion::service {
+            [...]
+            'onionperf.torproject.org',
+            [...]
+        }
+
+ 4. consider creating a new role and group for the component if none
+    match its purpose, see [[create-a-new-user]] for details:
+    
+        ssh alberti.torproject.org ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
+
+ 5. if you created a new group, you will probably need to modify the
+    `sudoers` file to grant a user access to the role/group, see
+    `modules/sudo/files/sudoers` in the `tor-puppet` repository (and
+    [[puppet]] to learn about how to make changes to
+    Puppet). `onionperf` is a good example of how to create a
+    `sudoers` file. edit the file with `visudo` so it checks the
+    syntax:
+    
+        visudo -f modules/sudo/files/sudoers
+
+    This, for example, is the line that was added for `onionperf`:
+    
+        %torwww,%metrics		STATICMASTER=(mirroradm)	NOPASSWD: /usr/local/bin/static-master-update-component onionperf.torproject.org, /usr/local/bin/static-update-component onionperf.torproject.org
