@@ -16,7 +16,7 @@
  11. schedule a removal of the host's backup, on the backup server
      (currently `bungei`):
 
-        echo rm -rf /srv/backups/bacula/$host/ | at now + 30d
+        echo rm -rf /srv/backups/bacula/$host/ | at now + 30 days
 
 TODO: remove the client from the Bacula catalog, see <https://trac.torproject.org/projects/tor/ticket/30880>.
 
