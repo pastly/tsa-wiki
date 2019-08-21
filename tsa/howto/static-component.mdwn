@@ -14,8 +14,8 @@ Adding a new component
 
  2. create the directory on `staticiforme`:
  
-        ssh staticiforme "mkdir /srv/onionperf.torproject.org/htdocs/ \
-            && chown torwww:torwww /srv/onionperf.torproject.org/htdocs/"
+        ssh staticiforme "mkdir -p /srv/onionperf.torproject.org/htdocs/ \
+            && chown torwww:torwww /srv/onionperf.torproject.org/{,htdocs}"
 
  3. run Puppet on the master and mirrors:
  
