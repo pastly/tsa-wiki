@@ -1,13 +1,13 @@
-# Ganeti setup
+# Ganeti Cluster Operations
 
-## Prepare
+## Cluster Setup Preliminaries
 
 - Make sure all nodes have the same LVM setup and the same network setup.  They want openvswitch.  Cf. host `fsn-node-01`'s /etc/network/interfaces.
 
 - Prepare all the nodes by configuring them in puppet.  They should be in the class `roles::ganeti::fsn` if they
   are part of the fsn cluster.  If you make a new cluster, make a new role and add nodes.
 
-## New master
+## New Master
 
 To create the fsn master, we added fsngnt to DNS, then ran
 
@@ -64,7 +64,13 @@ info`.
 
 TODO: create a private network.
 
-# Regular maintenance
+## Listing instances and nodes
+
+    gnt-instance list
+    gnt-node list
+    watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
+
+# Instance Operations
 
 ## Adding a new instance
 
@@ -126,16 +132,20 @@ still do so with:
 
 TODO: the internal network hasn't been created yet.
 
-## Listing instances
-
-    gnt-instance list
-
 ## Destroying an instance
 
 This totally deletes the instance, including all mirrors and
 everything, be very careful with it:
 
     gnt-instance remove test01.torproject.org
+
+## Accessing serial console
+
+Our instances do serial console, starting in grub.  To access it, run
+
+    gnt-instance console test01.torproject.org
+
+To exit, use `^]` -- that is, Control-&lt;Closing Bracket&gt;.
 
 ## Disk operations (DRBD)
 
