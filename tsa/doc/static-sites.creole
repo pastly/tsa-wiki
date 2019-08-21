@@ -1,17 +1,17 @@
 [[!meta title="writing to www, extra, dist, cdn, and other websites"]]
 
-The `www.torproject.org` website is hosted at several computers for
+The https://www.torproject.org website is hosted at several computers for
 redundancy, and these computers are together called "the www
 rotation". The www rotation serves a variety of other websites too,
 like extra.tp.o, dist.tp.o, and more.
 
 How do you edit one of these websites? Let's say you want to edit `extra`.
 
-* First you ssh in to `staticiforme` (using an ssh jump host if needed
+* First you ssh in to {{{staticiforme}}} (using an ssh jump host if needed
   [[learn how to do a ssh jump host|ssh-jump-host]])
 
 * Then you make your edits as desired to
-  `/srv/extra-master.torproject.org/htdocs/`
+  {{{/srv/extra-master.torproject.org/htdocs/}}}
 
 * When you're ready, you run this command to sync your changes to the
   www rotation:
@@ -20,7 +20,8 @@ How do you edit one of these websites? Let's say you want to edit `extra`.
 sudo -u mirroradm static-update-component extra.torproject.org
 }}}
 
-Example: You want to copy image.png from your Desktop to your blog post indexed as "2017-01-01-new-blog-post"
+Example: You want to copy image.png from your Desktop to your blog
+post indexed as **2017-01-01-new-blog-post**:
 
 {{{
 scp /home/user/Desktop/image.png staticiforme.torproject.org:/srv/extra-master.torproject.org/htdocs/blog/2017-01-01-new-blog-post/
