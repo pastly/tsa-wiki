@@ -3,7 +3,10 @@
  1. remove the host from `tor-nagios/config/nagios-master.cfg`
  2. if applicable, stop the VM: `virsh destroy $host`
  3. if applicable, undefine it: `virsh undefine $host`
- 4. if applicable, remove the LVM logical volumes or virtual disk files
+ 4. if applicable, remove the LVM logical volumes or virtual disk
+    files, for a virtual host. for a normal machine or a machine we do
+    not own the parent host for, wipe the disks using the method
+    described below
  5. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any `sudo` passwords users might have configured for that host
  6. if it has any associated records in `tor-dns/domains` or `auto-dns`, or upstream's reverse dns thing, remove it from there too
  7. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
@@ -16,3 +19,57 @@
         echo rm -rf /srv/backups/bacula/$host/ | at now + 30d
 
 TODO: remove the client from the Bacula catalog, see <https://trac.torproject.org/projects/tor/ticket/30880>.
+
+## Wiping disks
+
+To wipe disks on servers without a serial console or management
+interface, you need to be a little more creative. If there's a RAID
+array, first wipe one of the disks by taking it offline and writing
+garbage:
+
+    mdadm --fail /dev/md0 /dev/sdb1 &&
+    mdadm --remove /dev/md0 /dev/sdb1 &&
+    mdadm --fail /dev/md1 /dev/sdb2 &&
+    mdadm --remove /dev/md1 /dev/sdb2 &&
+    : etc, for the other RAID elements (see /proc/mdstat) &&
+    badblocks -w -s -v -p 2 /dev/sdb
+
+This will take a long time. When you return:
+
+ 1. start a `screen` session with `busybox` as your `SHELL`
+
+        chsh -s /bin/busybox root
+        export SHELL=/bin/busybox
+        exec screen -s $SHELL
+
+ 2. kill all processes but the SSH daemon, your SSH connexion and
+    shell. this will vary from machine to machine, but a good way is
+    to list all processes with `systemctl status` and `systemctl stop`
+    the services one by one. Hint: multiple services can be passed on
+    the same `stop` command, for example:
+
+        systemctl stop acpid atd bacula-df bind9 cron ntp postfix prometheus-node-exporter prometheus-bind-exporter
+
+ 3. disable swap:
+
+        swapoff -a
+
+ 4. unmount everything that can be unmounted (except `/proc`):
+
+        umount -a
+
+ 5. remount everything else readonly:
+
+        mount -o remount,ro /
+
+ 6. sync disks:
+
+        sync
+
+ 7. wipe the remaining disk (note the dangerous `-f`):
+
+        badblocks -w -s -v -p 2 -f /dev/sda
+
+ 8. shut down the system:
+
+        echo o > /proc/sysrq-trigger
