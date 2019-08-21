@@ -6,9 +6,12 @@
  2. if applicable, stop the VM: `virsh destroy $host`, or at least
     stop the primary service on the machine
  3. if applicable, undefine the VM: `virsh undefine $host`
- 4. wipe host data:
+ 4. wipe host data, possibly with a delay:
   
-    * if applicable, remove the LVM logical volumes or virtual disk files
+    * if applicable, remove the LVM logical volumes or virtual disk
+      files:
+      
+          echo 'lvremove -y vgname/lvname' | at now + 7 days
 
     * for a normal machine or a machine we do not own the parent host
       for, wipe the disks using the method described below
@@ -44,8 +47,8 @@ This will take a long time. When you return:
 
  1. start a `screen` session with `busybox` as your `SHELL`
 
-        chsh -s /bin/busybox root
-        export SHELL=/bin/busybox
+        ln -s /bin/busybox /root/sh
+        export SHELL=/root/sh
         exec screen -s $SHELL
 
  2. kill all processes but the SSH daemon, your SSH connexion and
