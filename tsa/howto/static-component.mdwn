@@ -36,6 +36,9 @@ Adding a new component
 
         ssl::service { onionperf.torproject.org': ensure => 'ifstatic', notify  => Exec['service apache2 reload'], key => true, }
 
+    This also requires generating an X509 certificate, for which we use
+    Let's encrypt. See [[letsencrypt]] for details.
+
  6. add an onion service, by adding another `onion::service` line in
     [[puppet]] to `modules/roles/manifests/static_mirror_onion.pp`:
 
