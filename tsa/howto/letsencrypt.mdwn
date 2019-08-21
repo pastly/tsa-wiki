@@ -14,7 +14,7 @@ backup-keys.
     $EDIT domains		# add your domain name and optional SAN(s)
 	./bin/manage-backup-keys create   # see tor-passwords/000-backup-keys for the passphrase
 
-## Push they new key to the backup-keys repo
+## Push the new key to the backup-keys repo
 
     cd backup-keys
 	git status
