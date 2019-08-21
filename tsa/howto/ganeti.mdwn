@@ -103,9 +103,9 @@ This configures the following:
    of the instance, see below.
  * with the `test01.torproject.org` hostname
 
-To find the root password and the IPv6 address, run this on the node where the instance was created:
+To find the root password, ssh host key fingerprints, and the IPv6 address, run this on the node where the instance was created:
 
-    egrep 'root password|configured eth0 with' $(ls -tr /var/log/ganeti/os/* | tail -1)
+    egrep 'root password|configured eth0 with|SHA256' $(ls -tr /var/log/ganeti/os/* | tail -1)
 
 Note that you need to use the `--node` parameter to pick on which
 machines you want the machine to end up, otherwise Ganeti will choose
