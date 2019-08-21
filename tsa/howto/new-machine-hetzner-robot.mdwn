@@ -136,6 +136,8 @@ which we'll use below.
 
         cat /target/etc/crypttab
 
+    If the backing device is an SSD, add `,discard` after the luks option.
+
  7. mount the helper filesystems once more
 
         for fs in dev proc run sys  ; do
