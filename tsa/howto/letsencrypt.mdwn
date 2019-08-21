@@ -30,10 +30,16 @@ backup-keys.
 	git commit
 	git push
 
-- dehydrated is now being run on DNS master (nevii.tpo), see the
-  `letsencrypt` user and `/srv/letsencrypt`.
-- Resulting keys and certs are being copied to the LDAP host
-  (currently pauli.tpo) under
-  `/srv/puppet.torproject.org/from-letsencrypt/`, from where they're
-  being picked up by the host running the service somehow.
-- FIXME: and then what?
+The last command will produce output from the `dehydrated` command
+which talks with the DNS primary (currently `nevii`) to fetch new keys
+and update old ones. (This happens on `/srv/letsencrypt` on the DNS
+primary.)
+
+The new keys and certs are being copied to the LDAP host
+(currently `pauli`) under
+`/srv/puppet.torproject.org/from-letsencrypt/`. Then [[Puppet]] pick
+those up in the `ssl` module. Use the `ssl::service` resource to
+deploy them.
+
+See also [[static-component]] for an example of how to deploy an
+encrypted virtual host and onion service.
