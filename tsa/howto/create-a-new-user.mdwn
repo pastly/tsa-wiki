@@ -134,7 +134,7 @@ Here's how to create a role account:
 
 3. Create a new `group` role for the new account:
 
-   * Copy-paste a previous `gid` that is also a `debianRoleAccount`
+   * Copy-paste a previous `gid` that is also a `debianGroup`
    * Change the first word of the copy-pasted block to `add` instead
      of the integer
    * Bump the `gidNumber` to the latest `gidNumber` in the file plus
