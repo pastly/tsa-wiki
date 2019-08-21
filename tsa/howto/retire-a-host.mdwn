@@ -1,12 +1,18 @@
 # Decommissioning a host
 
+ 1. long before (weeks or months) the machine is decomissioned, make
+    sure users are aware it will go away and of its replacement services
  1. remove the host from `tor-nagios/config/nagios-master.cfg`
- 2. if applicable, stop the VM: `virsh destroy $host`
- 3. if applicable, undefine it: `virsh undefine $host`
- 4. if applicable, remove the LVM logical volumes or virtual disk
-    files, for a virtual host. for a normal machine or a machine we do
-    not own the parent host for, wipe the disks using the method
-    described below
+ 2. if applicable, stop the VM: `virsh destroy $host`, or at least
+    stop the primary service on the machine
+ 3. if applicable, undefine the VM: `virsh undefine $host`
+ 4. wipe host data:
+  
+    * if applicable, remove the LVM logical volumes or virtual disk files
+
+    * for a normal machine or a machine we do not own the parent host
+      for, wipe the disks using the method described below
+
  5. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any `sudo` passwords users might have configured for that host
  6. if it has any associated records in `tor-dns/domains` or `auto-dns`, or upstream's reverse dns thing, remove it from there too
  7. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
