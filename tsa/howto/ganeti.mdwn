@@ -74,30 +74,48 @@ vocabulary:
     gnt-instance add \
       -o debootstrap+buster \
       -t drbd --no-wait-for-sync \
-      --disk 0:size=10G --disk 1:size=10G,vg=vg_ganeti_hdd --disk 2:size=1G,name=swap \
+      --node fsn-node-01:fsn-node-02 \
+      --disk 0:size=10G \
+      --disk 1:size=10G,vg=vg_ganeti_hdd \
+      --disk 2:size=1G,name=swap \
       --backend-parameters memory=2g,vcpus=2 \
-      --net 0:ip=pool,network=gnt-fsn --no-name-check --no-ip-check \
+      --net 0:ip=pool,network=gnt-fsn \
+      --no-name-check \
+      --no-ip-check \
       test01.torproject.org
 
 TODO: the above doesn't include the private network configuration.
 
 This configures the following:
 
- * redundant disks in a DRBD mirror, use `-t plain` for tests
+ * redundant disks in a DRBD mirror, use `-t plain` instead of `-t drbd` for
+   tests as that avoids syncing of disks and will speed things up considerably
+   (even with `--no-wait-for-sync` there are some operations that block on
+   synced mirrors).  Only one node should be provided as the argument for
+   `--node` then.
  * three partitions: one on the default VG (SSD), one on another (HDD)
    and a swap file on the default VG, if you don't specify a swap device,
    a 512MB swapfile is created in `/swapfile`
  * 2GB of RAM with 2 virtual CPUs
- * an IP allocated from the public gnt-fsn pool
+ * an IP allocated from the public gnt-fsn pool:
+   `gnt-instance add` will print the IPv4 address it picked to stdout.  The
+   IPv6 address can be found in `/var/log/ganeti/os/` on the primary node
+   of the instance, see below.
  * with the `test01.torproject.org` hostname
 
-To find the root password, run this on the node where the instance was created:
+To find the root password and the IPv6 address, run this on the node where the instance was created:
 
-    grep 'root password' $(ls -tr /var/log/ganeti/os/* | tail -1)
+    egrep 'root password|configured eth0 with' $(ls -tr /var/log/ganeti/os/* | tail -1)
 
 Note that you need to use the `--node` parameter to pick on which
 machines you want the machine to end up, otherwise Ganeti will choose
 for you.`
+
+We copy root's authorized keys into the new instance, so you should be able to
+log in with your token.  You will be required to change the root password immediately.
+Pick something nice and document it in `tor-passwords`.
+
+Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.your-server.de/).
 
 ## Adding and removing addresses on instances
 
