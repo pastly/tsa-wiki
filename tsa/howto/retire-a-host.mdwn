@@ -27,6 +27,9 @@
 
         echo rm -rf /srv/backups/bacula/$host/ | at now + 30 days
 
+ 12. if it's a physical machine or a virtual host we don't control,
+     schedule removal from racks or hosts with upstream
+
 TODO: remove the client from the Bacula catalog, see <https://trac.torproject.org/projects/tor/ticket/30880>.
 
 ## Wiping disks
