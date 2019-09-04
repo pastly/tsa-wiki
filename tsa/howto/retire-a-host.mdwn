@@ -48,10 +48,13 @@ garbage:
 
 This will take a long time. When you return:
 
- 1. start a `screen` session with `busybox` as your `SHELL`
+ 1. start a `screen` session with a static `busybox` as your `SHELL`
+    that will survive disk wiping:
 
-        ln -s /bin/busybox /root/sh
-        export SHELL=/root/sh
+        mkdir /root/tmp
+        mount -t tmpfs tmpfs /root/tmp
+        cp /bin/busybox /root/tmp/sh
+        export SHELL=/root/tmp/sh
         exec screen -s $SHELL
 
  2. kill all processes but the SSH daemon, your SSH connexion and
