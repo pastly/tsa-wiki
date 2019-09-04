@@ -51,10 +51,11 @@ This will take a long time. When you return:
  1. start a `screen` session with a static `busybox` as your `SHELL`
     that will survive disk wiping:
 
-        mkdir /root/tmp
-        mount -t tmpfs tmpfs /root/tmp
-        cp /bin/busybox /root/tmp/sh
-        export SHELL=/root/tmp/sh
+        # make sure /tmp is on a tmpfs first!
+        cp -av /root /tmp/root
+        mount -o bind /tmp/root /root
+        cp /bin/busybox /tmp/root/sh
+        export SHELL=/tmp/root/sh
         exec screen -s $SHELL
 
  2. kill all processes but the SSH daemon, your SSH connexion and
