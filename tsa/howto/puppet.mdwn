@@ -425,10 +425,12 @@ This installs some basic libraries, system-wide (Ruby bundler and the
 rspec stuff). Unfortunately, required Ruby code is rarely all present
 in Debian and you still need to install extra gems. In this case we
 set it up within the `vendor/bundle` directory to isolate them from
-the global search path. This implies you need to tell that to Ruby
-when you run the tests, like so:
+the global search path.
+
+Finally, to run the tests, you need to wrap your invocation with
+`bundle exec`, like so:
     
-    env GEM_PATH="$(gem environment gempath):$PWD/vendor/bundle/ruby/2.5.0" rake test
+    bundle exec rake test
 
 ## Listing all hosts under puppet
 
