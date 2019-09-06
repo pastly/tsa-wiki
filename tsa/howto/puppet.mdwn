@@ -408,6 +408,28 @@ modules:
 This will *also* update dependencies so make sure you audit those
 changes before committing and pushing.
 
+## Running tests
+
+Ideally, Puppet modules have a test suite. This is done with
+[rspec-puppet](https://rspec-puppet.com/) and [rspec-puppet-facts](https://github.com/mcanevet/rspec-puppet-facts). This is not very well
+documented upstream, but it's apparently part of the [Puppet
+Development Kit](https://puppet.com/docs/pdk/1.x/pdk.html) (PDK). Anyways: assuming tests exists, you will
+want to run some tests before pushing your code upstream, or at least
+upstream might ask you for this before accepting your changes. Here's
+how to get setup:
+
+    sudo apt install ruby-rspec-puppet ruby-puppetlabs-spec-helper ruby-bundler
+    bundle install --path vendor/bundle
+
+This installs some basic libraries, system-wide (Ruby bundler and the
+rspec stuff). Unfortunately, required Ruby code is rarely all present
+in Debian and you still need to install extra gems. In this case we
+set it up within the `vendor/bundle` directory to isolate them from
+the global search path. This implies you need to tell that to Ruby
+when you run the tests, like so:
+    
+    env GEM_PATH="$(gem environment gempath):$PWD/vendor/bundle/ruby/2.5.0" rake test
+
 ## Listing all hosts under puppet
 
 This will list all active hosts known to the Puppet master:
