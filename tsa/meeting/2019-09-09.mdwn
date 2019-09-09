@@ -107,9 +107,11 @@ See also the discussion in <https://trac.torproject.org/projects/tor/ticket/3154
 
 The alternatives:
 
-a. Hosted on Tor Project infrastructure, operated by Tor Project.
-a. Hosted on Tor Project infrastructure, operated by Riseup.
-a. Hosted on Riseup infrastructure, operated by Riseup.
+A. Hosted on Tor Project infrastructure, operated by Tor Project.
+
+B. Hosted on Tor Project infrastructure, operated by Riseup.
+
+C. Hosted on Riseup infrastructure, operated by Riseup.
 
 We're good with B or C for now. We can't give them root so B would need to be running as UID != 0, but they prefer to handle the machine themselves, so we'll go with C for now.
 
