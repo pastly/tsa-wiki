@@ -1,0 +1,155 @@
+#!/usr/bin/python3
+
+import json
+import os
+import re
+import subprocess
+
+import requests
+
+PUPPET_HOST = "pauli.torproject.org"
+LDAP_HOST = "alberti.torproject.org"
+PROMETHEUS_API = "https://{HTTP_USER}:{HTTP_PASS}@prometheus.torproject.org/api/v1".format(**os.environ)  # noqa: E501
+
+
+def prom_query(query):
+    resp = requests.get(PROMETHEUS_API + "/query?query=" + query)
+    return float(resp.json()['data']['result'][0]['value'][1])
+
+
+def host_count_puppet():
+    puppetdb_data = subprocess.check_output(['ssh', PUPPET_HOST,
+                                             'curl -s -G "http://localhost:8080/pdb/query/v4/nodes"'])  # noqa: E501
+    return len(json.loads(puppetdb_data))
+
+
+def host_count_ldap():
+    ldap_data = subprocess.check_output(['ssh', LDAP_HOST,
+                                         'ldapsearch -ZZ -vLx -h db.torproject.org -b "ou=hosts,dc=torproject,dc=org" 2>/dev/null'])  # noqa: E501
+    return len(re.findall(r'^dn: host', ldap_data.decode('ascii'), re.M))
+
+
+def sizeof_fmt(num, suffix='B', units=None, power=None,
+               sep=' ', precision=2, sign=False):
+    """format the given size as a human-readable size"""
+    prefix = '+' if sign and num > 0 else ''
+
+    for unit in units[:-1]:
+        if abs(round(num, precision)) < power:
+            if isinstance(num, int):
+                return "{}{}{}{}{}".format(prefix, num, sep, unit, suffix)
+            else:
+                return "{}{:3.{}f}{}{}{}".format(prefix, num, precision,
+                                                 sep, unit, suffix)
+        num /= float(power)
+    return "{}{:.{}f}{}{}{}".format(prefix, num, precision,
+                                    sep, units[-1], suffix)
+
+
+def sizeof_fmt_iec(num, suffix='B', sep=' ', precision=2, sign=False):
+    return sizeof_fmt(num, suffix=suffix, power=1024,
+                      units=['', 'Ki', 'Mi', 'Gi', 'Ti',
+                             'Pi', 'Ei', 'Zi', 'Yi'],
+                      sep=sep, precision=precision, sign=sign)
+
+
+def sizeof_fmt_decimal(num, suffix='B', sep=' ', precision=2, sign=False):
+    """
+    # no rounding necessary for those
+    >>> sizeof_fmt_decimal(0)
+    '0 B'
+    >>> sizeof_fmt_decimal(1)
+    '1 B'
+    >>> sizeof_fmt_decimal(142)
+    '142 B'
+    >>> sizeof_fmt_decimal(999)
+    '999 B'
+    >>> # rounding starts here
+    >>> sizeof_fmt_decimal(1000)
+    '1.00 kB'
+    >>> # should be rounded away
+    >>> sizeof_fmt_decimal(1001)
+    '1.00 kB'
+    >>> # should be rounded down
+    >>> sizeof_fmt_decimal(1234)
+    '1.23 kB'
+    >>> # should be rounded up
+    >>> sizeof_fmt_decimal(1235)
+    '1.24 kB'
+    >>> # rounded down as well
+    >>> sizeof_fmt_decimal(1010)
+    '1.01 kB'
+    >>> # rounded down
+    >>> sizeof_fmt_decimal(999990000)
+    '999.99 MB'
+    >>> # rounded down
+    >>> sizeof_fmt_decimal(999990001)
+    '999.99 MB'
+    >>> # rounded up to next unit
+    >>> sizeof_fmt_decimal(999995000)
+    '1.00 GB'
+    >>> # and all the remaining units, megabytes
+    >>> sizeof_fmt_decimal(10**6)
+    '1.00 MB'
+    >>> # gigabytes
+    >>> sizeof_fmt_decimal(10**9)
+    '1.00 GB'
+    >>> # terabytes
+    >>> sizeof_fmt_decimal(10**12)
+    '1.00 TB'
+    >>> # petabytes
+    >>> sizeof_fmt_decimal(10**15)
+    '1.00 PB'
+    >>> # exabytes
+    >>> sizeof_fmt_decimal(10**18)
+    '1.00 EB'
+    >>> # zottabytes
+    >>> sizeof_fmt_decimal(10**21)
+    '1.00 ZB'
+    >>> # yottabytes
+    >>> sizeof_fmt_decimal(10**24)
+    '1.00 YB'
+    >>> # negative value
+    >>> sizeof_fmt_decimal(-1)
+    '-1 B'
+    >>> # negative value with rounding
+    >>> sizeof_fmt_decimal(-1010)
+    '-1.01 kB'
+    """
+    return sizeof_fmt(num, suffix=suffix, power=1000,
+                      units=['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+                      sep=sep, precision=precision, sign=sign)
+
+
+def main():
+    print(" * hosts in Puppet: %d, LDAP: %d, Prometheus exporters: %d" %
+          (host_count_puppet(),
+           host_count_ldap(),
+           prom_query('sum(up)')))
+
+    print(" * number of apache servers monitored: %d, hits per second: %d" %
+          (prom_query('count(apache_up)'),
+           # XXX: wtf vs http_requests_total
+           prom_query('sum(rate(apache_accesses_total[30d]))')))
+
+    print(" * number of self-hosted nameservers: %d, mail servers: %d" %
+          (prom_query('sum(bind_up)'),
+           prom_query('sum(postfix_up)')))
+
+    print(" * pending upgrades: %d, reboots: %d" %
+          (prom_query('sum(apt_upgrades_pending)'),
+           prom_query('sum(node_reboot_required)')))
+
+    print(" * average load: %0.2f, memory available: %s/%s, running processes: %d" %  # noqa: E501
+          (prom_query('avg(node_load15)'),
+           sizeof_fmt_iec(prom_query('sum(node_memory_MemFree_bytes)')),
+           sizeof_fmt_iec(prom_query('sum(node_memory_MemTotal_bytes)')),
+           prom_query('sum(node_procs_running)')))
+
+    print(" * bytes sent: %s/s, received: %s/s" %
+          (sizeof_fmt_decimal(prom_query('sum(rate(node_network_transmit_bytes_total[30d]))')),  # noqa: E501
+           sizeof_fmt_decimal(prom_query('sum(rate(node_network_receive_bytes_total[30d]))'))))  # noqa: E501
+
+
+if __name__ == '__main__':
+    main()

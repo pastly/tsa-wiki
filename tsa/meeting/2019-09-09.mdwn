@@ -184,3 +184,25 @@ plan.
 # Next meeting
 
 october 7th 1400UTC
+
+# Metrics of the month
+
+I figured I would bring back this tradition that Linus had going before
+I started doing the reports, but that I omitted because of lack of time
+and familiarity with the infrastructure. Now I'm a little more
+comfortable so I made a script in the wiki which polls numbers from
+various sources and makes a nice overview of what our infra looks
+like. Access and transfer rates are over the last 30 days.
+
+ * hosts in Puppet: 76, LDAP: 79, Prometheus exporters: 121
+ * number of apache servers monitored: 32, hits per second: 168
+ * number of self-hosted nameservers: 5, mail servers: 10
+ * pending upgrades: 0, reboots: 0
+ * average load: 0.56, memory available: 357.18 GiB/934.53 GiB, running processes: 441
+ * bytes sent: 126.79 MB/s, received: 96.13 MB/s
+
+Those metrics should be taken with a grain of salt: many of those might
+not mean what you think they do, and some others might be gross
+mischaracterizations as well. I hope to improve those reports as time
+goes on.
+
