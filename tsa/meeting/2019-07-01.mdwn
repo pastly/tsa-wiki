@@ -116,5 +116,5 @@ effective, so we'll try that next time.
 
 # Next meeting
 
-August 5th, 1400UTC (canceled, moved to [[september|2019-09-09]]. We will try to make the meeting faster and
+August 5th, 1400UTC (canceled, moved to [[september|2019-09-09]]). We will try to make the meeting faster and
 prepare the first two points in a pad beforehand.
