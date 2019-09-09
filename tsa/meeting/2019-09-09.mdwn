@@ -1,0 +1,124 @@
+[[!toc levels=2]]
+
+[[!toc levels=2]]
+
+# Roll call: who's there and emergencies
+# What has everyone been up to
+
+## anarcat
+
+### July
+
+ * catchup with Stockholm and tasks
+ * ipsec puppet module completion (should we publish it?)
+ * fixed civicrm tunneling issues, hopefully (#30912)
+ * published blog post with updates from the previous email: https://anarc.at/blog/2019-07-30-pgp-flooding-attacks/
+ * struggled with administrative/accounting stuff
+ * contacted greenhost about DNS: they have anycast DNS with an API, but not GeoDNS, what should we do?
+ * RT access granting and audit (#31249, #31248), various LDAP access tickets and cleaned up gettor group
+ * backup documentation https://help.torproject.org/tsa/howto/backup/ https://trac.torproject.org/projects/tor/ticket/30880
+ * tested bacula and postgresq restore procedures, specifically, you might want to get familiar with those before a catastrophe
+ * cleaned up services inventory (#31261) all in https://trac.torproject.org/projects/tor/wiki/org/operations/services now
+ * worked on getting ganeti into puppet with weasel
+
+### August
+
+ * on vacation the last week, it was awesome
+ * published a summary of the KNOB attack against Bluetooth (TL;DR: don't trust your BT keyboards) https://anarc.at/blog/2019-08-19-is-my-bluetooth-device-insecure/
+ * ganeti merge almost completed
+ * first part of the hiera transition completed, yaaaaay!
+ * tested a puppet validation hook (#31226) you should install it locally, but our codebase is maybe not ready to run this server-side
+ * retired labs.tpo (#24956)
+ * retired nova.tpo (#29888) and updated the host retirement docs, especially the hairy procedure where we don't have remote console to wipe disks
+
+## hiro - Collecting all my snippets here https://dip.torproject.org/users/hiro/snippets
+
+ * catchup with Stockholm discussions and future tasks
+ * fixed some prometheus puppet-fu
+ * some website dev and maintenance
+ * some blog fixes and updates
+ * gitlab updates and migration planning
+ * gettor service admin via ansible
+
+## weasel, for september, actually
+ * Finished doing ganeti stuff.  We have at least one VM now, see next point
+ * We have a loghost now, it's called loghost01.  There is a /var/log/hosts that has logs per host, and some /var/log/*all* files that contain log lines from all the hosts.  We don't do backups of this host's /var/log because it's big and all the data should be elsewhere anyway.
+ * started doing new onionoo infra, see #31659.
+ * debian point releases
+
+# What we're up to next
+
+## anarcat
+
+ * figure out the next steps in hiera refactoring (#30020)
+ * ops report card, see below (#30881)
+ * LDAP sudo transition plan (#6367)
+ * followup with snowflake + TPA? (#31232)
+ * send root@ emails to RT, and start using it more for more things? (#31242)
+ * followup with email services improvements (#30608)
+ * continue prometheus module merges
+ * followup on SVN decomissionning (#17202)
+
+## hiro
+ * on vacation first two weeks of August
+ * followup and planning for search.tp.o
+ * websites and gettor taks
+ * more prometheus and puppet
+ * review services documentation
+ * monitor anti-censorship services
+ * followup with gettor tasks
+ * followup with greenhost
+
+## weasel
+ * want to restructure how we do web content distribution:
+    Right now, we rsync the static content to ~5-7 nodes that directly offer http to users and/or serve as backends for fastly.
+    The big number of rsync targets makes updating somewhat slow at times (since we want to switch to the new version atomicly).
+    I'd like to change that to ship all static content to 2, maybe 3, hosts.
+    These machines would not be accessed directly by users but would serve as backends for a) fastly, and b) our own varnish/haproxy frontends.
+ * split onionoo backends (that run the java stuff) from frontends (that run haproxy/varnish).  The backends might also want to run a
+   varnish.  Also, retire the stunnel and start doing ipsec between frontends and backends.
+   (that's already started, cf. #31659)
+ * start moving VMs to gnt-fsn
+
+## ln5
+
+  * help deciding things about a tor nextcloud instance
+  * help getting such a tor nextcloud instance up and running
+  * help migrating data from the nc instance at riseup into a tor instance
+  * help migrating data from storm into a tor instance
+
+# Answering the 'ops report card'
+
+See https://trac.torproject.org/projects/tor/ticket/30881
+
+anarcat introduced the project and gave a heads up that this might mean more ticket and organizational changes. for example, we don't define "what's an emergency" and "what's supported" clearly enough. anarcat will use this process as a prioritization tool as well.
+
+# Email next steps
+
+Brought up "the plan" to Vegas: https://trac.torproject.org/projects/tor/wiki/org/meetings/2019Stockholm/Notes/EmailNotEmail
+
+Response was: why don't we just give everyone LDAP accounts? Everyone has PGP...
+
+We're still uncomfortable with deploying the new email service but that was agreed upon in Stockholm. We don't see a problem with granting more people LDAP access, provided vegas or others can provide support and onboarding.
+
+# Do we want to run Nextcloud?
+
+See also the discussion in https://trac.torproject.org/projects/tor/ticket/31540
+
+The alternatives:
+
+a. Hosted on Tor Project infrastructure, operated by Tor Project.
+b. Hosted on Tor Project infrastructure, operated by Riseup.
+c. Hosted on Riseup infrastructure, operated by Riseup.
+
+We're good with B or C for now. We can't give them root so B would need to be running as UID != 0, but they prefer to handle the machine themselves, so we'll go with C for now.
+
+# Other discussions
+
+weasel played with prom/grafana to diagnose onionoo stuff, and found interesting things. Wonders if we can hookup varnish, anarcat will investigate yet.
+
+we don't want to keep storm running if we switch to nextcloud, make a plan.
+
+# Next meeting
+
+october 7th 1400UTC
