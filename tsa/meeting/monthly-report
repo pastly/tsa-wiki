@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+'''rough textual overview of resource usage on everything'''
+
 import argparse
 import json
 import os
@@ -8,12 +10,48 @@ import subprocess
 
 import requests
 
+__epilog__ = '''
+This script will connect to LDAP, PuppetDB and Prometheus to extract
+some metrics aimed at communicating general information about all our
+machines, in a monthly report. It's part of the "record monthly
+metrics" suggestion from Thomas Limoncelli in his Ops report card
+questionnaire, section 3.
+
+Make sure to provide HTTP_USER and HTTP_PASS through the environment
+to connect to the Prometheus server. The Puppet and LDAP servers are
+reached by first jumping to them over SSH and running queries
+locally.
+
+The output of this script should be valid markdown. It should also
+append to a CSV file to profile variations in over time, but that has
+not been implemented yet.'''
+
+# Missing metrics from the questionnaire, how many...
+#
+# sysadmins?
+# users?
+# CPU cores?
+# open tickets?
+# closed ticket in the last month?
+# tickets processed per sysadmin?
+# SLA metrics fulfilled?
+# backup disk usage?
+# overall disk usage?
+# nagios green?
+# metrics counts?
+#
+# This would obviously be better as a Grafana Dashboard, but this was
+# whipped up quickly for a monthly report.
+
 
 def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--puppet', default="pauli.torproject.org")
-    parser.add_argument('--ldap', default="alberti.torproject.org")
-    parser.add_argument('--prometheus', default="https://{HTTP_USER}:{HTTP_PASS}@prometheus.torproject.org/api/v1")  # noqa: E501
+    parser = argparse.ArgumentParser(description=__doc__, epilog=__epilog__)
+    parser.add_argument('--puppet', default="pauli.torproject.org",
+                        help='PuppetDB server hostname, default %(default)s')
+    parser.add_argument('--ldap', default="alberti.torproject.org",
+                        help='LDAP server hostname, default %(default)s')
+    parser.add_argument('--prometheus', default="https://{HTTP_USER}:{HTTP_PASS}@prometheus.torproject.org/api/v1",  # noqa: E501
+                        help='Prometheus API endpoint, default %(default)s')
     args = parser.parse_args()
     args.prometheus = args.prometheus.format(HTTP_USER=os.environ.get('HTTP_USER', ''),  # noqa: E501
                                              HTTP_PASS=os.environ.get('HTTP_PASS', ''))  # noqa: E501
