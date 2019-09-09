@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import json
 import os
 import re
@@ -7,24 +8,32 @@ import subprocess
 
 import requests
 
-PUPPET_HOST = "pauli.torproject.org"
-LDAP_HOST = "alberti.torproject.org"
-PROMETHEUS_API = "https://{HTTP_USER}:{HTTP_PASS}@prometheus.torproject.org/api/v1".format(**os.environ)  # noqa: E501
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--puppet', default="pauli.torproject.org")
+    parser.add_argument('--ldap', default="alberti.torproject.org")
+    parser.add_argument('--prometheus', default="https://{HTTP_USER}:{HTTP_PASS}@prometheus.torproject.org/api/v1")  # noqa: E501
+    args = parser.parse_args()
+    args.prometheus = args.prometheus.format(HTTP_USER=os.environ.get('HTTP_USER', ''),  # noqa: E501
+                                             HTTP_PASS=os.environ.get('HTTP_PASS', ''))  # noqa: E501
+    return args
 
 
-def prom_query(query):
-    resp = requests.get(PROMETHEUS_API + "/query?query=" + query)
+def prom_query(args, query):
+    resp = requests.get(args.prometheus + "/query?query=" + query)
+    resp.raise_for_status()
     return float(resp.json()['data']['result'][0]['value'][1])
 
 
-def host_count_puppet():
-    puppetdb_data = subprocess.check_output(['ssh', PUPPET_HOST,
+def host_count_puppet(args):
+    puppetdb_data = subprocess.check_output(['ssh', args.puppet,
                                              'curl -s -G "http://localhost:8080/pdb/query/v4/nodes"'])  # noqa: E501
     return len(json.loads(puppetdb_data))
 
 
-def host_count_ldap():
-    ldap_data = subprocess.check_output(['ssh', LDAP_HOST,
+def host_count_ldap(args):
+    ldap_data = subprocess.check_output(['ssh', args.ldap,
                                          'ldapsearch -ZZ -vLx -h db.torproject.org -b "ou=hosts,dc=torproject,dc=org" 2>/dev/null'])  # noqa: E501
     return len(re.findall(r'^dn: host', ldap_data.decode('ascii'), re.M))
 
@@ -122,33 +131,34 @@ def sizeof_fmt_decimal(num, suffix='B', sep=' ', precision=2, sign=False):
 
 
 def main():
+    args = parse_args()
     print(" * hosts in Puppet: %d, LDAP: %d, Prometheus exporters: %d" %
-          (host_count_puppet(),
-           host_count_ldap(),
-           prom_query('sum(up)')))
+          (host_count_puppet(args),
+           host_count_ldap(args),
+           prom_query(args, 'sum(up)')))
 
     print(" * number of apache servers monitored: %d, hits per second: %d" %
-          (prom_query('count(apache_up)'),
+          (prom_query(args, 'count(apache_up)'),
            # XXX: wtf vs http_requests_total
-           prom_query('sum(rate(apache_accesses_total[30d]))')))
+           prom_query(args, 'sum(rate(apache_accesses_total[30d]))')))
 
     print(" * number of self-hosted nameservers: %d, mail servers: %d" %
-          (prom_query('sum(bind_up)'),
-           prom_query('sum(postfix_up)')))
+          (prom_query(args, 'sum(bind_up)'),
+           prom_query(args, 'sum(postfix_up)')))
 
     print(" * pending upgrades: %d, reboots: %d" %
-          (prom_query('sum(apt_upgrades_pending)'),
-           prom_query('sum(node_reboot_required)')))
+          (prom_query(args, 'sum(apt_upgrades_pending)'),
+           prom_query(args, 'sum(node_reboot_required)')))
 
     print(" * average load: %0.2f, memory available: %s/%s, running processes: %d" %  # noqa: E501
-          (prom_query('avg(node_load15)'),
-           sizeof_fmt_iec(prom_query('sum(node_memory_MemFree_bytes)')),
-           sizeof_fmt_iec(prom_query('sum(node_memory_MemTotal_bytes)')),
-           prom_query('sum(node_procs_running)')))
+          (prom_query(args, 'avg(node_load15)'),
+           sizeof_fmt_iec(prom_query(args, 'sum(node_memory_MemFree_bytes)')),
+           sizeof_fmt_iec(prom_query(args, 'sum(node_memory_MemTotal_bytes)')),
+           prom_query(args, 'sum(node_procs_running)')))
 
     print(" * bytes sent: %s/s, received: %s/s" %
-          (sizeof_fmt_decimal(prom_query('sum(rate(node_network_transmit_bytes_total[30d]))')),  # noqa: E501
-           sizeof_fmt_decimal(prom_query('sum(rate(node_network_receive_bytes_total[30d]))'))))  # noqa: E501
+          (sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_transmit_bytes_total[30d]))')),  # noqa: E501
+           sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_receive_bytes_total[30d]))'))))  # noqa: E501
 
 
 if __name__ == '__main__':
