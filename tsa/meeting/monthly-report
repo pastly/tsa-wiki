@@ -198,6 +198,9 @@ def main():
           (sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_transmit_bytes_total[30d]))')),  # noqa: E501
            sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_receive_bytes_total[30d]))'))))  # noqa: E501
 
+    print()
+    print("Now also available as the main Grafana dashboard. Head to <https://grafana.torproject.org/>, change the time period to 30 days, and wait a while for results to render.")  # noqa: E501
+
 
 if __name__ == '__main__':
     main()
