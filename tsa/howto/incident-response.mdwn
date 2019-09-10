@@ -1,5 +1,11 @@
 [[!meta title="Incident and emergency response: what to do in case of fire"]]
 
+This documentation is for sysadmins to figure out what to do when
+things go wrong. If you don't have the required accesses and haven't
+been trained for such situation, you might be better off just trying
+to wake up someone that can deal with them. See the
+[[doc/how-to-get-help]] documentation instead.
+
 Specific situations
 ===================
 
