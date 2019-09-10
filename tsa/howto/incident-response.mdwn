@@ -18,8 +18,9 @@ If it does respond, you can try to diagnose the issue by looking at
 
 If it does *not* respond, you should see if it's a virtual machine,
 and in this case, which server is hosting it. This information is
-available in [[ldap]] (or [the web interface](https://db.torproject.org/machines.cgi), under the
-`physicalHost` field. Then login to that server to diagnose this
+available in [[ldap]]
+(or [the web interface](https://db.torproject.org/machines.cgi), under the
+`physicalHost` field). Then login to that server to diagnose this
 issue.
 
 If the physical host is not responding or is empty (in which case it
