@@ -75,9 +75,9 @@ Procedure
         (puppet agent -t || true) &&
         (puppet agent -t || true)
 
- 7.    reboot once so we can then get rid of the old kernel image
+ 7. reboot once so we can then get rid of the old kernel image
 
-       reboot
+        reboot
 
  8. Post-upgrade checks:
 
