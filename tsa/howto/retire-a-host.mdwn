@@ -21,7 +21,8 @@
  7. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
  8. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up
  9. clean host from `tor-passwords`
- 10. remove from the machine from the [Nextcloud spreadsheet](https://nc.riseup.net/remote.php/webdav/tpa/Tor%20VM%20Hosts.xlsx)
+ 10. remove from the machine from the [Nextcloud spreadsheet](https://nc.riseup.net/remote.php/webdav/tpa/Tor%20VM%20Hosts.xlsx), and the
+     [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's an entire service
  11. schedule a removal of the host's backup, on the backup server
      (currently `bungei`):
 
