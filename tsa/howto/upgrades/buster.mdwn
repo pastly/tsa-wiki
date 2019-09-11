@@ -15,8 +15,9 @@ Procedure
         ( umask 0077 &&
           tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states /var/cache/debconf &&
           dpkg --get-selections "*" > /var/backups/dpkg-selections-pre-buster.txt &&
-          debconf-get-selections > /var/backups/debconf-selections-pre-buster.txt &&
-          apt-mark showhold) &&
+          debconf-get-selections > /var/backups/debconf-selections-pre-buster.txt
+        ) &&
+        apt-mark showhold &&
         dpkg --audit &&
         : look for dkms packages and make sure they are relevant, if not, purge. &&
         ( dpkg -l '*dkms' || true ) &&
