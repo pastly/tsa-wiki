@@ -30,6 +30,7 @@ Procedure
         rm -f /etc/apt/preferences /etc/apt/preferences.d/* &&
         rm -f /etc/apt/sources.list.d/testing.list &&
         rm -f /etc/apt/sources.list.d/stretch-backports.list &&
+        rm -f /etc/apt/sources.list.d/backports.debian.org.list &&
         apt update && apt -y upgrade &&
         : list kernel images and purge unused packages &&
         dpkg -l 'linux-image-*' &&
@@ -42,7 +43,6 @@ Procedure
     download packages:
 
         sed -i 's/stretch/buster/g' /etc/apt/sources.list.d/* &&
-        rm -f /etc/apt/sources.list.d/backports.debian.org.list &&
         apt update &&
         apt -y -d upgrade &&
         apt -y -d dist-upgrade &&
