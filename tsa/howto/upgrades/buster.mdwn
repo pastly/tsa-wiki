@@ -43,7 +43,8 @@ Procedure
     download packages:
 
         sed -i 's/stretch/buster/g' /etc/apt/sources.list.d/* &&
-        apt update &&
+        apt update && apt -o APT::Get::Trivial-Only=true dist-upgrade &&
+        df -h &&
         apt -y -d upgrade &&
         apt -y -d dist-upgrade &&
         echo End of Step 4
