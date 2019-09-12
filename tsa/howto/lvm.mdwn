@@ -1,0 +1,28 @@
+# Cached LVM cheat sheet
+
+Create the VG consisting of 2 block devices (a slow and a fast)
+
+    apt install lvm2 &&
+    vg="vg_$(hostname)" &&
+    cat /proc/partitions &&
+    echo -n 'slow disk: ' && read slow &&
+    echo -n 'fast disk: ' && read fast &&
+    vgcreate "$vg" "$slow" "$fast"
+
+Create the srv LV, but leave a few (like 50?) extents empty on the slow disk.
+(lvconvert needs this extra free space later.  That's probably a bug.)
+
+    pvdisplay &&
+    echo -n "#extents: " && read extents &&
+    lvcreate -l "$extents" -n srv "$vg" "$slow"
+
+The -cache-meta disk should be 1/1000 the size of the -cache LV.  (if it is slightly more that also shouldn't hurt.)
+
+    lvcreate -L 100MB -n srv-cache-meta "$vg" "$fast"
+    lvcreate -l '100%FREE' -n srv-cache "$vg" "$fast"
+
+setup caching
+
+    lvconvert --type cache-pool --cachemode writethrough --poolmetadata "$vg"/srv-cache-meta "$vg"/srv-cache
+
+    lvconvert --type cache --cachepool "$vg"/srv-cache "$vg"/srv
