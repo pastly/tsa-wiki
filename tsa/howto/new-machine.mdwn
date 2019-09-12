@@ -115,6 +115,10 @@ All commands to be run as root unless otherwise noted.
         puppet agent -t
         puppet agent -t
 
+* do an upgrade in case there has been one recently
+
+        apt update && apt dist-upgrade && apt clean
+
 * get rid of unneeded network services (only needed if we did not install this
   from a minbase but from somebody else's install/image):
 
