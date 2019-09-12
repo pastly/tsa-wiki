@@ -18,7 +18,7 @@ Create the srv LV, but leave a few (like 50?) extents empty on the slow disk.
 
 The -cache-meta disk should be 1/1000 the size of the -cache LV.  (if it is slightly more that also shouldn't hurt.)
 
-    lvcreate -L 100MB -n srv-cache-meta "$vg" "$fast"
+    lvcreate -L 100MB -n srv-cache-meta "$vg" "$fast" &&
     lvcreate -l '100%FREE' -n srv-cache "$vg" "$fast"
 
 setup caching
