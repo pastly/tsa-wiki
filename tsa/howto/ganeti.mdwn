@@ -85,13 +85,14 @@ vocabulary:
       -t drbd --no-wait-for-sync \
       --node fsn-node-01:fsn-node-02 \
       --disk 0:size=10G \
-      --disk 1:size=10G,vg=vg_ganeti_hdd \
-      --disk 2:size=1G,name=swap \
-      --backend-parameters memory=2g,vcpus=2 \
+      --disk 1:size=2G,name=swap \
+      --disk 2:size=20G \
+      --disk 3:size=800G,vg=vg_ganeti_hdd \
+      --backend-parameters memory=8g,vcpus=2 \
       --net 0:ip=pool,network=gnt-fsn \
       --no-name-check \
       --no-ip-check \
-      test01.torproject.org
+      static-master-fsn.torproject.org
 
 TODO: the above doesn't include the private network configuration.
 
@@ -125,6 +126,8 @@ log in with your token.  You will be required to change the root password immedi
 Pick something nice and document it in `tor-passwords`.
 
 Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.your-server.de/).
+
+Then follow [[new-machine]].
 
 ## Adding and removing addresses on instances
 
