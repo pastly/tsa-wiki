@@ -1,3 +1,5 @@
+[[!toc levels=3]]
+
 # How to get an X.509 certificate for your new name
 
 ## The letsencrypt-domains git repository
