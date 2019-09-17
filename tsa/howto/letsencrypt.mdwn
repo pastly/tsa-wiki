@@ -11,12 +11,30 @@ backup-keys.
 	cd letsencrypt-domains
 	git clone pauli.torproject.org:/srv/puppet.torproject.org/git/tor-backup-keys.git backup-keys
 
-## Add your new name and generate a private key
+## Add your new name
 
-    $EDIT domains		# add your domain name and optional SAN(s)
-	./bin/manage-backup-keys create   # see tor-passwords/000-backup-keys for the passphrase
+Add your domain name and optional alternative names (`SAN`) to the
+`domains` file:
+    
+    $EDIT domains
 
-## Push the new key to the backup-keys repo
+## Public key pinning
+
+If you do not want to use HPKP, skip this section.
+
+Generate backup [HPKP][]:
+
+[HPKP]: https://en.wikipedia.org/wiki/HTTP_Public_Key_Pinning
+
+	./bin/manage-backup-keys create
+
+See `tor-passwords/000-backup-keys` for the passphrase when prompted.
+
+The private key is a backup RSA certificate that can be used to rotate
+HTTPS certificates in case of a compromise, while respecting the pins
+sent as `Public-Key-Pins` headers.
+
+Push the new key to the backup-keys repo:
 
     cd backup-keys
 	git status
