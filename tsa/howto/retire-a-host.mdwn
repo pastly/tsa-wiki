@@ -28,7 +28,11 @@
 
         echo rm -rf /srv/backups/bacula/$host.torproject.org/ | at now + 30 days
 
- 13. if it's a physical machine or a virtual host we don't control,
+ 13. remove any certs and backup keys from letsencrypt-domains and
+     letsencrypt-domains/backup-keys that are no longer relevant
+     Also clean up the relevant files on the letsencrypt master
+     (currently nevii.  Use find to find those.)
+ 14. if it's a physical machine or a virtual host we don't control,
      schedule removal from racks or hosts with upstream
 
 TODO: remove the client from the Bacula catalog, see <https://trac.torproject.org/projects/tor/ticket/30880>.
