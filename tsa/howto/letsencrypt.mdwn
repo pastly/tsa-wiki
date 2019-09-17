@@ -1,6 +1,6 @@
 # How to get an X.509 certificate for your new name
 
-## The letnsencrypt-domains git repository
+## The letsencrypt-domains git repository
 
 If not already done, clone git repos letsencrypt-domains and
 backup-keys.
