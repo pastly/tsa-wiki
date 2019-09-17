@@ -43,3 +43,63 @@ deploy them.
 
 See also [[static-component]] for an example of how to deploy an
 encrypted virtual host and onion service.
+
+# Disabling HPKP
+
+To disable key pinning ([HPKP][]) on a given domain, just remove the
+backup key from the repository:
+
+    cd backup-keys
+	git rm example.torproject.org*
+	git commit
+	git push
+
+Then run Puppet on all affected hosts, for example the static mirrors:
+
+    cumin 'C:roles::static_mirror_web' 'puppet agent -t'
+
+# Design
+
+How is this built anyways?
+
+When you push to the git repository:
+
+ 1. a per-repository hook gets called in
+    `/srv/git.torproject.org/git-helpers/post-receive-per-repo.d/`
+
+ 2. this hooks hits the DNS master over SSH (`letsencrypt@nevii`) and
+    there the `authorized_keys` file hardcodes the command to
+    `/srv/letsencrypt.torproject.org/bin/from-githost`
+
+ 3. ... which in turns just calls `bin/update` in the same directory
+    (`/srv/letsencrypt.torproject.org`)
+
+ 4. ... which in turns pulls the `letsencrypt-domains` repository and
+    runs `dehydrated-wrap --cron` with a special `BASE` variable that
+    points dehydrated at our configuration, in
+    `etc/dehydrated-config`, again in the same directory
+
+Through that special configure, the dehydrated command is configured
+to call a custom hook (`bin/le-hook`) which implements logic around
+the DNS-01 authentication challenge, notably adding challenges,
+bumping serial numbers in the primary nameserver, and waiting for
+secondaries to sync.
+
+Note that there's a configuration file for that hook in
+`/etc/dsa/le-hook.conf`.
+
+The `le-hook` also pushes the changes around. The hook calls the
+`bin/deploy` file which installs the certificates files in
+`var/result`. It also generates a Public Key Pin (PKP) hash with the
+`bin/get-pin` command and appends Diffie-Hellman paramets
+(`dh-$size.pem`) to the certificate chain. It finally calls the
+`bin/push` command which runs `rsync` to the Puppet server, which in
+turns hardcodes the place where those files are dumped (in
+`pauli:/srv/puppet.torproject.org/from-letsencrypt`) through its
+`authorized_keys` file.
+
+Finally, those certificates are collected by Puppet through the `ssl`
+module. Pay close attention to how the
+`tor-puppet/modules/apache2/templates/ssl-key-pins.erb` template
+works: it will not deploy key pinning if the backup `.pin` file is
+missing.
