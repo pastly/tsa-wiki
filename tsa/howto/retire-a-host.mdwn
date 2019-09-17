@@ -26,7 +26,7 @@
  12. schedule a removal of the host's backup, on the backup server
      (currently `bungei`):
 
-        echo rm -rf /srv/backups/bacula/$host/ | at now + 30 days
+        echo rm -rf /srv/backups/bacula/$host.torproject.org/ | at now + 30 days
 
  13. if it's a physical machine or a virtual host we don't control,
      schedule removal from racks or hosts with upstream
