@@ -21,8 +21,28 @@ password reset on first install, stored in `torr-passwords.git`, in
 
 Grafana dashboards, in particular, live in
 `modules/profile/files/grafana/dashboards`, which is a copy of
-anarcat's [grafana-dashboards repository](https://gitlab.com/anarcat/grafana-dashboards). The `README.md` file
+anarcat's [grafana-dashboards repository][]. The `README.md` file
 there contains more instructions on how to add and update
 dashboards. In general, dashboards must not be modified directly
 through the web interface, at least not without being exported back
 into the repository.
+
+[grafana-dashboards repository]: https://gitlab.com/anarcat/grafana-dashboards
+
+Updating a Grafana dashboard
+----------------------------
+
+As mentioned above, the Grafana dashboards are maintained by
+Puppet. So while new dashboard can be created and edited in the
+Grafana web interface, changes will be **lost** when Puppet ships a
+new version of the dashboard.
+
+You therefore need to make *sure* you update the Dashboard in git
+before leaving. New dashboards not in git should be fairly safe, but
+please do also commit them to git so we have a proper revisioned
+history of their deployment. It's also the right way to make sure they
+are usable across other instances of Grafana. Finally, they are also
+easier to share and collaborate on that way.
+
+See the [grafana-dashboards repository][] for instructions on how to
+export dashboards into git.
