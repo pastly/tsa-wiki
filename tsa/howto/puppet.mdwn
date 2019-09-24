@@ -232,7 +232,7 @@ moved into a class parameter, probably in `common.yaml`.
 For new deployments, this is *NOT* the prefered method. For example,
 if you are deploying new software that is not already in use in our
 infrastructure, do *not* follow this guide and instead follow the
-`Adding new configuration` guide below.
+`Adding a new module` guide below.
 
 If you are touching an *existing* configuration, things are much
 simpler however: you simply go to the module where the code already
@@ -244,7 +244,7 @@ code to modify. If you are making changes that potentially affect more
 than one host, you should also definitely look at the `Progressive
 deployment` section below.
 
-## Adding new configuration
+## Adding a new module
 
 This is a broad topic, but let's take the Prometheus monitoring system
 as an example which followed the [role/profile/module][]
