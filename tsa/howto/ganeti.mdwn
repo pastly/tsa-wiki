@@ -47,6 +47,7 @@ These could probably be merged into the cluster init, but just to document what 
     gnt-cluster modify --uid-pool 4000-4019
     gnt-cluster modify --nic-parameters mode=openvswitch,link=br0,vlan=4000
     gnt-cluster modify -D drbd:c-plan-ahead=0,disk-custom='--c-plan-ahead 0'
+    gnt-cluster modify -H kvm:migration_bandwidth=950
 
 ### Network configuration
 
