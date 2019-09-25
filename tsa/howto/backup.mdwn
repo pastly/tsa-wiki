@@ -353,43 +353,16 @@ TODO: Do consider deploying it with Puppet, as discussed in
 
 TODO: Document how to setup PostgreSQL by hand.
 
-Then you need to restore the actual database. This can be done by
-extracting the database file from the catalog backup. The catalog
-backup is on the storage server (currently `bungei`), in
-`/srv/backups/bacula/Catalog/`. You can find the latest file and list
-its contents with this oneliner:
+Then you need to restore the actual database.  We have
+backups of the bacula postgres cluster on the backup
+storage server (as of 2019-09 that is bungei, and
+the backups are in `/srv/backups/pg/dictyotum`).
+Recover the database as documented in [[postgresql]] or
+on the [postgres site](https://www.postgresql.org/docs/).
+(the BASE tarballs are created with `pg_basebackup`
+and the WALs are also there.)
 
-    bls $(ls /srv/backups/bacula/Catalog/* | tail -1)
-
-This is necessary because [bls](https://www.bacula.org/7.2.x-manuals/en/utility/Volume_Utility_Tools.html#115) only takes absolute paths. It should
-show something like this:
-
-    root@bungei:~# bls $(ls /srv/backups/bacula/Catalog/* | tail -1)
-    bls: butil.c:292-0 Using device: "/srv/backups/bacula/Catalog" for reading.
-    19-aoû 19:53 bls JobId 0: Ready to read from volume "torproject-catalog.2019-08-19_10:57" on File device "FileStorage-catalog" (/srv/backups/bacula/Catalog).
-    bls JobId 0: -rw-------   1 systemd- systemd-        14880261463 2019-08-19 10:57:32  /var/lib/bacula/bacula.sql.gz
-    19-aoû 19:53 bls JobId 0: End of Volume "torproject-catalog.2019-08-19_10:57" at addr=14891296413 on device "FileStorage-catalog" (/srv/backups/bacula/Catalog).
-    1 files found.
-
-You can then extract this entire "catalog" (which is really a
-compressed SQL dumped stored inside a Bacula-specific archive) using
-[bextract](https://www.bacula.org/7.2.x-manuals/en/utility/Volume_Utility_Tools.html#SECTION00260000000000000000):
-
-    bextract /srv/backups/bacula/Catalog/torproject-catalog.2019-08-19_10:57 /var/tmp/restore
-
-The second argument should be a previously-created directory where the
-file should be stored. You now have an SQL dump of the
-database. Create an actual database in postgres to restore the file
-into, if it doesn't already exist:
-
-    sudo -u postgres psql -c 'CREATE DATABASE bacula;'
-
-Finally, the database can be restored with this command.
-
-WARNING: that will *OVERWRITE* any existing Bacula catalog. Make sure
-you run this on the right machine!
-
-    gunzip -c /var/tmp/restore/var/lib/bacula/bacula.sql.gz | sudo -u postgres psql bacula
+Once you have the postgres database cluster restored, start the director.
 
 Then everything should be fairies and magic and happiness all over
 again. Check that everything works with:
@@ -397,6 +370,40 @@ again. Check that everything works with:
     bconsole
 
 Run a few of the "Basic commands", above just to make sure.
+
+Get files without a director
+----------------------------
+
+If you want to get to files stored on the bacula storgage host without
+involving the director, they can be accessed directly as well.  Remember
+that to bacula everything is a tape, and `/srv/backups/bacula` is full
+of directories of tapes.  You can see the contents of a tape using
+[bls](https://www.bacula.org/7.2.x-manuals/en/utility/Volume_Utility_Tools.html#115),
+that is, `bls <file>`, with a fully qualified filename, i.e. involving all the
+paths.  `bls $(readlink -f <filename>)` is a handy way to get that.
+
+
+    root@bungei:/srv/backups/bacula/dictyotum.torproject.org# bls `readlink -f torproject-inc-dictyotum.torproject.org.2019-09-25_11:53` | head
+    bls: butil.c:292-0 Using device: "/srv/backups/bacula/dictyotum.torproject.org" for reading.
+    25-Sep 13:48 bls JobId 0: Ready to read from volume "torproject-inc-dictyotum.torproject.org.2019-09-25_11:53" on File device "FileStorage-dictyotum.torproject.org" (/srv/backups/bacula/dictyotum.torproject.org).
+    bls JobId 0: drwxr-xr-x   4 root     root                   1024 2019-09-07 17:01:03  /boot/
+    bls JobId 0: drwxr-xr-x  24 root     root                    800 2019-09-25 11:33:53  /run/
+    bls JobId 0: -rw-r--r--   1 root     root                  12288 2019-09-25 11:51:17  /etc/postfix/debian.db
+    bls JobId 0: -rw-r--r--   1 root     root                   4732 2019-09-25 11:51:17  /etc/postfix/debian
+    bls JobId 0: -r--r--r--   1 root     root                  28161 2019-09-25 00:55:50  /etc/ssl/torproject-auto/crls/ca.crl
+    ...
+
+
+You can then extract files from there
+[bextract](https://www.bacula.org/7.2.x-manuals/en/utility/Volume_Utility_Tools.html#SECTION00260000000000000000):
+
+    bextract /srv/backups/bacula/dictyotum.torproject.org/torproject-inc-dictyotum.torproject.org.2019-09-25_11:53 /var/tmp/restore
+
+This will extract the entire tape to `/var/tmp/restore`.  If you want only a few files,
+put their names into a file such as `include` and call bextract with `-i`:
+
+    bextract -i ~/include /srv/backups/bacula/dictyotum.torproject.org/torproject-inc-dictyotum.torproject.org.2019-09-25_11:53 /var/tmp/restore
+
 
 Restore PostgreSQL databases
 ----------------------------
