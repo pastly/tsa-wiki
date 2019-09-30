@@ -643,3 +643,93 @@ resources with `troodi` in the name:
 
 Keep in mind that there are [automatic tags](https://puppet.com/docs/puppet/6.4/lang_tags.html) in exported resources
 which can complicate things.
+
+## Password management
+
+If you need to set a password in a manifest, there are special
+functions to handle this. We do not want to store passwords directly
+in Puppet source code, for various reasons: it is hard to erase
+because code is stored in git, but also, ultimately, we want to
+publish that source code publicly.
+
+We have two mechanisms on how to do this now: a HKDF to generate
+passwords by hashing a common secret, and Trocla, which is currently
+[in testing][].
+
+[in testing]: https://trac.torproject.org/projects/tor/ticket/30009
+
+### hkdf
+
+Most passwords in Puppet are managed through a [Key Derivation
+Function][] (KDF), more specifically a [hash-based KDF][] that takes a
+secret stored on the Puppet master (in `/etc/puppet/secret`)
+concatenates this with a unique token picked by the caller, and
+generates a secret unique to that token. An example:
+
+[hash-based KDF]: https://en.wikipedia.org/wiki/HKDF
+[Key Derivation Function]: https://en.wikipedia.org/wiki/Key_derivation_function
+
+    $secret = hkdf('/etc/puppet/secret', "dip-${::hostname}-base-secret")
+
+This generates a unique passwords for the given token. The password is
+then used, in clear text, by the puppet client as appropriate.
+
+The function is an implementation of [RFC5869][], a [SHA256][]-based
+HKDF taken from an earlier version of [John Downey's Rubygems
+implementation][].
+
+[John Downey's Rubygems implementation]: https://rubygems.org/gems/hkdf
+[RFC5869]: https://tools.ietf.org/html/rfc5869
+[SHA256]: https://en.wikipedia.org/wiki/SHA-2
+
+### Trocla
+
+[Trocla][] is another password-management solution that takes another
+approach. With Trocla, each password is generated on the fly from a
+secure entropy source ([Ruby's SecureRandom module][]) and stored
+inside a state file (in `/var/lib/trocla/trocla_data.yml`, configured
+`/etc/puppet/troclarc.yaml`) on the Puppet master.
+
+Trocla can return "hashed" versions of the passwords, so that the
+plain text password is never visible from the client. The plain text
+can still be stored on the Puppet master, or it can be deleted once
+it's been transmitted to the user or another password manager. This
+makes it possible to have Trocla not keep any secret at all.
+
+[Ruby's SecureRandom module]: https://ruby-doc.org/stdlib-1.9.3/libdoc/securerandom/rdoc/SecureRandom.html
+[Trocla]: https://github.com/duritong/trocla
+
+This piece of code will generate a [bcrypt][]-hashed password for the
+Grafana admin, for example:
+
+    $grafana_admin_password = trocla('grafana_admin_password', 'bcrypt')
+
+The plaintext for that password will never leave the Puppet master. it
+will still be stored on the Puppet master, and you can see the value
+with:
+
+    trocla get grafana_admin_password plain
+
+... on the commandline.
+
+[bcrypt]: https://en.wikipedia.org/wiki/Bcrypt
+
+A password can also be set with this command:
+
+    trocla set grafana_guest_password plain
+
+Note that this might *erase* other formats for this password, although
+those will get regenerated as needed.
+
+Also note that `trocla get` will fail if the particular password or
+format requested does not exist. For example, say you generate a
+plaintext password with and then get the `bcrypt` version:
+
+    trocla create test plain
+    trocla get test bcrypt
+
+This will return the empty string instead of the hashed
+version. Instead, use `trocla create` to generate that password. In
+general, it's safe to use `trocla create` as it will reuse existing
+password. It's actually how the `trocla()` function behaves in Puppet
+as well.
