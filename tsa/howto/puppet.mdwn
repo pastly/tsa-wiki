@@ -524,13 +524,6 @@ Batch jobs can also be ran on all Puppet hosts with Cumin:
 
 See [[cumin]] for more examples.
 
-## Generating secrets
-
-- `bacula::director` inherits `bacula` which defines
-- `$bacula_director_secret` using
-- `hkdf()` and generates
-- `/etc/bacula/bacula-dir.conf` using that
-
 ## Progressive deployment
 
 If you are making a major change to the infrastructure, you may want
