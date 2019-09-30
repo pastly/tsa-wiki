@@ -74,157 +74,6 @@ deployment` section below, which will teach you how to make a change
 like the above while making sure you don't break anything even if it
 affects a lot of machines.
 
-# Reference
-
-This documents generally how things are setup.
-
-## Before it all starts
-
-- `puppet.tpo` is currently being run on `pauli.tpo`
-- This is where the tor-puppet git repo lives
-- The repo has hooks to populate `/etc/puppet` with its contents, most
-  notably the modules directory.
-- All paths in this document are relative to the root of this
-  repository.
-
-## File layout
-
-- `3rdparty/modules` include modules that are shared publicly and do
-  not contain any TPO-specific configuration. There is a `Puppetfile`
-  there that documents where each module comes from and that can be
-  maintained with [r10k][] or [librarian][].
-
-  [librarian]: https://librarian-puppet.com/
-  [r10k]: https://github.com/puppetlabs/r10k/
-
-- `modules` includes roles, profiles, and classes that make the bulk
-  of our configuration.
-
-- in there, the `roles` class (`modules/roles/manifests/init.pp`) maps
-  services to roles, using the `$nodeinfo` variable.
-
-- The `torproject_org` module
-  (`modules/torproject_org/manifests/init.pp`) performs basic host
-  initialisation, like configuring Debian mirrors and APT sources,
-  installing a base set of packages, configuring puppet and timezone,
-  setting up a bunch of rc-files and running ud-replicate.
-
-- In there, `local.yaml` (`modules/torproject_org/misc/local.yaml`)
-  defines services and list which host(s) supply each
-  service. `local.yaml` is read by the `roles` class above for setting
-  up the `$localinfo` and `$nodeinfo` variables. It also defines the
-  `$roles` parameter and defines `ferm` macros.
-
-- There is also the `hoster.yaml` file
-  (`modules/torproject_org/misc/hoster.yaml`) which defines hosting
-  providers and specifies things like which network blocks they use,
-  if they have a DNS resolver or a Debian mirror. `hoster.yaml` is read
-  by
-  - the `nodeinfo()` function
-    (`modules/puppetmaster/lib/puppet/parser/functions/nodeinfo.rb`),
-    used for setting up the `$nodeinfo` variable
-  - ferm's `def.conf` template (`modules/ferm/templates/defs.conf.erb`)
-  - the `entropy provider`
-    (`modules/puppetmaster/lib/puppet/parser/functions/entropy_provider.rb`)
-    TODO
-
-- The root of definitions and execution is in Pupept is found in
-  the `manifests/site.pp` file, but this file is now mostly empty, in
-  favor of Hiera.
-
-Note that the above is the current state of the file hierachy. As part
-of the transition to Hiera, a lot of the above architecture will
-change in favor of the more standard [role/profile/module][]
-pattern. See [ticket #29387][] for an in-depth discussion.
-
-[role/profile/module]: https://puppet.com/docs/pe/2017.2/r_n_p_intro.html
-[ticket #29387]: https://trac.torproject.org/projects/tor/ticket/29387
-
-## Custom facts
-
-`modules/torproject_org/lib/facter/software.rb` defines our custom
-facts, making it possible to get answer to questions like "Is this
-host running apache2?" byt simply looking at a puppet variable.
-
-## Style guide
-
-Puppet manifests should generally follow the [Puppet style
-guide][]. This can be easily done with [Flycheck][] in Emacs,
-[vim-puppet][], or a similar plugin in your favorite text editor.
-
-Many files do not *currently* follow the style guide, as they
-*predate* the creation of said guide. Files should *not* be completely
-reformatted unless there's a good reason. For example, if a
-conditional covering a large part of a file is removed and the file
-needs to be reindented, it's a good opportunity to fix style in the
-file. Same if a file is split in two components or for some other
-reason completely rewritten.
-
-Otherwise the style already in use in the file should be followed.
-
-[Puppet style guide]: https://puppet.com/docs/puppet/4.8/style_guide.html
-[Flycheck]: http://flycheck.org/
-[vim-puppet]: https://github.com/rodjek/vim-puppet
-
-## Hiera
-
-[Hiera][] is a "key/value lookup tool for configuration data" which
-Puppet uses to look up values for class parameters and node
-configuration in General.
-
-We are in the process of transitionning over to this mecanism from our
-previous set of custom YAML lookup system. This documents the way we
-currently use Hiera.
-
-[Hiera]: https://puppet.com/docs/hiera/3.2/
-
-### Classes definitions
-
-Each host declares which class it should include through a `classes`
-parameter. For example, this is what configures a Prometheus server:
-
-    classes:
-      - roles::monitoring
-
-Roles should be *abstract* and *not* implementation specific. Each
-role includes a set of profiles which *are* implementation
-specific. For example, the `monitoring` role includes
-`profile::prometheus::server` and `profile::grafana`. Do *not* include
-profiles directly from Hiera.
-
-As a temporary exception to this rule, old modules can be included as
-we transition from the `has_role` mechanism to Hiera, but eventually
-those should be ported to shared modules from the Puppet forge, with
-our glue built into a profile on top of the third-party module. The
-role `roles::monitoring` follows that pattern correctly.
-
-### Node configuration
-
-On top of the host configuration, some node-specific configuration can
-be performed from Hiera. This should be avoided as much as possible,
-but sometimes there is just no other way. A good example are the
-`build-arm-*` nodes which include the following configuration:
-
-    bacula::client::ensure: "absent"
-
-This disables backups on those machines, which are normally configured
-everywhere. This is done because they are behind a firewall and
-therefore not reachable, an unusual condition in the network. Another
-example is `nutans` which sits behind a NAT so it doesn't know its own
-IP address. To export proper firewall rules, the allow address has
-been overriden as such:
-
-    bind::secondary::allow_address: 89.45.235.22
-
-Those types of parameters are normally automatically guess inside
-modules' classes, but they are overridable from Hiera.
-
-Note: eventually *all* host configuration will be done here, but there
-are currently still some configurations hardcoded in individual
-modules. For example, the Bacula director is hardcoded in the `bacula`
-base class (in `modules/bacula/manifests/init.pp`). That should be
-moved into a class parameter, probably in `common.yaml`.
-
 # How to guides
 
 ## Modifying an existing configuration
@@ -726,3 +575,154 @@ version. Instead, use `trocla create` to generate that password. In
 general, it's safe to use `trocla create` as it will reuse existing
 password. It's actually how the `trocla()` function behaves in Puppet
 as well.
+
+# Reference
+
+This documents generally how things are setup.
+
+## Before it all starts
+
+- `puppet.tpo` is currently being run on `pauli.tpo`
+- This is where the tor-puppet git repo lives
+- The repo has hooks to populate `/etc/puppet` with its contents, most
+  notably the modules directory.
+- All paths in this document are relative to the root of this
+  repository.
+
+## File layout
+
+- `3rdparty/modules` include modules that are shared publicly and do
+  not contain any TPO-specific configuration. There is a `Puppetfile`
+  there that documents where each module comes from and that can be
+  maintained with [r10k][] or [librarian][].
+
+  [librarian]: https://librarian-puppet.com/
+  [r10k]: https://github.com/puppetlabs/r10k/
+
+- `modules` includes roles, profiles, and classes that make the bulk
+  of our configuration.
+
+- in there, the `roles` class (`modules/roles/manifests/init.pp`) maps
+  services to roles, using the `$nodeinfo` variable.
+
+- The `torproject_org` module
+  (`modules/torproject_org/manifests/init.pp`) performs basic host
+  initialisation, like configuring Debian mirrors and APT sources,
+  installing a base set of packages, configuring puppet and timezone,
+  setting up a bunch of rc-files and running ud-replicate.
+
+- In there, `local.yaml` (`modules/torproject_org/misc/local.yaml`)
+  defines services and list which host(s) supply each
+  service. `local.yaml` is read by the `roles` class above for setting
+  up the `$localinfo` and `$nodeinfo` variables. It also defines the
+  `$roles` parameter and defines `ferm` macros.
+
+- There is also the `hoster.yaml` file
+  (`modules/torproject_org/misc/hoster.yaml`) which defines hosting
+  providers and specifies things like which network blocks they use,
+  if they have a DNS resolver or a Debian mirror. `hoster.yaml` is read
+  by
+  - the `nodeinfo()` function
+    (`modules/puppetmaster/lib/puppet/parser/functions/nodeinfo.rb`),
+    used for setting up the `$nodeinfo` variable
+  - ferm's `def.conf` template (`modules/ferm/templates/defs.conf.erb`)
+  - the `entropy provider`
+    (`modules/puppetmaster/lib/puppet/parser/functions/entropy_provider.rb`)
+    TODO
+
+- The root of definitions and execution is in Pupept is found in
+  the `manifests/site.pp` file, but this file is now mostly empty, in
+  favor of Hiera.
+
+Note that the above is the current state of the file hierachy. As part
+of the transition to Hiera, a lot of the above architecture will
+change in favor of the more standard [role/profile/module][]
+pattern. See [ticket #29387][] for an in-depth discussion.
+
+[role/profile/module]: https://puppet.com/docs/pe/2017.2/r_n_p_intro.html
+[ticket #29387]: https://trac.torproject.org/projects/tor/ticket/29387
+
+## Custom facts
+
+`modules/torproject_org/lib/facter/software.rb` defines our custom
+facts, making it possible to get answer to questions like "Is this
+host running apache2?" byt simply looking at a puppet variable.
+
+## Style guide
+
+Puppet manifests should generally follow the [Puppet style
+guide][]. This can be easily done with [Flycheck][] in Emacs,
+[vim-puppet][], or a similar plugin in your favorite text editor.
+
+Many files do not *currently* follow the style guide, as they
+*predate* the creation of said guide. Files should *not* be completely
+reformatted unless there's a good reason. For example, if a
+conditional covering a large part of a file is removed and the file
+needs to be reindented, it's a good opportunity to fix style in the
+file. Same if a file is split in two components or for some other
+reason completely rewritten.
+
+Otherwise the style already in use in the file should be followed.
+
+[Puppet style guide]: https://puppet.com/docs/puppet/4.8/style_guide.html
+[Flycheck]: http://flycheck.org/
+[vim-puppet]: https://github.com/rodjek/vim-puppet
+
+## Hiera
+
+[Hiera][] is a "key/value lookup tool for configuration data" which
+Puppet uses to look up values for class parameters and node
+configuration in General.
+
+We are in the process of transitionning over to this mecanism from our
+previous set of custom YAML lookup system. This documents the way we
+currently use Hiera.
+
+[Hiera]: https://puppet.com/docs/hiera/3.2/
+
+### Classes definitions
+
+Each host declares which class it should include through a `classes`
+parameter. For example, this is what configures a Prometheus server:
+
+    classes:
+      - roles::monitoring
+
+Roles should be *abstract* and *not* implementation specific. Each
+role includes a set of profiles which *are* implementation
+specific. For example, the `monitoring` role includes
+`profile::prometheus::server` and `profile::grafana`. Do *not* include
+profiles directly from Hiera.
+
+As a temporary exception to this rule, old modules can be included as
+we transition from the `has_role` mechanism to Hiera, but eventually
+those should be ported to shared modules from the Puppet forge, with
+our glue built into a profile on top of the third-party module. The
+role `roles::monitoring` follows that pattern correctly.
+
+### Node configuration
+
+On top of the host configuration, some node-specific configuration can
+be performed from Hiera. This should be avoided as much as possible,
+but sometimes there is just no other way. A good example are the
+`build-arm-*` nodes which include the following configuration:
+
+    bacula::client::ensure: "absent"
+
+This disables backups on those machines, which are normally configured
+everywhere. This is done because they are behind a firewall and
+therefore not reachable, an unusual condition in the network. Another
+example is `nutans` which sits behind a NAT so it doesn't know its own
+IP address. To export proper firewall rules, the allow address has
+been overriden as such:
+
+    bind::secondary::allow_address: 89.45.235.22
+
+Those types of parameters are normally automatically guess inside
+modules' classes, but they are overridable from Hiera.
+
+Note: eventually *all* host configuration will be done here, but there
+are currently still some configurations hardcoded in individual
+modules. For example, the Bacula director is hardcoded in the `bacula`
+base class (in `modules/bacula/manifests/init.pp`). That should be
+moved into a class parameter, probably in `common.yaml`.
