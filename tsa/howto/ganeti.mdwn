@@ -174,15 +174,21 @@ session, and takes over 15 minutes to complete right now, but depends
 on the size of the cluster (in terms of core memory usage).
 
 Once the reboot is completed, all instances might end up on a single
-machine, and the cluster might need to be rebalanced, see below.
+machine, and the cluster might need to be rebalanced. This is
+automatically scheduled by the `ganeti-reboot-cluster` script and will
+be done within 30 minutes of the reboot.
 
 ## Rebalancing a cluster
 
 After a reboot or a downtime, all nodes might end up on the same
-machine. This can be easily corrected with this command, which will
-spread instances around the cluster to balance it:
+machine. This is normally handled by the reboot script, but it might
+be desirable to do this by hand if there was a crash or another
+special condition.
 
-    hbal -L -X
+This can be easily corrected with this command, which will spread
+instances around the cluster to balance it:
+
+    hbal -L -C -v -X
 
 This will automatically move the instances around and rebalance the
 cluster. Here's an example run on a small cluster:
