@@ -1,4 +1,6 @@
-# Cached LVM cheat sheet
+[[!meta title="LVM cheat sheet"]]
+
+# Caching
 
 Create the VG consisting of 2 block devices (a slow and a fast)
 
