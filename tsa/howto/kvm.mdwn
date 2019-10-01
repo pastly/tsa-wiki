@@ -52,7 +52,7 @@ Disk allocation
 Disks are allocated on a need-to basis on the KVM host, in the
 `/srv/vmstore`. Each disk is a file on the host filesystem, and
 underneath the guest can create its own partitions. Here is, for
-example, `vineale`'s disk which is currently taking 29GB:
+example, `vineale`'s disk which is currently taking 29GiB:
 
     root@vineale:/srv# df -h /srv
     Sys. de fichiers           Taille Utilisé Dispo Uti% Monté sur
@@ -63,11 +63,16 @@ On the parent host, it looks like this:
     root@macrum:~# du -h /srv/vmstore/vineale.torproject.org/vineale.torproject.org-lvm
     29G	/srv/vmstore/vineale.torproject.org/vineale.torproject.org-lvm
 
-ie. only 29GB is in use. You can also see there's a layer of LVM
-volumes inside the guest, so the actual allocation is for 40GB:
+ie. only 29GiB is in use. You can also see there's a layer of LVM
+volumes inside the guest, so the actual allocation is for 40GiB:
 
     root@vineale:/srv# pvs
       PV         VG         Fmt  Attr PSize  PFree
       /dev/sdb   vg_vineale lvm2 a--  40,00g 5,00g
 
-That 40GB size is allocated inside the `QCOW` image.
+That 40GiB size is allocated inside the `QCOW` image:
+
+    root@macrum:~# file /srv/vmstore/vineale.torproject.org/vineale.torproject.org-lvm
+    /srv/vmstore/vineale.torproject.org/vineale.torproject.org-lvm: QEMU QCOW Image (v3), 42949672960 bytes
+
+42949672960 bytes is, of course, the 40GiB we see above.
