@@ -1,0 +1,73 @@
+KVM is Linux's [Kernel-based Virtual Machine][] (not to be confused
+with a [KVM switch][]. It's the backing mechanism for our
+virtualization technologies. This page documents the internals of KVM
+and the configuration on some of our older nodes. Newer machines
+should be provisioned with [[ganeti]] on top and most documentation
+here should not be necessary in day-to-day Ganeti operations.
+
+[KVM switch]: https://en.wikipedia.org/wiki/KVM_switch
+[Kernel-based Virtual Machine]: https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine
+
+Tutorials
+=========
+
+Rebooting
+---------
+
+Rebooting should be done with a specific procedure, documented in [[upgrades]].
+
+Resizing disks
+---------------
+
+To resize a disk, you need to resize the [QCOW2][] image in the parent
+host.
+
+Before you do this, however, you might also have some wiggle room
+inside the guest itself, inside the LVM physical volume, see the
+output of `pvs` and the [[lvm]] cheat sheet.
+
+Once you are sure you need to resize the partition on the host, you
+need to use the `qemu-img` command to do the resize.
+
+For example, this will resize (grow!) the image to 50GB, assuming it
+was smaller before:
+
+[QCOW2]: https://en.wikipedia.org/wiki/Qcow
+
+    qemu-img resize /srv/vmstore/vineale.torproject.org/vineale.torproject.org-lvm 50G
+
+TODO: do we need to stop the host before this? how about
+repartitionning?
+
+To *shrink* an image, you need to use the `--shrink` option but, be
+careful: the underlying partitions and filesystems need to first be
+resized otherwise you will have data loss.
+
+Design
+======
+
+Disk allocation
+---------------
+
+Disks are allocated on a need-to basis on the KVM host, in the
+`/srv/vmstore`. Each disk is a file on the host filesystem, and
+underneath the guest can create its own partitions. Here is, for
+example, `vineale`'s disk which is currently taking 29GB:
+
+    root@vineale:/srv# df -h /srv
+    Sys. de fichiers           Taille Utilisé Dispo Uti% Monté sur
+    /dev/mapper/vg_vineale-srv    35G     29G  4,4G  87% /srv
+
+On the parent host, it looks like this:
+
+    root@macrum:~# du -h /srv/vmstore/vineale.torproject.org/vineale.torproject.org-lvm
+    29G	/srv/vmstore/vineale.torproject.org/vineale.torproject.org-lvm
+
+ie. only 29GB is in use. You can also see there's a layer of LVM
+volumes inside the guest, so the actual allocation is for 40GB:
+
+    root@vineale:/srv# pvs
+      PV         VG         Fmt  Attr PSize  PFree
+      /dev/sdb   vg_vineale lvm2 a--  40,00g 5,00g
+
+That 40GB size is allocated inside the `QCOW` image.

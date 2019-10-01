@@ -28,3 +28,75 @@ setup caching
     lvconvert --type cache-pool --cachemode writethrough --poolmetadata "$vg"/srv-cache-meta "$vg"/srv-cache
 
     lvconvert --type cache --cachepool "$vg"/srv-cache "$vg"/srv
+
+# Resizing
+
+Assume we want to grow this partition to take the available free space
+in the PV:
+
+    root@vineale:/srv# lvs
+      LV   VG         Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+      srv  vg_vineale -wi-ao---- 35,00g                                                    
+    root@vineale:/srv# pvs
+      PV         VG         Fmt  Attr PSize  PFree
+      /dev/sdb   vg_vineale lvm2 a--  40,00g 5,00g
+    root@vineale:~# pvdisplay 
+      --- Physical volume ---
+      PV Name               /dev/sdb
+      VG Name               vg_vineale
+      PV Size               40,00 GiB / not usable 4,00 MiB
+      Allocatable           yes 
+      PE Size               4,00 MiB
+      Total PE              10239
+      Free PE               1279
+      Allocated PE          8960
+      PV UUID               CXKO15-Wze1-xY6y-rOO6-Tfzj-cDSs-V41mwe
+
+To resize the partition to take up all available free space, you
+should do the following:
+
+ 1. stop services and processes using the partition (will obviously vary):
+ 
+        service apache2 stop
+
+ 2. unmount the filesystem:
+ 
+        umount /srv
+
+ 3. check the filesystem:
+ 
+        fsck -y -f /dev/mapper/vg_vineale-srv
+
+ 4. extend the filesystem using the extent notation to take up all
+    available space:
+    
+        lvextend vg_vineale/srv -l +1279
+
+ 5. grow the filesystem:
+ 
+        resize2fs -p /dev/mapper/vg_vineale-srv
+
+ 6. recheck the filesystem:
+ 
+        fsck  -f -y /dev/mapper/vg_vineale-srv
+
+ 7. remount the filesystem and start processes:
+ 
+        mount /srv
+        service apache2 start
+
+Note: this assumes there is free space on the physical volume. If
+there isn't you will need to add disks to the volume group, and grow
+the physical volume. For example:
+
+    pvcreate /dev/md123
+    vgextend vg_vineale /dev/md123
+
+If the underlying disk was grown, which happens in virtual hosting
+environments, you can also just extend the physical volume:
+
+    pvextend /dev/sdb
+
+See also the [upstream documentation][].
+
+[upstream documentation]: http://www.tldp.org/HOWTO/LVM-HOWTO/extendlv.html
