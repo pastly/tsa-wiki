@@ -161,3 +161,42 @@ Instances should be setup using the DRBD backend, in which case you
 should probably take a look at [[drbd]] if you have problems with
 that. Ganeti handles most of the logic there so that should generally
 not be necessary.
+
+## Rebalancing a cluster
+
+After a reboot or a downtime, all nodes might end up on the same
+machine. This can be easily corrected with this command, which will
+spread instances around the cluster to balance it:
+
+    hbal -L -X
+
+This will automatically move the instances around and rebalance the
+cluster. Here's an example run on a small cluster:
+
+    root@fsn-node-01:~# gnt-instance list
+    Instance                          Hypervisor OS                 Primary_node               Status  Memory
+    loghost01.torproject.org          kvm        debootstrap+buster fsn-node-02.torproject.org running   2.0G
+    onionoo-backend-01.torproject.org kvm        debootstrap+buster fsn-node-02.torproject.org running  12.0G
+    static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
+    web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+    web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+    root@fsn-node-01:~# hbal -L -X
+    Loaded 2 nodes, 5 instances
+    Group size 2 nodes, 5 instances
+    Selected node group: default
+    Initial check done: 0 bad nodes, 0 bad instances.
+    Initial score: 8.45007519
+    Trying to minimize the CV...
+        1. onionoo-backend-01 fsn-node-02:fsn-node-01 => fsn-node-01:fsn-node-02   4.98124611 a=f
+        2. loghost01          fsn-node-02:fsn-node-01 => fsn-node-01:fsn-node-02   1.78271883 a=f
+    Cluster score improved from 8.45007519 to 1.78271883
+    Solution length=2
+    Got job IDs 16345
+    Got job IDs 16346
+    root@fsn-node-01:~# gnt-instance list
+    Instance                          Hypervisor OS                 Primary_node               Status  Memory
+    loghost01.torproject.org          kvm        debootstrap+buster fsn-node-01.torproject.org running   2.0G
+    onionoo-backend-01.torproject.org kvm        debootstrap+buster fsn-node-01.torproject.org running  12.0G
+    static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
+    web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+    web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G

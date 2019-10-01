@@ -29,6 +29,8 @@ this:
 
     WARNING: Kernel needs upgrade [linux-image-4.9.0-9-amd64 != linux-image-4.9.0-8-amd64]
 
+#### Rebooting guests
+
 If this is only a virtual machine, and the only one affected, it can
 be rebooted directly. This is a useful pipeline that will reboot the
 host and make sure it comes back within a certain delay:
@@ -52,6 +54,8 @@ entered at boot time, either through the initramfs (if it has the
 the case for the `mandos-01` server itself, for example, as it
 currently can't unlock itself, naturally.
 
+#### Rebooting KVM hosts
+
 Generally, KVM hosts are the latter case and need special attention,
 as the guests need to be individually rebooted. The
 `tor-libvirt-reboot` takes care of the hand-holding necessary
@@ -74,6 +78,21 @@ reboot procedure will look something like this:
 If only the guests on the machine need a reboot, for example Nagios
 complains about `libvirt-qemu` processes, use the
 `tor-libvirt-stop-start` script.
+
+#### Rebooting Ganeti clusters
+
+Those hosts need special care, as we can accomplish zero-downtime
+reboots on those machines. There's a script (`ganeti-reboot-cluster`)
+deployed in the ganeti cluster that can be ran on the master to
+migrate all instances around and perform a clean reboot.
+
+Such a reboot should be ran interactively, inside a `tmux` or `screen`
+session, and takes over 15 minutes to complete right now, but depends
+on the size of the cluster (in terms of core memory usage).
+
+Once the reboot is completed, all instances might end up on a single
+machine, and the cluster might need to be rebalanced. See [[ganeti]]
+for that procedure (hint: use `hbal`).
 
 ### Example runs
 
