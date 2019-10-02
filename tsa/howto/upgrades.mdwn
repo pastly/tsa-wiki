@@ -21,6 +21,48 @@ done with the `torproject-upgrade-prepare` command, which is available
 in the `admin/tor-misc.git` project in git-rw, followed by the 
 `tor-project-upgrade` script.
 
+### Restarting services
+
+After upgrades, there's a Nagios check that might trigger and tell you
+that some services are running with outdated libraries. For example,
+after a Bacula upgrade:
+
+    The following processes have libs linked that were upgraded: bacula: bacula-fd (1787)
+
+While the entire host can be rebooted (using the procedure below) to
+fix this problem, it's sometimes less disruptive to just restart that
+one process.
+
+For this purpose, `needrestart` is installed on all machines, but it's
+currently not setup to automatically restart services while we test
+the service. It can still be useful to restart services manually, for
+example with:
+
+    ssh root@cupani.torproject.org needrestart -u NeedRestart::UI::stdio -r a
+
+(Note that earlier versions of needrestart showed spurious warnings in
+this mode, see [bug #859387](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=859387), fixed in buster.)
+
+If you cannot figure out why the warning happens, you might want to
+run the check by hand:
+
+    /usr/lib/nagios/plugins/dsa-check-libs
+
+The `--verbose` flag also shows which file trigger the warning.
+
+Some services will have `cron` as a parent, and will make
+`needrestart` want to restart cron which is, of course,
+ineffective. The only "proper" way to restart those services is to
+reboot the host.
+
+Services setup with the new systemd-based startup system documented in
+[[doc/services]] can be restarted with:
+
+    systemctl restart user@1504.service
+
+There's a feature request ([bug #843778](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=843778)) to implement support for
+those services directly in needrestart.
+
 ### Kernel upgrades and reboots
 
 Sometimes it is necessary to perform a reboot on the hosts, when the
