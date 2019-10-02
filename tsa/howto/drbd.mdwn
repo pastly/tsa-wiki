@@ -58,6 +58,24 @@ opinion, less readable.
 Because DRBD is built with kernel modules, you can also see activity
 in the `dmesg` logs
 
+## Finding device associated with host
+
+In the drbd status, devices are shown by their `minor` identifier. For
+example, this is device minor id 18 having a trouble of some sort:
+
+    18: cs:SyncSource ro:Primary/Secondary ds:UpToDate/Inconsistent C r-----
+        ns:1237956 nr:0 dw:11489220 dr:341910 al:177 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:0
+    	[===================>] sync'ed:100.0% (0/10240)M
+    	finish: 0:00:00 speed: 764 (768) K/sec (stalled)
+
+Finding which host is associated with this device is easy: just call
+`list-drbd`:
+
+    root@fsn-node-01:~# gnt-node list-drbd fsn-node-01 | grep 18
+    fsn-node-01.torproject.org    18 gettor-01.torproject.org          disk/0 primary   fsn-node-02.torproject.org
+
+It's the host `gettor-01`.
+
 References
 ==========
 
