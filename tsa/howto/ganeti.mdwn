@@ -85,7 +85,6 @@ vocabulary:
     gnt-instance add \
       -o debootstrap+buster \
       -t drbd --no-wait-for-sync \
-      --node fsn-node-01:fsn-node-02 \
       --disk 0:size=10G \
       --disk 1:size=2G,name=swap \
       --disk 2:size=20G \
@@ -121,7 +120,10 @@ To find the root password, ssh host key fingerprints, and the IPv6 address, run 
 
 Note that you need to use the `--node` parameter to pick on which
 machines you want the machine to end up, otherwise Ganeti will choose
-for you.
+for you. Use, for example, `--node fsn-node-01:fsn-node-02` to use
+`node-01` as primary and `node-02` as secondary. It might be better to
+let the Ganeti allocator do its job since it will, eventually do this
+during cluster rebalancing.
 
 We copy root's authorized keys into the new instance, so you should be able to
 log in with your token.  You will be required to change the root password immediately.
