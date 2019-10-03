@@ -121,7 +121,7 @@ To find the root password, ssh host key fingerprints, and the IPv6 address, run 
 
 Note that you need to use the `--node` parameter to pick on which
 machines you want the machine to end up, otherwise Ganeti will choose
-for you.`
+for you.
 
 We copy root's authorized keys into the new instance, so you should be able to
 log in with your token.  You will be required to change the root password immediately.
