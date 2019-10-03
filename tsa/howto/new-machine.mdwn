@@ -21,9 +21,9 @@ All commands to be run as root unless otherwise noted.
 
 * swap and tmp
 
-        grep tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
+        grep -q tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
 
-        ! grep swap /etc/fstab && \
+        ! grep -q swap /etc/fstab && \
         dd if=/dev/zero bs=1024k count=1024 of=/swapfile && \
         chmod 0 /swapfile && \
         mkswap /swapfile && \
