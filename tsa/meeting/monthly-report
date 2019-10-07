@@ -201,6 +201,9 @@ def main():
     print()
     print("Now also available as the main Grafana dashboard. Head to <https://grafana.torproject.org/>, change the time period to 30 days, and wait a while for results to render.")  # noqa: E501
 
+    print()
+    print("Consider pointing users at predict-os as well: <https://gitlab.com/anarcat/predict-os>")  # noqa: E501
+
 
 if __name__ == '__main__':
     main()
