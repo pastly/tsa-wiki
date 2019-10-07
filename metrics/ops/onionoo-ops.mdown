@@ -1,0 +1,55 @@
+
+# NAME
+
+**onionoo-ops** - Onionoo Operations
+
+# SERVICE DESCRIPTION
+
+Onionoo is a web-based protocol to learn about currently running Tor relays and
+bridges. Onionoo itself was not designed as a service for human beings&#8212;at least
+not directly. Onionoo provides the data for other applications and websites
+which in turn present Tor network status information to humans.
+
+# SERVICE CONTACTS
+
+The primary contact for this service is the
+Metrics Team &lt;[metrics-team@lists.torproject.org](mailto:metrics-team@lists.torproject.org)&gt;.
+For urgent queries, contact
+*karsten*,
+*irl*,
+or
+*gaba*
+in
+[#tor-project](ircs://irc.oftc.net:6697/tor-project).
+
+# SERVICE OVERVIEW
+
+The underlying infrastructure for the Onionoo service is provided by the
+Tor Sysadmin Team.
+
+# DIAGNOSTICS
+
+# ERRORS
+
+# SEE ALSO
+
+java(1),
+systemd-logind(8)
+
+# STANDARDS
+
+# HISTORY
+
+# AUTHORS
+
+# BUGS
+
+Known bugs can be found in the Tor Project Trac using
+[this query](https://trac.torproject.org/projects/tor/query?status=!closed&component=Metrics%252FOnionoo).
+
+New bug reports should also be
+[filed at the Tor Project Trac](https://trac.torproject.org/projects/tor/newticket?component=Metrics/Onionoo)
+in the
+*Metrics/Onionoo*
+component.
+

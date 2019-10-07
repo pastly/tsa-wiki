@@ -1,0 +1,7 @@
+[[!meta  title="Torproject Metrics Team"]]
+
+= Torproject Metrics Team =
+
+== service operations
+
+[[!map pages="metrics/ops/*" show=title]]
