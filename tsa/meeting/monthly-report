@@ -178,7 +178,7 @@ def main():
     print(" * number of apache servers monitored: %d, hits per second: %d" %
           (prom_query(args, 'count(apache_up)'),
            # XXX: wtf vs http_requests_total
-           prom_query(args, 'sum(rate(apache_accesses_total[30d]))')))
+           prom_query(args, 'sum(rate(apache_accesses_total[15d]))')))
 
     print(" * number of self-hosted nameservers: %d, mail servers: %d" %
           (prom_query(args, 'sum(bind_up)'),
@@ -195,8 +195,8 @@ def main():
            prom_query(args, 'sum(node_procs_running)')))
 
     print(" * bytes sent: %s/s, received: %s/s" %
-          (sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_transmit_bytes_total[30d]))')),  # noqa: E501
-           sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_receive_bytes_total[30d]))'))))  # noqa: E501
+          (sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_transmit_bytes_total[15d]))')),  # noqa: E501
+           sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_receive_bytes_total[15d]))'))))  # noqa: E501
 
     print()
     print("Now also available as the main Grafana dashboard. Head to <https://grafana.torproject.org/>, change the time period to 30 days, and wait a while for results to render.")  # noqa: E501

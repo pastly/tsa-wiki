@@ -124,3 +124,22 @@ We discussed the question of the "double tools problem" that seems to be coming 
 # Next meeting
 
 We're changing the time because 1400UTC would be too early for anarcat because of daylight savings. We're pushing to 1500UTC, which is 1600CET and 1000EST.
+
+# Metrics of the month
+
+Access and transfer rates are an average over the last 15 days.
+
+ * hosts in Puppet: 79, LDAP: 82, Prometheus exporters: 106
+ * number of apache servers monitored: 26, hits per second: 177
+ * number of self-hosted nameservers: 4, mail servers: 10
+ * pending upgrades: 0, reboots: 0
+ * average load: 0.51, memory available: 318.82 GiB/871.81 GiB, running processes: 379
+ * bytes sent: 134.28 MB/s, received: 94.38 MB/s
+
+Now also available as the main Grafana dashboard. Head to
+<https://grafana.torproject.org/>, change the time period to 7 days,
+and wait a while for results to render.
+
+Note that the retention period of the Prometheus server has been
+reduced from 30 to 15 days to address stability issues with the server
+(ticket #31916), so far without luck.
