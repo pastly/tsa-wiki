@@ -1,0 +1,126 @@
+[[!toc levels=2]]
+
+# Roll call: who's there and emergencies
+
+anarcat, hiro, ln5, qbi and weasel are here.
+
+# What has everyone been up to
+
+## anarcat
+
+ * announced LDAP sudo transition plan ([#6367][])
+ * finished first phase of the hiera transition ([#30020][])
+ * deployed trocla in test ([#30009][])
+ * coordinate textile shutdown ([#31686][])
+ * announced jabber service shutdown ([#31700][])
+ * closed snowflake -> TPA transition ticket for now, external monitoring is sufficient ([#31232][])
+ * improvements on grafana dashboards
+ * gitlab, nextcloud transitions coordination and oversight
+ * ooni.tpo to ooni.io transition coordination ([#31718][])
+ * bugtracking on networking issues ([#31610][], [#31805][], [#31916][])
+ * regular janitorial work (security upgrades, reboots, crashes, disk space management, etc)
+ * started needrestart deployment to reduce that work ([#31957][])
+ * completed the "reports card" questionaire ([#30881][])
+ * continued work on the upstream prometheus module
+ * tested puppetboard as a Puppet Dashboard ([#31969][])
+
+[#6367]: https://bugs.torproject.org/6367
+[#30009]: https://bugs.torproject.org/30009
+[#30020]: https://bugs.torproject.org/30020
+[#31232]: https://bugs.torproject.org/31232
+[#31686]: https://bugs.torproject.org/31686
+[#31700]: https://bugs.torproject.org/31700
+[#31718]: https://bugs.torproject.org/31718
+[#31610]: https://bugs.torproject.org/31610
+[#31805]: https://bugs.torproject.org/31805
+[#31916]: https://bugs.torproject.org/31916
+[#31969]: https://bugs.torproject.org/31969
+
+## weasel
+
+ * Started with new onionoo hosts.  Currently there's just one backend on fsn, irl is doing the service part (cf. #31659)
+ * puppet cleanup: nameserver/hoster info
+ * new static master on fsn
+ * staticsync and bacula puppet cleanups/major-rework/syncs with debian
+ * new fsn web frontends.  only one is currently rotated
+ * retire togashii, started retiring saxatile
+ * moved windows VM away from textile
+ * random updates/reboots/fixes
+ * upgraded polyanthum to Debian 10
+
+## Hiro
+
+ * Setup dip so that it can be easily rebased with debian upstream
+ * Migrated gettor from getulum to gettor-01
+ * Random upgrades and reboots
+ * Moving all my services to ansible or packages (no ad - hoc configuration):
+     - Gettor can be deployed and updated via ansible
+     - Survey should be deployed and updated via ansible
+     - Gitlab (dip) is already on ansible
+     - Schleuder should be maintained via packages
+ * Nagios checks for gettor
+
+## ln5
+
+Didn't do much. :(
+
+## qbi
+
+Didn't do volunteering due to private stuff
+
+# What we're up to next
+
+## anarcat
+
+New:
+
+ * LDAP sudo transition ([#6367][])
+ * jabber service shutdown ([#31700][])
+ * considering unattended-upgrades or at least automated needrestart deployment ([#31957][])
+ * followup on the various ops report card things ([#30881][])
+ * maybe deploy puppetboard as a Puppet Dashboard ([#31969][]), possibly moving puppetdb to a separate machine
+ * nbg1/prometheus stability issues, ipsec seems to be the problem ([#31916][])
+
+Continuing/stalled:
+
+ * director replacement ([#31786][])
+ * taking a break on hiera refactoring ([#30020][])
+ * send root@ emails to RT ([#31242][])
+ * followup with email services improvements ([#30608][])
+ * continue prometheus module merges
+ * followup on SVN decomissionning ([#17202][])
+
+[#17202]: https://bugs.torproject.org/17202
+[#30608]: https://bugs.torproject.org/30608
+[#30881]: https://bugs.torproject.org/30881
+[#31242]: https://bugs.torproject.org/31242
+[#31232]: https://bugs.torproject.org/31232
+[#31786]: https://bugs.torproject.org/31786
+
+## weasel
+
+ * more VMs should move to gnt-fsn
+ * more VMs should be upgraded
+ * maybe get some of the pg config fu from dsa-puppet since the 3rd party pg module sucks
+ 
+## Hiro
+ * Nagios checks for bridgedb
+ * decommissioning getulum
+ * ansible recipe to manage survey.tp.o
+ * dev portal coding in lektor
+ * finishing moving gettor to gettor-01 includes gettor-web via lektor
+ * do usual updates and rebots
+
+## ln5
+
+Nextcloud migration.
+
+# Other discussions
+
+## configuration management systems
+
+We discussed the question of the "double tools problem" that seems to be coming up with the configuration management system: most systems are managed with Puppet, but some services are deployed with Puppet. It was argued it might be preferable to use Puppet everywhere to ease onboarding, since it would be one less tool to learn. But that might require giving people root, or managing services ourselves, which is currently out of the question. So it was agreed it's better to have services managed with ansible than not managed at all...
+
+# Next meeting
+
+We're changing the time because 1400UTC would be too early for anarcat because of daylight savings. We're pushing to 1500UTC, which is 1600CET and 1000EST.
