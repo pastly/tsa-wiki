@@ -6,3 +6,4 @@ documentation here -- if you were looking for that, sorry.
 
 * [[known support issues|support]]
 * [[torproject.org infrastructure/sysadmin related things|tsa]]
+* [[tor metrics operations things|metrics]]
