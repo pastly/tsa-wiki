@@ -13,12 +13,15 @@ anarcat, hiro, ln5, qbi and weasel are here.
  * deployed trocla in test ([#30009][])
  * coordinate textile shutdown ([#31686][])
  * announced jabber service shutdown ([#31700][])
- * closed snowflake -> TPA transition ticket for now, external monitoring is sufficient ([#31232][])
+ * closed snowflake -> TPA transition ticket for now, external
+   monitoring is sufficient ([#31232][])
  * improvements on grafana dashboards
  * gitlab, nextcloud transitions coordination and oversight
  * ooni.tpo to ooni.io transition coordination ([#31718][])
- * bugtracking on networking issues ([#31610][], [#31805][], [#31916][])
- * regular janitorial work (security upgrades, reboots, crashes, disk space management, etc)
+ * bugtracking on networking issues ([#31610][], [#31805][],
+   [#31916][])
+ * regular janitorial work (security upgrades, reboots, crashes, disk
+   space management, etc)
  * started needrestart deployment to reduce that work ([#31957][])
  * completed the "reports card" questionaire ([#30881][])
  * continued work on the upstream prometheus module
@@ -38,10 +41,12 @@ anarcat, hiro, ln5, qbi and weasel are here.
 
 ## weasel
 
- * Started with new onionoo hosts.  Currently there's just one backend on fsn, irl is doing the service part (cf. #31659)
+ * Started with new onionoo hosts.  Currently there's just one backend
+   on fsn, irl is doing the service part (cf. #31659)
  * puppet cleanup: nameserver/hoster info
  * new static master on fsn
- * staticsync and bacula puppet cleanups/major-rework/syncs with debian
+ * staticsync and bacula puppet cleanups/major-rework/syncs with
+   debian
  * new fsn web frontends.  only one is currently rotated
  * retire togashii, started retiring saxatile
  * moved windows VM away from textile
@@ -53,7 +58,8 @@ anarcat, hiro, ln5, qbi and weasel are here.
  * Setup dip so that it can be easily rebased with debian upstream
  * Migrated gettor from getulum to gettor-01
  * Random upgrades and reboots
- * Moving all my services to ansible or packages (no ad - hoc configuration):
+ * Moving all my services to ansible or packages (no ad - hoc
+   configuration):
      - Gettor can be deployed and updated via ansible
      - Survey should be deployed and updated via ansible
      - Gitlab (dip) is already on ansible
@@ -76,10 +82,13 @@ New:
 
  * LDAP sudo transition ([#6367][])
  * jabber service shutdown ([#31700][])
- * considering unattended-upgrades or at least automated needrestart deployment ([#31957][])
+ * considering unattended-upgrades or at least automated needrestart
+   deployment ([#31957][])
  * followup on the various ops report card things ([#30881][])
- * maybe deploy puppetboard as a Puppet Dashboard ([#31969][]), possibly moving puppetdb to a separate machine
- * nbg1/prometheus stability issues, ipsec seems to be the problem ([#31916][])
+ * maybe deploy puppetboard as a Puppet Dashboard ([#31969][]),
+   possibly moving puppetdb to a separate machine
+ * nbg1/prometheus stability issues, ipsec seems to be the problem
+   ([#31916][])
 
 Continuing/stalled:
 
@@ -101,7 +110,8 @@ Continuing/stalled:
 
  * more VMs should move to gnt-fsn
  * more VMs should be upgraded
- * maybe get some of the pg config fu from dsa-puppet since the 3rd party pg module sucks
+ * maybe get some of the pg config fu from dsa-puppet since the 3rd
+   party pg module sucks
  
 ## Hiro
  * Nagios checks for bridgedb
@@ -119,11 +129,20 @@ Nextcloud migration.
 
 ## configuration management systems
 
-We discussed the question of the "double tools problem" that seems to be coming up with the configuration management system: most systems are managed with Puppet, but some services are deployed with Puppet. It was argued it might be preferable to use Puppet everywhere to ease onboarding, since it would be one less tool to learn. But that might require giving people root, or managing services ourselves, which is currently out of the question. So it was agreed it's better to have services managed with ansible than not managed at all...
+We discussed the question of the "double tools problem" that seems to
+be coming up with the configuration management system: most systems
+are managed with Puppet, but some services are deployed with
+Puppet. It was argued it might be preferable to use Puppet everywhere
+to ease onboarding, since it would be one less tool to learn. But that
+might require giving people root, or managing services ourselves,
+which is currently out of the question. So it was agreed it's better
+to have services managed with ansible than not managed at all...
 
 # Next meeting
 
-We're changing the time because 1400UTC would be too early for anarcat because of daylight savings. We're pushing to 1500UTC, which is 1600CET and 1000EST.
+We're changing the time because 1400UTC would be too early for anarcat
+because of daylight savings. We're pushing to 1500UTC, which is
+1600CET and 1000EST.
 
 # Metrics of the month
 
@@ -133,7 +152,8 @@ Access and transfer rates are an average over the last 15 days.
  * number of apache servers monitored: 26, hits per second: 177
  * number of self-hosted nameservers: 4, mail servers: 10
  * pending upgrades: 0, reboots: 0
- * average load: 0.51, memory available: 318.82 GiB/871.81 GiB, running processes: 379
+ * average load: 0.51, memory available: 318.82 GiB/871.81 GiB,
+   running processes: 379
  * bytes sent: 134.28 MB/s, received: 94.38 MB/s
 
 Now also available as the main Grafana dashboard. Head to
