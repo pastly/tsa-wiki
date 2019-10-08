@@ -263,9 +263,13 @@ if __name__ == '__main__':
     args = parse_args()
     logging.basicConfig(format='%(message)s', level=args.log_level.upper())
     if args.test:
-        logging.info('# running test suite')
-        test_puppetdb_query()
-        sys.exit(0)
+        logging.info('running test suite')
+        try:
+            import pytest
+        except ImportError:
+            logging.error('test suite requires pytest to run properly')
+            sys.exit(1)
+        sys.exit(pytest.main([__file__]))
     try:
         main(args)
     except Exception as e:
