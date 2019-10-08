@@ -65,7 +65,7 @@ def parse_args(args=sys.argv[1:]):
                         help='fetch from PuppetDB (default: %(default)s)')
     parser.add_argument('--dryrun', '-n', action='store_true',
                         help='do nothing')
-    parser.add_argument('--output', type=argparse.FileType('wb'),
+    parser.add_argument('--output', '-o', type=argparse.FileType('wb'),
                         default=sys.stdout, help='image to write, default to graphical display or stdout if unavailable')  # noqa: E501
     parser.add_argument('--source', '-s', default='stretch',
                         help='major version we are upgrading from')
