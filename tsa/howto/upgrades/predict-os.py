@@ -200,7 +200,9 @@ def fake_dates(x, pos):
 def plot_records(records, args):
     '''draw the actual graph, on the GUI or in a file as args dictates'''
     sns.set(color_codes=True)
-    graph = sns.lmplot(x='datenum', y='count', hue='release', data=records)
+    # ci=False because it looks kind of wrong
+    graph = sns.lmplot(x='datenum', y='count', hue='release',
+                       data=records, ci=False)
     # return numeric dates into human-readable
     graph.ax.xaxis.set_major_formatter(fake_dates)
 
