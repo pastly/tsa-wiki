@@ -82,11 +82,17 @@ Restore procedures
 
 This is an adaptation of the [official recovery procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY). 
 
-Here we'll assume the backup server has access to the server we'll
-restore files into. If not, you can do the following, on the backup
-server, assuming `$IP` is the IP of the client and `$HOSTKEY` is its
-hostkey (the `cat /etc/ssh/ssh_host_rsa_key.pub` on the client,
-below):
+First, you will need to give the backup server access to the new
+postgresql server, which we'll call the "client" for now. First, login
+to the client and allow the backup server to connect, and show the
+public hostkey:
+
+    iptables -I INPUT -s $BACKUP_SERVER -j ACCEPT
+    cat /etc/ssh/ssh_host_rsa_key.pub
+
+Then load the server's private key in an agent and show it to allow on
+the client. On the server, assuming `$IP` is the IP of the client and
+`$HOSTKEY` is its hostkey:
 
     ssh-agent bash
     ssh-add /etc/ssh/ssh_host_rsa_key
@@ -97,7 +103,6 @@ below):
 And on the client, allow the server `$HOSTKEY` (the above `cat
 /etc/ssh/ssh_host_rsa_key.pub` on the backup server):
 
-    cat /etc/ssh/ssh_host_rsa_key.pub
     echo "$HOSTKEY" >> /etc/ssh/userkeys/root
 
 TODO: the above gives the backup server access to the client, but if
