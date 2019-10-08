@@ -25,10 +25,13 @@ import collections
 from datetime import datetime
 import io
 import logging
+import os
+import os.path
 import sys
 
 import betamax
 import pandas as pd
+import matplotlib.pyplot as plt
 import requests
 import seaborn as sns
 
@@ -60,6 +63,8 @@ def parse_args(args=sys.argv[1:]):
                         help='pull current results from PuppetDB (default: %(default)s)')
     parser.add_argument('--dryrun', '-n', action='store_true',
                         help='do nothing')
+    parser.add_argument('--output', type=argparse.FileType('wb'),
+                        default=sys.stdout, help='image to write, default to graphical display or stdout if unavailable')  # noqa: E501
     return parser.parse_args(args=args)
 
 
@@ -77,7 +82,7 @@ def main(args):
         if not args.dryrun:
             with open(args.path, 'w') as fp:
                 store_csv(fp, records)
-    plot_records(records)
+    plot_records(args, records)
 
 
 def load_csv(fp):
@@ -182,8 +187,14 @@ def test_add_releases():
 7  2019-04-05  stretch      9''' == repr(d)
 
 
-def plot_records(records):
-    sns.lmplot(x='Date', y='count', hue='release', data=records)
+def plot_records(args, records):
+    sns.relplot(x='Date', y='count', hue='release', data=records)
+    if args.output == sys.stdout and ('DISPLAY' in os.environ
+                                      or sys.stdout.isatty()):
+        plt.show()
+    else:
+        _, ext = os.path.splitext(args.output.name)
+        plt.savefig(args.output, format=ext[1:])
 
 
 if __name__ == '__main__':
