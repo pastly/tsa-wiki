@@ -57,6 +57,8 @@ packages to be installed: python3-requests python3-seaborn'''
 PUPPETDB_URL = 'http://localhost:8080/pdb/query/v4'
 PUPPETDB_QUERY = 'facts[value] { name = "lsbdistcodename" }'
 
+DEFAULT_HEADER = ['Date', 'release', 'count']
+
 
 def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(description=__doc__,
@@ -86,6 +88,9 @@ def parse_args(args=sys.argv[1:]):
 
 def main(args):
     logging.debug('loading previous records from %s', args.path)
+    if not os.path.exists(args.path):
+        with open(args.path, 'w') as fp:
+            fp.write(','.join(DEFAULT_HEADER))
     with open(args.path) as fp:
         records = load_csv(fp)
     if args.refresh:
