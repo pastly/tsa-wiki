@@ -204,8 +204,9 @@ def plot_records(records, args):
     # return numeric dates into human-readable
     graph.ax.xaxis.set_major_formatter(fake_dates)
 
-    if args.output == sys.stdout and ('DISPLAY' in os.environ
-                                      or sys.stdout.isatty()):
+    if (args.dryrun or
+        (args.output == sys.stdout and
+         (sys.stdout.isatty() or 'DISPLAY' in os.environ))):
         plt.show()
     else:
         _, ext = os.path.splitext(args.output.name)
