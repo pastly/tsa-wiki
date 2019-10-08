@@ -60,7 +60,7 @@ def parse_args(args=sys.argv[1:]):
     parser.add_argument('--path', default='data.csv',
                         help='CSV datafile that keeps past records')
     parser.add_argument('--refresh', '-r', action='store_true',
-                        help='pull current results from PuppetDB (default: %(default)s)')
+                        help='fetch from PuppetDB (default: %(default)s)')
     parser.add_argument('--dryrun', '-n', action='store_true',
                         help='do nothing')
     parser.add_argument('--output', type=argparse.FileType('wb'),
@@ -209,7 +209,7 @@ if __name__ == '__main__':
     except Exception as e:
         logging.error('unexpected error: %s', e)
         if args.log_level == 'debug':
-            logging.warning('starting debugger, type "c" and enter to continue...')
+            logging.warning('starting debugger, type "c" and enter to continue')  # noqa: E501
             import traceback
             import pdb
             import sys
