@@ -26,7 +26,9 @@
  12. schedule a removal of the host's backup, on the backup server
      (currently `bungei`):
 
-        echo rm -rf /srv/backups/bacula/$host.torproject.org/ | at now + 30 days
+        cd  /srv/backups/bacula/
+        mv $host.torproject.org $host.torproject.org-OLD
+        echo rm -rf /srv/backups/bacula/$host.torproject.org.OLD/ | at now + 30 days
 
  13. remove any certs and backup keys from letsencrypt-domains and
      letsencrypt-domains/backup-keys that are no longer relevant
