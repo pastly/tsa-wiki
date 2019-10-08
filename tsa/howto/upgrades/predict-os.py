@@ -29,7 +29,6 @@ import os
 import os.path
 import sys
 
-import betamax
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
@@ -158,6 +157,7 @@ def puppetdb_query(url, query, session=requests):
 
 def test_puppetdb_query():
     '''simulate a PuppetDB query'''
+    import betamax
     session = requests.Session()
     recorder = betamax.Betamax(session, cassette_library_dir='cassettes')
     with recorder.use_cassette('puppetdb'):
