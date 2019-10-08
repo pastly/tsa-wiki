@@ -41,7 +41,18 @@ import seaborn as sns
 __epilog__ = '''This scripts will predict when major OS upgrades will complete,
 based on regular samples stored in a CSV file, which are added from
 PuppetDB. It will also draw a graph, on the GUI or in a file,
-representing the state of the CSV file and progress.'''
+representing the state of the CSV file and progress. This project is a
+rewrite of this R toolset in Python:
+https://gitlab.com/anarcat/predict-os'''
+
+# the reason this was rewritten in Python was that:
+#
+# 1. libreoffice is a catastrophe, see the original predict-os for details
+# 2. i don't want to learn how to read/write/parse CSV files in R
+# 3. i don't want to learn how to make R talk with PuppetDB
+# 4. i got tired of chasing the PuppetDB SQL database changes
+# 5. i had to use python to massage data anyways
+# 6. "code without tests is legacy code" and i don't want legacy code
 
 PUPPETDB_URL = 'http://localhost:8080/pdb/query/v4'
 PUPPETDB_QUERY = 'facts[value] { name = "lsbdistcodename" }'
