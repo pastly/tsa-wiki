@@ -105,13 +105,11 @@ And on the client, allow the server `$HOSTKEY` (the above `cat
 
     echo "$HOSTKEY" >> /etc/ssh/userkeys/root
 
-TODO: the above gives the backup server access to the client, but if
-we give access the *client* access to the backup server, we could
-avoid copying the WAL files altogether and instead use:
-
-    restore_command = '/usr/local/bin/pg-receive-file-from-backup $CLIENT main.WAL.%f %p'
-
-... to restore the WAL files.
+Note: the above gives the backup server access to the client, but if we give
+access the *client* access to the backup server, we can avoid copying
+the WAL files altogether and instead use the same SSH connexion as the
+backup procedure to restore the WAL files. See the "bis" procedure
+below for another example, which currently does not work.
 
 Once the backup server has access to the client, we can transfer files
 over:
@@ -185,6 +183,88 @@ When the restore succeeds, the `recovery.conf` file will be renamed to
 
 Ignore the error from `cp` complaining about the `.history` file, it's
 harmless.
+
+Direct restore procedure
+------------------------
+
+TODO: this procedure does not work.
+
+The above procedure assumes a bare-bones recovery, on a new server,
+but it's also possible to sync an existing server from backups. The
+following, therefore, assume postgres is already configured, with
+something like:
+
+    apt install postgres-11
+
+Make sure you run the SAME MAJOR VERSION of PostgreSQL than the
+backup! You cannot restore across versions. This might mean installing
+from backports or an older version of Debian.
+
+On the postgres server:
+
+    cat ~postgres/.ssh/*.pub
+
+Then on the backup server:
+
+    echo "command="/usr/local/bin/debbackup-ssh-wrap $OLDSERVER",restrict $HOSTKEY" > /etc/ssh/userkeys/torbackup.more
+
+This assumes we connect to a *previous* server's backups, named
+`$OLDSERVER` (e.g. `dictyotum`). The `$HOSTKEY` is the public key
+found on the postgres server above.
+
+Then you need to create a `recovery.conf` file in
+`/var/lib/postgresql/9.6/main` that will tell postgres where to find
+the WAL files. At least the `restore_command` need to be
+specified. Something like this should work:
+
+    restore_command = '/usr/local/bin/pg-receive-file-from-backup $OLDSERVER main.WAL.%f %p'
+
+... where `$OLDSERVER` should be replaced by the previous postgresql
+server name (e.g. `dictyotum`). You can specify a specific recovery
+point in the `recovery.conf`, see the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for
+more information. Make sure the file is owned by postgres:
+
+    $EDITOR /var/lib/postgresql/9.6/main/recovery.conf
+    chown postgres /var/lib/postgresql/9.6/main/recovery.conf
+
+Then start the server and look at the logs to follow the recovery
+process:
+
+    service postgresql start
+    tail -f /var/log/postgresql/*
+
+At this point, I'm getting this error and can't get out:
+
+    2019-10-08 21:21:03.745 UTC [14130] postgres@postgres FATAL:  the database system is starting up
+    No directories from which read is allowed given on cmdline.
+    Uknown format in line 1 () when getting dictyotum:main.WAL.00000005.history from backup host
+
+By *editing* the host's SSH key in `/etc/ssh/userkeys/torbackup` to
+add `-r /srv/backups/pg/dictyotum`, it is actually allowed to talk to
+the backup server, but still fails to restore:
+
+    2019-10-08 21:25:43.711 UTC [14320] [unknown]@[unknown] LOG:  incomplete startup packet
+    2019-10-08 21:25:44.215 UTC [14326] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:44.451 UTC [14316] WARNING:  WAL was generated with wal_level=minimal, data may be missing
+    2019-10-08 21:25:44.451 UTC [14316] HINT:  This happens if you temporarily set wal_level=minimal without taking a new base backup.
+    2019-10-08 21:25:44.451 UTC [14316] LOG:  consistent recovery state reached at 0/153A3F0
+    2019-10-08 21:25:44.451 UTC [14316] LOG:  invalid record length at 0/153A3F0: wanted 24, got 0
+    2019-10-08 21:25:44.451 UTC [14316] LOG:  redo is not required
+    2019-10-08 21:25:44.721 UTC [14334] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:45.226 UTC [14340] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:45.549 UTC [14316] LOG:  selected new timeline ID: 6
+    2019-10-08 21:25:45.732 UTC [14343] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:45.765 UTC [14316] LOG:  archive recovery complete
+    2019-10-08 21:25:46.238 UTC [14349] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:46.466 UTC [14316] LOG:  MultiXact member wraparound protections are now enabled
+    2019-10-08 21:25:46.467 UTC [14315] LOG:  database system is ready to accept connections
+    2019-10-08 21:25:46.467 UTC [14351] LOG:  autovacuum launcher started
+
+TODO: figure out this voodoo.
+
+Then remove the temporary SSH access on the backup server:
+
+    rm /etc/ssh/userkeys/torbackup.more
 
 Dealing with Nagios warnings
 ----------------------------
