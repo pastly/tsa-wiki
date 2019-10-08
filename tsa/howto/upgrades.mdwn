@@ -3,6 +3,20 @@
 Debian upgrades
 ===============
 
+<figure class="align-right">
+<img alt="graph showing planned completion date, currently around july 2020"
+src="https://gitlab.com/anarcat/predict-os/raw/master/torproject-2019-10-07.png"
+/>
+<figcaption>
+
+The above graphic shows the progress of the migration between major
+releases. It can be regenerated with the [[predict-os.py]] script in
+the subdirectory. It pulls information from [[puppet]] to update a
+[[CSV file|data.csv]] to keep track of progress over time. See [[the
+script|predict-os.py]] for details. 
+
+</figure>
+
 Major upgrades
 --------------
 
@@ -10,18 +24,6 @@ Major upgrades are done by hand, with a "cheat sheet" created for each
 major release. Here are the currently documented ones:
 
 [[!map pages="page(tsa/howto/upgrades/*)"]]
-
-### Predicting completion
-
-[[!img predict-stretch.png align=right alt="graph showing planned completion date, currently around july 2020"]]
-
-The above graphic shows the progress of the migration between major
-releases. It can be regenerated with the [[predict-os.py]] script in
-the subdirectory. It pulls information from [[puppet]] to update a CSV
-file to keep track of progress over time. It is ran by hand from time
-to time, like this:
-
-    ./predict-os.py --path data.csv --refresh --output predict-stretch.png
 
 Minor upgrades
 --------------
