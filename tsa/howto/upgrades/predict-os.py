@@ -86,7 +86,7 @@ def main(args):
         if not args.dryrun:
             with open(args.path, 'w') as fp:
                 store_csv(fp, records)
-    records['datenum'] = matplotlib.dates.datestr2num(records['Date'])
+    records = prepare_records(records)
     date = guess_completion_time(records, args.source)
     print("completion time of %s major upgrades: %s" % (args.source, date))
 
@@ -214,6 +214,16 @@ def plot_records(args, records):
     else:
         _, ext = os.path.splitext(args.output.name)
         plt.savefig(args.output, format=ext[1:])
+
+
+def prepare_records(records):
+    '''various massaging required by other tools
+
+    This currently only stores the numeric date for seaborn and
+    regression processing.
+    '''
+    records['datenum'] = matplotlib.dates.datestr2num(records['Date'])
+    return records
 
 
 def guess_completion_time(records, source):
