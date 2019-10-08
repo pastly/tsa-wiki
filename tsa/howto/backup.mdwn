@@ -116,8 +116,21 @@ point in time.
 
 The first thing to know is that restores are done from the server to
 the client, ie. they are restored directly on the machine that is
-backed up. This means it can overwrite existing files and are
-therefore pretty powerful.
+backed up. Note that by default files will be owned by the `bacula`
+user because the file daemon runs as `bacula` in our configuration. If
+that's a problem for large backups, the override (in
+`/etc/systemd/system/bacula-fd.service.d/override.conf`) can be
+temporarily disabled by simply removing the file and restarting the
+service:
+
+    rm /etc/systemd/system/bacula-fd.service.d/override.conf
+    systemctl restart bacula-fd
+
+And then restarting the restore procedure. Note that this file well be
+re-created by Puppet the next time it runs, so maybe you also want to
+run `puppet --disable 'to respect the bacula-fd override'`. In this
+configuration, however, the file daemon can overwrite any file, so be
+careful in this case.
 
 A simple way of restoring a given client to a given point in time is
 to use the  option. So:
