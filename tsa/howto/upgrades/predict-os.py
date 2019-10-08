@@ -98,8 +98,7 @@ def load_csv(fp):
     return pd.read_csv(fp)
 
 
-def test_load_csv():
-    data = b'''Date,release,count
+SAMPLE_CSV = '''Date,release,count
 2019-01-01,buster,32
 2019-01-01,stretch,10
 2019-02-02,buster,37
@@ -107,15 +106,20 @@ def test_load_csv():
 2019-03-03,buster,50
 2019-03-03,stretch,1
 '''
-    fp = io.StringIO(data.decode('utf-8'))
-    res = load_csv(fp)
-    assert repr(res) == '''         Date  release  count
+
+SAMPLE_DF_REPR = '''         Date  release  count
 0  2019-01-01   buster     32
 1  2019-01-01  stretch     10
 2  2019-02-02   buster     37
 3  2019-02-02  stretch      5
 4  2019-03-03   buster     50
-5  2019-03-03  stretch      1'''  # noqa: W291
+5  2019-03-03  stretch      1'''
+
+
+def test_load_csv():
+    fp = io.StringIO(SAMPLE_CSV)
+    res = load_csv(fp)
+    assert repr(res) == SAMPLE_DF_REPR
     return res
 
 
@@ -127,16 +131,8 @@ def test_store_csv():
     fp = io.StringIO()
     data = test_load_csv()
     store_csv(fp, data)
-    expected = '''Date,release,count
-2019-01-01,buster,32
-2019-01-01,stretch,10
-2019-02-02,buster,37
-2019-02-02,stretch,5
-2019-03-03,buster,50
-2019-03-03,stretch,1
-'''
     fp.seek(0)
-    assert fp.read() == expected
+    assert fp.read() == SAMPLE_CSV
 
 
 def puppetdb_query(url, query, session=requests):
@@ -184,13 +180,7 @@ def test_add_releases():
     data = test_load_csv()
     new_data = {'buster': 33, 'stretch': 9}
     d = add_releases(data, new_data, '2019-04-05')
-    assert '''         Date  release  count
-0  2019-01-01   buster     32
-1  2019-01-01  stretch     10
-2  2019-02-02   buster     37
-3  2019-02-02  stretch      5
-4  2019-03-03   buster     50
-5  2019-03-03  stretch      1
+    assert SAMPLE_DF_REPR + '''
 6  2019-04-05   buster     33
 7  2019-04-05  stretch      9''' == repr(d)
 
