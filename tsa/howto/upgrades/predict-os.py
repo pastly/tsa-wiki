@@ -104,8 +104,11 @@ def main(args):
             with open(args.path, 'w') as fp:
                 store_csv(fp, records)
     records = prepare_records(records)
-    date = guess_completion_time(records, args.source)
-    print("completion time of %s major upgrades: %s" % (args.source, date))
+    try:
+        date = guess_completion_time(records, args.source)
+        print("completion time of %s major upgrades: %s" % (args.source, date))
+    except ValueError as e:
+        logging.warning("cannot guess completion time: %s", e)
     plot_records(records, date, args)
 
 
