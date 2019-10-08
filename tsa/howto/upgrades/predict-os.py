@@ -23,6 +23,7 @@ from __future__ import print_function, unicode_literals
 import argparse
 import collections
 from datetime import datetime
+import io
 import logging
 import sys
 
@@ -73,6 +74,9 @@ def main(args):
         logging.info('found %d hosts', len(new_data))
         new_record = count_releases(new_data)
         records = add_releases(records, new_record)
+        if not args.dryrun:
+            with open(args.path, 'w') as fp:
+                store_csv(fp, records)
     plot_records(records)
 
 
@@ -82,7 +86,6 @@ def load_csv(fp):
 
 
 def test_load_csv():
-    import io
     data = b'''Date,release,count
 2019-01-01,buster,32
 2019-01-01,stretch,10
@@ -101,6 +104,26 @@ def test_load_csv():
 4  2019-03-03   buster     50
 5  2019-03-03  stretch      1'''  # noqa: W291
     return res
+
+
+def store_csv(fp, records):
+    fp.write(records.to_csv(index=False))
+
+
+def test_store_csv():
+    fp = io.StringIO()
+    data = test_load_csv()
+    store_csv(fp, data)
+    expected = '''Date,release,count
+2019-01-01,buster,32
+2019-01-01,stretch,10
+2019-02-02,buster,37
+2019-02-02,stretch,5
+2019-03-03,buster,50
+2019-03-03,stretch,1
+'''
+    fp.seek(0)
+    assert fp.read() == expected
 
 
 def puppetdb_query(url, query, session=requests):
