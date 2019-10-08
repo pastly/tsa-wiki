@@ -90,7 +90,7 @@ def main(args):
     records = prepare_records(records)
     date = guess_completion_time(records, args.source)
     print("completion time of %s major upgrades: %s" % (args.source, date))
-    plot_records(records, args)
+    plot_records(records, date, args)
 
 
 def load_csv(fp):
@@ -197,7 +197,7 @@ def fake_dates(x, pos):
     return matplotlib.dates.num2date(x).strftime('%Y-%m-%d')
 
 
-def plot_records(records, args):
+def plot_records(records, guessed_date, args):
     '''draw the actual graph, on the GUI or in a file as args dictates'''
     sns.set(color_codes=True)
     # ci=False because it looks kind of wrong
@@ -205,7 +205,11 @@ def plot_records(records, args):
                        data=records, ci=False)
     # return numeric dates into human-readable
     graph.ax.xaxis.set_major_formatter(fake_dates)
-
+    graph.ax.set_title('Debian major upgrades to %s planned completion by %s' %
+                       (args.source, guessed_date))
+    graph.ax.set_xlabel('date')
+    # labels overlap otherwise
+    graph.ax.tick_params(labelrotation=45)
     if (args.dryrun or
         (args.output == sys.stdout and
          (sys.stdout.isatty() or 'DISPLAY' in os.environ))):
