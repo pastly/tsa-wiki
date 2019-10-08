@@ -13,13 +13,15 @@ major release. Here are the currently documented ones:
 
 ### Predicting completion
 
-Anarcat wrote a set of tools to predict when a cluster of machines
-(under Puppet) will complete the transition to a given release. See
-the [predict-os][] for details.
+[[!img predict-stretch.png align=right alt="graph showing planned completion date, currently around july 2020"]]
 
-[predict-os]: https://gitlab.com/anarcat/predict-os/
+The above graphic shows the progress of the migration between major
+releases. It can be regenerated with the [[predict-os.py]] script in
+the subdirectory. It pulls information from [[puppet]] to update a CSV
+file to keep track of progress over time. It is ran by hand from time
+to time, like this:
 
-<img alt="graph showing planned completion date, currently around july 2020" src="https://gitlab.com/anarcat/predict-os/raw/master/torproject-2019-10-07.png" />
+    ./predict-os.py --path data.csv --refresh --output predict-stretch.png
 
 Minor upgrades
 --------------
