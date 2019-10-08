@@ -353,18 +353,39 @@ The director is, essentially, a PostgreSQL database. Therefore, the
 restore procedure is to restore that database, along with some
 configuration.
 
-TODO: this procecure is untested.
+The first step is therefore to create a [[new-machine]] run [[Puppet]]
+with the `roles::backup::director` class applied to the node, say in
+`hiera/nodes/bacula-director-01.yaml`:
 
-The first step is therefore to run Puppet with the `bacula::director`
-class applied to the node. This should restore a basic Bacula
-configuration, along with all client jobs. This will not,
-unfortunately, configure the PostgreSQL server, which is configured by
-hand.
+    classes:
+      - roles::backup::director
+    bacula::client::director_server: 'bacula-director-01.torproject.org'
+
+This should restore a basic Bacula configuration with the director
+acting, weirdly, as its own director. The last line can be changed in
+`common.yaml` to have all clients refer to this new director, in
+time. Run Puppet by hand on the new director and the storage server a
+few times, so their manifest converge:
+
+    puppet agent -t
+
+The Puppet manifests will fail because PostgreSQL is not
+installed. And even if it would be, it will fail because it doesn't
+have the right passwords. For now, PostgreSQL is configured by hand.
 
 TODO: Do consider deploying it with Puppet, as discussed in
 [[postgresql]].
 
-TODO: Document how to setup PostgreSQL by hand.
+It might be the case that backups of the director are from an earlier
+version of PostgreSQL than the version available in the new
+machine. In that case, an older `sources.list` needs to be added:
+
+    cat > /etc/apt/sources.list.d/stretch.list <<EOF
+    deb https://deb.debian.org/debian/  stretch  main
+    deb http://security.debian.org/ stretch/updates  main
+    EOF
+    apt update
+    apt install -y postgresql-9.6
 
 Then you need to restore the actual database.  We have
 backups of the bacula postgres cluster on the backup
@@ -383,6 +404,10 @@ again. Check that everything works with:
     bconsole
 
 Run a few of the "Basic commands", above just to make sure.
+
+TODO:
+
+    15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link
 
 Get files without a director
 ----------------------------
