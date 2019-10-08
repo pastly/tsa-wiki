@@ -109,3 +109,10 @@ you updated the DS for one of those, update the corresponding file in
 `tsa-puppet/modules/unbound/files`.  Existing machines don't need that (since
 we do slow, RFC5011-style rolling of KSKs), but new instances will be sad if we
 ship them obsolete trust anchors.
+
+Design
+======
+
+This needs to be documented better. weasel made a [blog post](https://dsa.debian.org/dsablog/2014/The_Debian_DNS_universe/)
+describing parts of the infrastructure on Debian.org, and that is
+partly relevant to TPO as well.
