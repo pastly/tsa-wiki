@@ -31,6 +31,7 @@ import sys
 
 import betamax
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import requests
 import seaborn as sns
@@ -187,8 +188,20 @@ def test_add_releases():
 7  2019-04-05  stretch      9''' == repr(d)
 
 
+# cargo-culted from https://stackoverflow.com/questions/48860428/passing-datetime-like-object-to-seaborn-lmplot  # noqa: E501
+@plt.FuncFormatter
+def fake_dates(x, pos):
+    """ Custom formater to turn floats into e.g., 2016-05-08"""
+    return matplotlib.dates.num2date(x).strftime('%Y-%m-%d')
+
+
 def plot_records(args, records):
-    sns.relplot(x='Date', y='count', hue='release', data=records)
+    sns.set(color_codes=True)
+    records['datenum'] = matplotlib.dates.datestr2num(records['Date'])
+    graph = sns.lmplot(x='datenum', y='count', hue='release', data=records)
+    # return numeric dates into human-readable
+    graph.ax.xaxis.set_major_formatter(fake_dates)
+
     if args.output == sys.stdout and ('DISPLAY' in os.environ
                                       or sys.stdout.isatty()):
         plt.show()
