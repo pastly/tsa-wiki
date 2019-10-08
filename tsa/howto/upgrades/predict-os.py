@@ -25,9 +25,16 @@ import collections
 from datetime import datetime
 import io
 import logging
+import logging.handlers
 import os
 import os.path
 import sys
+import tempfile
+
+try:
+    import pytest
+except ImportError:
+    pytest = None
 
 import pandas as pd
 import matplotlib
@@ -107,9 +114,33 @@ def main(args):
     try:
         date = guess_completion_time(records, args.source)
         print("completion time of %s major upgrades: %s" % (args.source, date))
-    except ValueError as e:
+    except (TypeError, ValueError) as e:
         logging.warning("cannot guess completion time: %s", e)
+        date = 'N/A'
     plot_records(records, date, args)
+
+
+if pytest is not None:
+    @pytest.xfail('not sure why there is no output, but this should work')
+    @pytest.mark.parametrize("test_input,expected",
+                             [(b'''Date,release,count
+2019-10-08,stretch,83
+2019-10-08,buster,3
+2019-10-08,sid,1
+2019-10-08,jessie,2''', 'cannot guess completion time')])
+    def test_main(test_input, expected):
+        with tempfile.NamedTemporaryFile() as csv:
+            csv.write(test_input)
+            csv.flush()
+            handler = logging.handlers.MemoryHandler(1000)
+            handler.setLevel('DEBUG')
+            logging.getLogger('').addHandler(handler)
+            with tempfile.NamedTemporaryFile(suffix='.png') as graph:
+                args = parse_args(['--path', csv.name, '--output', graph.name])
+                main(args)
+            output = "\n".join([record.getMessage()
+                                for record in handler.buffer])
+            assert expected in output
 
 
 def load_csv(fp):
