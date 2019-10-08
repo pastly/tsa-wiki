@@ -40,7 +40,8 @@ import seaborn as sns
 
 __epilog__ = '''This scripts will predict when major OS upgrades will complete,
 based on regular samples stored in a CSV file, which are added from
-PuppetDB.'''
+PuppetDB. It will also draw a graph, on the GUI or in a file,
+representing the state of the CSV file and progress.'''
 
 PUPPETDB_URL = 'http://localhost:8080/pdb/query/v4'
 PUPPETDB_QUERY = 'facts[value] { name = "lsbdistcodename" }'
@@ -89,12 +90,11 @@ def main(args):
     records = prepare_records(records)
     date = guess_completion_time(records, args.source)
     print("completion time of %s major upgrades: %s" % (args.source, date))
-
     plot_records(args, records)
 
 
 def load_csv(fp):
-    '''load the data from the CSV, indexed by date'''
+    '''load the data from the CSV'''
     return pd.read_csv(fp)
 
 
@@ -117,6 +117,7 @@ SAMPLE_DF_REPR = '''         Date  release  count
 
 
 def test_load_csv():
+    '''just a sanity check that pandas works as expected'''
     fp = io.StringIO(SAMPLE_CSV)
     res = load_csv(fp)
     assert repr(res) == SAMPLE_DF_REPR
@@ -124,10 +125,12 @@ def test_load_csv():
 
 
 def store_csv(fp, records):
-    fp.write(records.to_csv(index=False))
+    '''write the CSV file back to the given stream'''
+    return fp.write(records.to_csv(index=False))
 
 
 def test_store_csv():
+    '''just a sanity check that we do the CSV rountrip cleanly'''
     fp = io.StringIO()
     data = test_load_csv()
     store_csv(fp, data)
@@ -143,6 +146,7 @@ def puppetdb_query(url, query, session=requests):
 
 
 def test_puppetdb_query():
+    '''simulate a PuppetDB query'''
     session = requests.Session()
     recorder = betamax.Betamax(session, cassette_library_dir='cassettes')
     with recorder.use_cassette('puppetdb'):
@@ -177,6 +181,7 @@ def add_releases(data, new_data, date=None):
 
 
 def test_add_releases():
+    '''check that we can add to the pandas dataframe as expected'''
     data = test_load_csv()
     new_data = {'buster': 33, 'stretch': 9}
     d = add_releases(data, new_data, '2019-04-05')
@@ -193,6 +198,7 @@ def fake_dates(x, pos):
 
 
 def plot_records(args, records):
+    '''draw the actual graph, on the GUI or in a file as args dictates'''
     sns.set(color_codes=True)
     graph = sns.lmplot(x='datenum', y='count', hue='release', data=records)
     # return numeric dates into human-readable
