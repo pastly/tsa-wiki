@@ -90,7 +90,7 @@ def main(args):
     records = prepare_records(records)
     date = guess_completion_time(records, args.source)
     print("completion time of %s major upgrades: %s" % (args.source, date))
-    plot_records(args, records)
+    plot_records(records, args)
 
 
 def load_csv(fp):
@@ -197,7 +197,7 @@ def fake_dates(x, pos):
     return matplotlib.dates.num2date(x).strftime('%Y-%m-%d')
 
 
-def plot_records(args, records):
+def plot_records(records, args):
     '''draw the actual graph, on the GUI or in a file as args dictates'''
     sns.set(color_codes=True)
     graph = sns.lmplot(x='datenum', y='count', hue='release', data=records)
