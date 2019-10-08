@@ -42,7 +42,8 @@ based on regular samples stored in a CSV file, which are added from
 PuppetDB. It will also draw a graph, on the GUI or in a file,
 representing the state of the CSV file and progress. This project is a
 rewrite of this R toolset in Python:
-https://gitlab.com/anarcat/predict-os'''
+https://gitlab.com/anarcat/predict-os and expects the following Python
+packages to be installed: python3-requests python3-seaborn'''
 
 # the reason this was rewritten in Python was that:
 #
