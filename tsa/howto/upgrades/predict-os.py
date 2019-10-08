@@ -227,6 +227,17 @@ def prepare_records(records):
 
 
 def guess_completion_time(records, source):
+    '''take the given records and guess the estimated completion time
+
+    :param Dataframe records: the records, as loaded from the CSV file
+           by load_csv)
+    :param str source: the kind of `release`. will fail if unknown
+    :returns: completion date, formatted as a string (YYYY-MM-DD)
+
+    >>> records = prepare_records(test_load_csv())
+    >>> guess_completion_time(records, 'stretch')
+    '2019-03-09'
+    '''
     subdf = records[records['release'] == source]
     fit = np.polyfit(subdf['count'], subdf['datenum'], 1)
     return matplotlib.dates.num2date(np.poly1d(fit)(0)).strftime('%Y-%m-%d')
