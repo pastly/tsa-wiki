@@ -216,7 +216,7 @@ def plot_records(records, guessed_date, args):
         plt.show()
     else:
         _, ext = os.path.splitext(args.output.name)
-        plt.savefig(args.output, format=ext[1:])
+        plt.savefig(args.output, format=ext[1:], bbox_inches='tight')
 
 
 def prepare_records(records):
