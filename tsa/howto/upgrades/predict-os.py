@@ -240,7 +240,8 @@ def guess_completion_time(records, source):
     '''
     subdf = records[records['release'] == source]
     fit = np.polyfit(subdf['count'], subdf['datenum'], 1)
-    return matplotlib.dates.num2date(np.poly1d(fit)(0)).strftime('%Y-%m-%d')
+    prediction = np.poly1d(fit)(0)
+    return fake_dates(prediction, None)
 
 
 if __name__ == '__main__':
