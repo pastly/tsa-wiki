@@ -33,6 +33,7 @@ import betamax
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import requests
 import seaborn as sns
 
@@ -52,7 +53,7 @@ def parse_args(args=sys.argv[1:]):
                         action='store_const', const='info', default='warning')
     parser.add_argument('--debug', '-d', dest='log_level',
                         action='store_const', const='debug', default='warning')
-    parser.add_argument('--selftest', '-s', action='store_true',
+    parser.add_argument('--test', action='store_true',
                         help='run self test suite and nothing else')
     parser.add_argument('--puppetdb', '-p', default=PUPPETDB_URL,
                         help='PuppetDB server URL')
@@ -66,6 +67,8 @@ def parse_args(args=sys.argv[1:]):
                         help='do nothing')
     parser.add_argument('--output', type=argparse.FileType('wb'),
                         default=sys.stdout, help='image to write, default to graphical display or stdout if unavailable')  # noqa: E501
+    parser.add_argument('--source', '-s', default='stretch',
+                        help='major version we are upgrading from')
     return parser.parse_args(args=args)
 
 
@@ -83,6 +86,10 @@ def main(args):
         if not args.dryrun:
             with open(args.path, 'w') as fp:
                 store_csv(fp, records)
+    records['datenum'] = matplotlib.dates.datestr2num(records['Date'])
+    date = guess_completion_time(records, args.source)
+    print("completion time of %s major upgrades: %s" % (args.source, date))
+
     plot_records(args, records)
 
 
@@ -197,7 +204,6 @@ def fake_dates(x, pos):
 
 def plot_records(args, records):
     sns.set(color_codes=True)
-    records['datenum'] = matplotlib.dates.datestr2num(records['Date'])
     graph = sns.lmplot(x='datenum', y='count', hue='release', data=records)
     # return numeric dates into human-readable
     graph.ax.xaxis.set_major_formatter(fake_dates)
@@ -210,10 +216,16 @@ def plot_records(args, records):
         plt.savefig(args.output, format=ext[1:])
 
 
+def guess_completion_time(records, source):
+    subdf = records[records['release'] == source]
+    fit = np.polyfit(subdf['count'], subdf['datenum'], 1)
+    return matplotlib.dates.num2date(np.poly1d(fit)(0)).strftime('%Y-%m-%d')
+
+
 if __name__ == '__main__':
     args = parse_args()
     logging.basicConfig(format='%(message)s', level=args.log_level.upper())
-    if args.selftest:
+    if args.test:
         logging.info('# running test suite')
         test_puppetdb_query()
         sys.exit(0)
