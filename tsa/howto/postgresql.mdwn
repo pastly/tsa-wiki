@@ -335,6 +335,9 @@ If you get this kind of errors, it's because you forgot to restore the
     2019-10-08 21:25:46.467 UTC [14315] LOG:  database system is ready to accept connections
     2019-10-08 21:25:46.467 UTC [14351] LOG:  autovacuum launcher started
 
+See also the "Direct restore procedure" troubleshooting section, which
+also applies here.
+
 Dealing with Nagios warnings
 ----------------------------
 
