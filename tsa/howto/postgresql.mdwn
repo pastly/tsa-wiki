@@ -257,7 +257,11 @@ information on how to pick a restore procedure.
     by name should be enough to find the latest one. Uncompress the
     `BASE` file in place, as the `postgres` user:
 
-        sudo -u postgres ssh torbackup@$BACKUPSERVER $(hostname) retrieve-file pg $OLDSERVER bacula.BASE.$BACKUPSERVER-20191004-062226-$OLDSERVER.torproject.org-$CLUSTERNAME-9.6-backup.tar.gz | sudo -u postgres tar -C /var/lib/postgresql/9.6/main -x -z -f -
+        sudo -u postgres -i
+        mkdir -m 0700 /var/lib/postgresql/9.6/main
+        ssh torbackup@$BACKUPSERVER $(hostname) retrieve-file pg $OLDSERVER $BASEFILE \
+          | sed '0,/^$/d' \
+          | tar -C /var/lib/postgresql/9.6/main -x -z -f -
 
     Add a `pv` before the `tar` call in the pipeline for a progress bar
     with large backups, and replace:
@@ -268,6 +272,8 @@ information on how to pick a restore procedure.
        (e.g. `dictyotum`)
      * `$CLUSTERNAME` with the name of the cluster to restore
        (e.g. usually `main`)
+     * `$BASEFILE` with something like
+       `$CLUSTERNAME.BASE.$BACKUPSERVER-20191004-062226-$OLDSERVER.torproject.org-$CLUSTERNAME-9.6-backup.tar.gz`
 
     The above might hang for a while, but it should complete. The
     "hang" is because `retrieve-file` sends a header which includes a
