@@ -221,10 +221,6 @@ file in place, as the `postgres` user:
     sudo -u postgres -i
     sudo -u postgres ssh torbackup@$BACKUPSERVER $(hostname) retrieve-file pg $OLDSERVER bacula.BASE.$BACKUPSERVER-20191004-062226-$OLDSERVER.torproject.org-$CLUSTERNAME-9.6-backup.tar.gz | tar -C /var/lib/postgresql/9.6/main -x -z -f -
 
-TODO: the above just hangs. For some reason the backup server refuses
-to send this file. Use the indirect procedure to restore the BASE,
-which there is hopefully space for without the logs...
-
 Add a `pv` before the `tar` call in the pipeline for a progress bar
 with large backups, and replace:
 
@@ -234,6 +230,12 @@ with large backups, and replace:
     (e.g. `dictyotum`)
  3. `$CLUSTERNAME` with the name of the cluster to restore
     (e.g. usually `main`)
+
+TODO: The above might hang for a while, but it should complete. It
+`retrieve-file` sends a header which includes a `sha512sum` which
+takes a while to compute. If it doesn't work, use the indirect
+procedure to restore the BASE, which there is hopefully space for
+without the logs...
 
 Make sure the `pg_xlog` directory doesn't contain any files.
 
