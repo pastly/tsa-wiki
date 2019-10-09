@@ -286,7 +286,7 @@ information on how to pick a restore procedure.
 
  6. Make sure the `pg_xlog` directory doesn't contain any files.
  
-        rm -f -- /var/lib/postgresql/9.6/main/pg_xlog/*
+        rm -rf -- /var/lib/postgresql/9.6/main/pg_xlog/*
 
  7. Then you need to create a `recovery.conf` file in
     `/var/lib/postgresql/9.6/main` that will tell postgres where to
