@@ -275,10 +275,14 @@ information on how to pick a restore procedure.
      * `$BASEFILE` with something like
        `$CLUSTERNAME.BASE.$BACKUPSERVER-20191004-062226-$OLDSERVER.torproject.org-$CLUSTERNAME-9.6-backup.tar.gz`
 
-    The above might hang for a while, but it should complete. The
+    The above might hang for a while (yes, maybe even a minute) in the
+    beginning, but it should eventually get started and complete. The
     "hang" is because `retrieve-file` sends a header which includes a
-    `sha512sum` and it takes a while to compute. If it doesn't work,
-    use the indirect procedure to restore the `BASE` file.
+    `sha512sum` and it takes a while to compute. The `sed` command in
+    that pipeline is there to skip that header.
+
+    If the above doesn't work, use the indirect procedure to restore
+    the `BASE` file.
 
  6. Make sure the `pg_xlog` directory doesn't contain any files.
  
