@@ -222,13 +222,13 @@ information on how to pick a restore procedure.
  2. On that new PostgreSQL server, show the `postgres` server public
     key, creating it if missing:
 
-    [ -f ~postgres/.ssh/id_rsa.pub ] || sudo -u postgres ssh-keygen
-    cat ~postgres/.ssh/*.pub
+        [ -f ~postgres/.ssh/id_rsa.pub ] || sudo -u postgres ssh-keygen
+        cat ~postgres/.ssh/*.pub
 
  3. Then on the backup server, allow the user to access backups of the
     old server:
 
-    echo "command="/usr/local/bin/debbackup-ssh-wrap --read-allow=/srv/backups/pg/$OLDSERVER $CLIENT",restrict $HOSTKEY" > /etc/ssh/userkeys/torbackup.more
+        echo "command="/usr/local/bin/debbackup-ssh-wrap --read-allow=/srv/backups/pg/$OLDSERVER $CLIENT",restrict $HOSTKEY" > /etc/ssh/userkeys/torbackup.more
 
     This assumes we connect to a *previous* server's backups, named
     `$OLDSERVER` (e.g. `dictyotum`). The `$HOSTKEY` is the public key
