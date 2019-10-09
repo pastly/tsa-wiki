@@ -419,9 +419,9 @@ again. Check that everything works with:
 
 Run a few of the "Basic commands", above just to make sure.
 
-TODO:
+TODO: `15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link`
 
-    15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link
+TODO: how to switch between the two servers?
 
 Get files without a director
 ----------------------------
