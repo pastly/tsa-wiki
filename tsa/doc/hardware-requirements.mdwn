@@ -1,0 +1,34 @@
+[[!meta title="Hardware requirements"]]
+
+So you want to give us hardware? Great! Here's what we need...
+==============================================================
+
+If you want to [donate hardware][], there are specific requirements
+for machine we manage that you should follow. For other donations,
+please see the [donation site][].
+
+[donate hardware]: https://donate.torproject.org/donor-faq
+[donation site]: https://donate.torproject.org/
+
+This list is not final, and if you have questions, please [[contact
+us|how-to-get-help]].
+
+Must have:
+
+ * Out of band management with dedicated network port, preferably a
+   BMC, or failing that, serial console and networked power bars
+   Rackmount
+ * No human intervention to power on or reboot
+ * Warranty or post-warranty hardware support, preferably provided by
+   the sponsor
+ * Under the 'ownership' of Tor, although long-term loans can also
+   work
+
+Would like to have:
+
+ * Production quality rather than pre-production hardware
+ * Support for multiple drives (so we can do RAID) although this can
+   be waived for disposable servers like build boxes
+ * Hosting for the machine: we do not run our own datacenters or rack,
+   so it would be preferable if you can also find a hosting location
+   for the machine
