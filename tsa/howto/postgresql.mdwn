@@ -77,10 +77,13 @@ Same with databases:
 
 Source: [PostgreSQL wiki](https://wiki.postgresql.org/wiki/Disk_Usage). See also [the upstream manual](https://www.postgresql.org/docs/9.1/disk-usage.html).
 
-Restore procedures
-------------------
+Indirect restore procedures
+---------------------------
 
-This is an adaptation of the [official recovery procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY). 
+This is an adaptation of the [official recovery procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY). This
+procedures first transfers the backup files to the server and then
+runs the restore, so it require twice the space of the direct
+procedure, documented below.
 
 First, you will need to give the backup server access to the new
 postgresql server, which we'll call the "client" for now. First, login
@@ -104,12 +107,6 @@ And on the client, allow the server `$HOSTKEY` (the above `cat
 /etc/ssh/ssh_host_rsa_key.pub` on the backup server):
 
     echo "$HOSTKEY" >> /etc/ssh/userkeys/root
-
-Note: the above gives the backup server access to the client, but if we give
-access the *client* access to the backup server, we can avoid copying
-the WAL files altogether and instead use the same SSH connexion as the
-backup procedure to restore the WAL files. See the "bis" procedure
-below for another example, which currently does not work.
 
 Once the backup server has access to the client, we can transfer files
 over:
