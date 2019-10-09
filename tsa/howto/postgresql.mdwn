@@ -83,77 +83,92 @@ Indirect restore procedures
 This is an adaptation of the [official recovery procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY). This
 procedures first transfers the backup files to the server and then
 runs the restore, so it require twice the space of the direct
-procedure, documented below.
+procedure, documented below. If disk space is sparse, the latter
+procedure should be prefered.
 
-First, you will need to give the backup server access to the new
-postgresql server, which we'll call the "client" for now. First, login
-to the client and allow the backup server to connect, and show the
-public hostkey:
+ 1. First, you will need to give the backup server access to the new
+    postgresql server, which we'll call the "client" for now. First,
+    login to the client and allow the backup server to connect, and
+    show the public hostkey:
 
-    iptables -I INPUT -s $BACKUP_SERVER -j ACCEPT
-    cat /etc/ssh/ssh_host_rsa_key.pub
+        iptables -I INPUT -s $BACKUP_SERVER -j ACCEPT
+        cat /etc/ssh/ssh_host_rsa_key.pub
 
-Then load the server's private key in an agent and show it to allow on
-the client. On the server, assuming `$IP` is the IP of the client and
-`$HOSTKEY` is its hostkey:
+ 2. Then load the server's private key in an agent and show it to
+    allow on the client. On the server, assuming `$IP` is the IP of
+    the client and `$HOSTKEY` is its hostkey:
 
-    ssh-agent bash
-    ssh-add /etc/ssh/ssh_host_rsa_key
-    mkdir -p ~/.ssh
-    echo "$IP $HOSTKEY" >> ~/.ssh/known_hosts
-    cat /etc/ssh/ssh_host_rsa_key.pub
+        ssh-agent bash
+        ssh-add /etc/ssh/ssh_host_rsa_key
+        mkdir -p ~/.ssh
+        echo "$IP $HOSTKEY" >> ~/.ssh/known_hosts
+        cat /etc/ssh/ssh_host_rsa_key.pub
 
-And on the client, allow the server `$HOSTKEY` (the above `cat
-/etc/ssh/ssh_host_rsa_key.pub` on the backup server):
+ 3. And on the client, allow the server `$HOSTKEY` (the above `cat
+    /etc/ssh/ssh_host_rsa_key.pub` on the backup server):
 
-    echo "$HOSTKEY" >> /etc/ssh/userkeys/root
+        echo "$HOSTKEY" >> /etc/ssh/userkeys/root
 
-Once the backup server has access to the client, we can transfer files
-over:
+ 4. Then, we can transfer files over from the backup server to the
+    client:
 
-    cd /srv/backups/pg
-    rsync -aP $CLIENT $CLIENT:/var/lib/postgresql/restore
+        cd /srv/backups/pg
+        rsync -aP $CLIENT $CLIENT:/var/lib/postgresql/restore
 
-Then, on the client, install the software, stop the server and move
-the template cluster out of the way:
+ 5. Then, on the client, install the software, stop the server and
+    move the template cluster out of the way:
 
-    apt install postgres rsync
-    service postgresql stop
-    mv /var/lib/postgresql/*/main{,.orig}
-    su -c 'mkdir -m 0700 /var/lib/postgresql/9.6/main' postgres
+        apt install postgres rsync
+        service postgresql stop
+        mv /var/lib/postgresql/*/main{,.orig}
+        su -c 'mkdir -m 0700 /var/lib/postgresql/9.6/main' postgres
 
-We'll be restoring files in that directory.
+    We'll be restoring files in that `main` directory.
 
-Make sure you run the SAME MAJOR VERSION of PostgreSQL than the
-backup! You cannot restore across versions. This might mean installing
-from backports or an older version of Debian.
+    Make sure you run the SAME MAJOR VERSION of PostgreSQL than the
+    backup! You cannot restore across versions. This might mean
+    installing from backports or an older version of Debian.
 
-Then you need to find the right `BASE` file to restore from. Each
-`BASE` file has a timestamp in its filename, so just sorting them by
-name should be enough to find the latest one. Uncompress the `BASE`
-file in place:
+ 6. Then you need to find the right `BASE` file to restore from. Each
+    `BASE` file has a timestamp in its filename, so just sorting them
+    by name should be enough to find the latest one. Uncompress the
+    `BASE` file in place:
 
-    cat ~postgres/restore/$CLIENT/main.BASE.bungei.torproject.org-20190805-145239-$CLIENT.torproject.org-main-9.6-backup.tar.gz | su -c 'tar -C /var/lib/postgresql/11/main -x -z -f -'
+        cat ~postgres/restore/$CLIENT/main.BASE.bungei.torproject.org-20190805-145239-$CLIENT.torproject.org-main-9.6-backup.tar.gz | su postgres -c 'tar -C /var/lib/postgresql/11/main -x -z -f -'
 
-(Use `pv` instead of `cat` for a progress bar with large backups.)
+    (Use `pv` instead of `cat` for a progress bar with large backups.)
 
-Make sure the `pg_xlog` directory doesn't contain any files.
+ 7. Make sure the `pg_xlog` directory doesn't contain any files.
 
-Then you need to create a `recovery.conf` file in
-`/var/lib/postgresql/9.6/main` that will tell postgres where to find
-the WAL files. At least the `restore_command` need to be
-specified. Something like this should work:
+ 8. Then you need to create a `recovery.conf` file in
+    `/var/lib/postgresql/9.6/main` that will tell postgres where to
+    find the WAL files. At least the `restore_command` need to be
+    specified. Something like this should work:
 
-    restore_command = 'cp /var/lib/postgresql/restore/subnotablie/main.WAL.%f %p'
+        restore_command = 'cp /var/lib/postgresql/restore/subnotablie/main.WAL.%f %p'
 
-You can specify a specific recovery point in the `recovery.conf`, see
-the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for more information.
+    You can specify a specific recovery point in the `recovery.conf`,
+    see the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for more information.
 
-Then start the server and look at the logs to follow the recovery
-process:
+ 9. Then start the server and look at the logs to follow the recovery
+    process:
 
-    service postgresql start
-    tail -f /var/log/postgresql/*
+        service postgresql start
+        tail -f /var/log/postgresql/*
+
+When the restore succeeds, the `recovery.conf` file will be renamed to
+`recovery.done` and you will see something like:
+
+    2019-08-12 21:36:53.453 UTC [16901] LOG:  selected new timeline ID: 2
+    2019-08-12 21:36:53.470 UTC [16901] LOG:  archive recovery complete
+    cp: cannot stat '/var/lib/postgresql/restore/subnotablie/main.WAL.00000001.history': No such file or directory
+    2019-08-12 21:36:53.577 UTC [16901] LOG:  MultiXact member wraparound protections are now enabled
+    2019-08-12 21:36:53.584 UTC [16900] LOG:  database system is ready to accept connections
+
+Ignore the error from `cp` complaining about the `.history` file, it's
+harmless.
+
+### Troubleshooting
 
 If you find the following error in the logs:
 
@@ -168,18 +183,6 @@ could be many causes for this, but the ones I stumbled upon were:
    not `~root`)
  * wrong path or pattern for `restore_command` (double-check the path
    and make sure to include the right prefix, e.g. `main.WAL`)
-
-When the restore succeeds, the `recovery.conf` file will be renamed to
-`recovery.done` and you will see something like:
-
-    2019-08-12 21:36:53.453 UTC [16901] LOG:  selected new timeline ID: 2
-    2019-08-12 21:36:53.470 UTC [16901] LOG:  archive recovery complete
-    cp: cannot stat '/var/lib/postgresql/restore/subnotablie/main.WAL.00000001.history': No such file or directory
-    2019-08-12 21:36:53.577 UTC [16901] LOG:  MultiXact member wraparound protections are now enabled
-    2019-08-12 21:36:53.584 UTC [16900] LOG:  database system is ready to accept connections
-
-Ignore the error from `cp` complaining about the `.history` file, it's
-harmless.
 
 Direct restore procedure
 ------------------------
