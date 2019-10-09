@@ -396,7 +396,21 @@ on the [postgres site](https://www.postgresql.org/docs/).
 (the BASE tarballs are created with `pg_basebackup`
 and the WALs are also there.)
 
-Once you have the postgres database cluster restored, start the director.
+You will also need to restore the file
+`/etc/dsa/bacula-reader-database` from backups (see "Getting files
+without a director", below), as that file is not (currently) managed
+through [[puppet]] (TODO). Alternatively, that file can be recreated
+by hand, using a syntax like this:
+
+    service=bacula user=bacula-dictyotum-reader password=X
+
+The matching user will need to have its password modified to match
+`X`, obviously.
+
+Once you have the postgres database cluster restored, start the
+director:
+
+    systemctl start bacula-director
 
 Then everything should be fairies and magic and happiness all over
 again. Check that everything works with:

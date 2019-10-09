@@ -289,10 +289,6 @@ You should see something like this:
 
 ... and so on.
 
-You will also need to restore the file
-`/etc/dsa/bacula-reader-database` from [[backup]]s, as that file is not
-(currently) managed through [[puppet]] (TODO).
-
 Then remove the temporary SSH access on the backup server, either by
 removing the `.more` key file or restoring the previous key
 configuration:
