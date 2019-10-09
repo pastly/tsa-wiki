@@ -120,7 +120,7 @@ the template cluster out of the way:
     apt install postgres rsync
     service postgresql stop
     mv /var/lib/postgresql/*/main{,.orig}
-    su -c 'mkdir -m 0700 /var/lib/postgresql/*/main' postgres
+    su -c 'mkdir -m 0700 /var/lib/postgresql/9.6/main' postgres
 
 We'll be restoring files in that directory.
 
