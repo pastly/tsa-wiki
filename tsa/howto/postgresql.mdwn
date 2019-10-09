@@ -266,24 +266,32 @@ process:
     service postgresql start
     tail -f /var/log/postgresql/*
 
-TODO: SSH access works, but restore fails:
+You should see something like this:
 
-    2019-10-08 21:25:43.711 UTC [14320] [unknown]@[unknown] LOG:  incomplete startup packet
-    2019-10-08 21:25:44.215 UTC [14326] postgres@postgres FATAL:  the database system is starting up
-    2019-10-08 21:25:44.451 UTC [14316] WARNING:  WAL was generated with wal_level=minimal, data may be missing
-    2019-10-08 21:25:44.451 UTC [14316] HINT:  This happens if you temporarily set wal_level=minimal without taking a new base backup.
-    2019-10-08 21:25:44.451 UTC [14316] LOG:  consistent recovery state reached at 0/153A3F0
-    2019-10-08 21:25:44.451 UTC [14316] LOG:  invalid record length at 0/153A3F0: wanted 24, got 0
-    2019-10-08 21:25:44.451 UTC [14316] LOG:  redo is not required
-    2019-10-08 21:25:44.721 UTC [14334] postgres@postgres FATAL:  the database system is starting up
-    2019-10-08 21:25:45.226 UTC [14340] postgres@postgres FATAL:  the database system is starting up
-    2019-10-08 21:25:45.549 UTC [14316] LOG:  selected new timeline ID: 6
-    2019-10-08 21:25:45.732 UTC [14343] postgres@postgres FATAL:  the database system is starting up
-    2019-10-08 21:25:45.765 UTC [14316] LOG:  archive recovery complete
-    2019-10-08 21:25:46.238 UTC [14349] postgres@postgres FATAL:  the database system is starting up
-    2019-10-08 21:25:46.466 UTC [14316] LOG:  MultiXact member wraparound protections are now enabled
-    2019-10-08 21:25:46.467 UTC [14315] LOG:  database system is ready to accept connections
-    2019-10-08 21:25:46.467 UTC [14351] LOG:  autovacuum launcher started
+    2019-10-09 21:17:47.335 UTC [9632] LOG:  database system was interrupted; last known up at 2019-10-04 08:12:28 UTC
+    2019-10-09 21:17:47.517 UTC [9632] LOG:  starting archive recovery
+    2019-10-09 21:17:47.524 UTC [9633] [unknown]@[unknown] LOG:  incomplete startup packet
+    2019-10-09 21:17:48.032 UTC [9639] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:17:48.538 UTC [9642] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:17:49.046 UTC [9645] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:17:49.354 UTC [9632] LOG:  restored log file "00000001000005B200000074" from archive
+    2019-10-09 21:17:49.552 UTC [9648] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:17:50.058 UTC [9651] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:17:50.565 UTC [9654] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:17:50.836 UTC [9632] LOG:  redo starts at 5B2/74000028
+    2019-10-09 21:17:51.071 UTC [9659] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:17:51.577 UTC [9665] postgres@postgres FATAL:  the database system is starting up
+    2019-10-09 21:20:35.790 UTC [9632] LOG:  restored log file "00000001000005B20000009F" from archive
+    2019-10-09 21:20:37.745 UTC [9632] LOG:  restored log file "00000001000005B2000000A0" from archive
+    2019-10-09 21:20:39.648 UTC [9632] LOG:  restored log file "00000001000005B2000000A1" from archive
+    2019-10-09 21:20:41.738 UTC [9632] LOG:  restored log file "00000001000005B2000000A2" from archive
+    2019-10-09 21:20:43.773 UTC [9632] LOG:  restored log file "00000001000005B2000000A3" from archive
+
+... and so on.
+
+You will also need to restore the file
+`/etc/dsa/bacula-reader-database` from [[backup]]s, as that file is not
+(currently) managed through [[puppet]] (TODO).
 
 Then remove the temporary SSH access on the backup server, either by
 removing the `.more` key file or restoring the previous key
@@ -304,6 +312,26 @@ It's because the SSH keys deployed on the server does not have the
 If the restore doesn't work, try to connect by hand:
 
     sudo -u postgres /usr/local/bin/pg-receive-file-from-backup dictyotum bacula.WAL.00000001000005AB0000003A /tmp/foo
+
+If you get this kind of errors, it's because you forgot to restore the
+`BASE` file first:
+
+    2019-10-08 21:25:43.711 UTC [14320] [unknown]@[unknown] LOG:  incomplete startup packet
+    2019-10-08 21:25:44.215 UTC [14326] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:44.451 UTC [14316] WARNING:  WAL was generated with wal_level=minimal, data may be missing
+    2019-10-08 21:25:44.451 UTC [14316] HINT:  This happens if you temporarily set wal_level=minimal without taking a new base backup.
+    2019-10-08 21:25:44.451 UTC [14316] LOG:  consistent recovery state reached at 0/153A3F0
+    2019-10-08 21:25:44.451 UTC [14316] LOG:  invalid record length at 0/153A3F0: wanted 24, got 0
+    2019-10-08 21:25:44.451 UTC [14316] LOG:  redo is not required
+    2019-10-08 21:25:44.721 UTC [14334] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:45.226 UTC [14340] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:45.549 UTC [14316] LOG:  selected new timeline ID: 6
+    2019-10-08 21:25:45.732 UTC [14343] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:45.765 UTC [14316] LOG:  archive recovery complete
+    2019-10-08 21:25:46.238 UTC [14349] postgres@postgres FATAL:  the database system is starting up
+    2019-10-08 21:25:46.466 UTC [14316] LOG:  MultiXact member wraparound protections are now enabled
+    2019-10-08 21:25:46.467 UTC [14315] LOG:  database system is ready to accept connections
+    2019-10-08 21:25:46.467 UTC [14351] LOG:  autovacuum launcher started
 
 Dealing with Nagios warnings
 ----------------------------
