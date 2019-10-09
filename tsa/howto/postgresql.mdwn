@@ -203,23 +203,57 @@ On the postgres server:
 
 Then on the backup server:
 
-    echo "command="/usr/local/bin/debbackup-ssh-wrap $OLDSERVER",restrict $HOSTKEY" > /etc/ssh/userkeys/torbackup.more
+    echo "command="/usr/local/bin/debbackup-ssh-wrap --read-allow=/srv/backups/pg/$OLDSERVER $CLIENT",restrict $HOSTKEY" > /etc/ssh/userkeys/torbackup.more
 
 This assumes we connect to a *previous* server's backups, named
 `$OLDSERVER` (e.g. `dictyotum`). The `$HOSTKEY` is the public key
 found on the postgres server above.
+
+Warning: the above will fail if the key is already present in
+`/etc/ssh/userkeys/torbackup`, edit the key in there instead in that
+case.
+
+Then you need to find the right `BASE` file to restore from. Each
+`BASE` file has a timestamp in its filename, so just sorting them by
+name should be enough to find the latest one. Uncompress the `BASE`
+file in place, as the `postgres` user:
+
+    sudo -u postgres -i
+    sudo -u postgres ssh torbackup@$BACKUPSERVER $(hostname) retrieve-file pg $OLDSERVER bacula.BASE.$BACKUPSERVER-20191004-062226-$OLDSERVER.torproject.org-$CLUSTERNAME-9.6-backup.tar.gz | tar -C /var/lib/postgresql/9.6/main -x -z -f -
+
+TODO: the above just hangs. For some reason the backup server refuses
+to send this file. Use the indirect procedure to restore the BASE,
+which there is hopefully space for without the logs...
+
+Add a `pv` before the `tar` call in the pipeline for a progress bar
+with large backups, and replace:
+
+ 1. `$BACKUPSERVER` with the backupserver name and username (currently
+    `bungei.torproject.org`)
+ 2. `$OLDSERVER` with the old server's (short) hostname
+    (e.g. `dictyotum`)
+ 3. `$CLUSTERNAME` with the name of the cluster to restore
+    (e.g. usually `main`)
+
+Make sure the `pg_xlog` directory doesn't contain any files.
 
 Then you need to create a `recovery.conf` file in
 `/var/lib/postgresql/9.6/main` that will tell postgres where to find
 the WAL files. At least the `restore_command` need to be
 specified. Something like this should work:
 
-    restore_command = '/usr/local/bin/pg-receive-file-from-backup $OLDSERVER main.WAL.%f %p'
+    restore_command = '/usr/local/bin/pg-receive-file-from-backup $OLDSERVER $CLUSTERNAME.WAL.%f %p'
 
-... where `$OLDSERVER` should be replaced by the previous postgresql
-server name (e.g. `dictyotum`). You can specify a specific recovery
-point in the `recovery.conf`, see the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for
-more information. Make sure the file is owned by postgres:
+... where:
+
+ * `$OLDSERVER` should be replaced by the previous postgresql server
+   name (e.g. `dictyotum`)
+ * `$CLUSTERNAME` should be replaced by the previous cluster name
+   (e.g. `main`, generally)
+
+You can specify a specific recovery point in the `recovery.conf`, see
+the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for more information. Make sure the
+file is owned by postgres:
 
     $EDITOR /var/lib/postgresql/9.6/main/recovery.conf
     chown postgres /var/lib/postgresql/9.6/main/recovery.conf
@@ -230,15 +264,7 @@ process:
     service postgresql start
     tail -f /var/log/postgresql/*
 
-At this point, I'm getting this error and can't get out:
-
-    2019-10-08 21:21:03.745 UTC [14130] postgres@postgres FATAL:  the database system is starting up
-    No directories from which read is allowed given on cmdline.
-    Uknown format in line 1 () when getting dictyotum:main.WAL.00000005.history from backup host
-
-By *editing* the host's SSH key in `/etc/ssh/userkeys/torbackup` to
-add `-r /srv/backups/pg/dictyotum`, it is actually allowed to talk to
-the backup server, but still fails to restore:
+TODO: SSH access works, but restore fails:
 
     2019-10-08 21:25:43.711 UTC [14320] [unknown]@[unknown] LOG:  incomplete startup packet
     2019-10-08 21:25:44.215 UTC [14326] postgres@postgres FATAL:  the database system is starting up
@@ -257,11 +283,25 @@ the backup server, but still fails to restore:
     2019-10-08 21:25:46.467 UTC [14315] LOG:  database system is ready to accept connections
     2019-10-08 21:25:46.467 UTC [14351] LOG:  autovacuum launcher started
 
-TODO: figure out this voodoo.
-
-Then remove the temporary SSH access on the backup server:
+Then remove the temporary SSH access on the backup server, either by
+removing the `.more` key file or restoring the previous key
+configuration:
 
     rm /etc/ssh/userkeys/torbackup.more
+
+### Troubleshooting
+
+If you get this error in the PostgreSQL restore logs:
+
+    No directories from which read is allowed given on cmdline.
+    Unkown format in line 1 () when getting dictyotum:main.WAL.00000005.history from backup host
+
+It's because the SSH keys deployed on the server does not have the
+`--read-allowed` argument.
+
+If the restore doesn't work, try to connect by hand:
+
+    sudo -u postgres /usr/local/bin/pg-receive-file-from-backup dictyotum bacula.WAL.00000001000005AB0000003A /tmp/foo
 
 Dealing with Nagios warnings
 ----------------------------
