@@ -77,14 +77,34 @@ Same with databases:
 
 Source: [PostgreSQL wiki](https://wiki.postgresql.org/wiki/Disk_Usage). See also [the upstream manual](https://www.postgresql.org/docs/9.1/disk-usage.html).
 
+Picking a restore procedures
+----------------------------
+
+We have two ways of restoring PostgreSQL backups, **indirect** and
+**direct**.
+
+The **indirect** procedures first transfers the backup files to the
+server and then runs the restore, so it require more space than the
+direct procedure. It might also be slower than the direct restore
+procedure because files are copied around twice: once from the backup
+server, and again loaded in the database.
+
+The **direct** procedure *streams* the backup files directly from the
+backup server. The `BASE` file is streamed into the `tar` command for
+restore of the base snapshot, then the PostgreSQL restore command
+copies each log directly from the backup server as well. It requires
+minimal amount of space, as files are not copied to a temporary
+location on the new server. The downside is it might be more difficult
+to deploy and diagnose, as it has more moving parts.
+
+Both procedures are adaptations of the [official recovery
+procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY), which can be refered to for more information.
+
 Indirect restore procedures
 ---------------------------
 
-This is an adaptation of the [official recovery procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY). This
-procedures first transfers the backup files to the server and then
-runs the restore, so it require twice the space of the direct
-procedure, documented below. If disk space is sparse, the latter
-procedure should be prefered.
+Reminder: this procedure **copies** the backup files from the backup
+server to the database server and restores from those.
 
  1. First, you will need to give the backup server access to the new
     postgresql server, which we'll call the "client" for now. First,
@@ -187,10 +207,9 @@ could be many causes for this, but the ones I stumbled upon were:
 Direct restore procedure
 ------------------------
 
-The above procedure assumes a bare-bones recovery, on a new server,
-but it's also possible to sync an existing server from backups. This
-is also an adaptation of the [official recovery
-procedure](https://www.postgresql.org/docs/9.3/continuous-archiving.html#BACKUP-PITR-RECOVERY).
+Reminder: this procedure **streams** the files from the backup server
+to the database server and restore directly. See above for more
+information on how to pick a restore procedure.
 
  1. First install the right PostgreSQL version:
 
