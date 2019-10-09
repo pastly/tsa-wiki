@@ -27,6 +27,7 @@ anarcat, hiro, ln5, qbi and weasel are here.
  * continued work on the upstream prometheus module
  * tested puppetboard as a Puppet Dashboard ([#31969][])
 
+[#31957]: https://bugs.torproject.org/31957
 [#6367]: https://bugs.torproject.org/6367
 [#30009]: https://bugs.torproject.org/30009
 [#30020]: https://bugs.torproject.org/30020
