@@ -135,7 +135,11 @@ server to the database server and restores from those.
         cd /srv/backups/pg
         rsync -aP $CLIENT $CLIENT:/var/lib/postgresql/restore
 
- 5. Then, on the client, install the software, stop the server and
+ 5. Disable Puppet so you have control on when PostgreSQL is running:
+
+        puppet agent --disable 'keeping control of postgresql startup -- anarcat 2019-10-09'
+
+ 6. Then, on the client, install the software, stop the server and
     move the template cluster out of the way:
 
         apt install postgres rsync
@@ -149,7 +153,7 @@ server to the database server and restores from those.
     backup! You cannot restore across versions. This might mean
     installing from backports or an older version of Debian.
 
- 6. Then you need to find the right `BASE` file to restore from. Each
+ 7. Then you need to find the right `BASE` file to restore from. Each
     `BASE` file has a timestamp in its filename, so just sorting them
     by name should be enough to find the latest one. Uncompress the
     `BASE` file in place:
@@ -158,9 +162,9 @@ server to the database server and restores from those.
 
     (Use `pv` instead of `cat` for a progress bar with large backups.)
 
- 7. Make sure the `pg_xlog` directory doesn't contain any files.
+ 8. Make sure the `pg_xlog` directory doesn't contain any files.
 
- 8. Then you need to create a `recovery.conf` file in
+ 9. Then you need to create a `recovery.conf` file in
     `/var/lib/postgresql/9.6/main` that will tell postgres where to
     find the WAL files. At least the `restore_command` need to be
     specified. Something like this should work:
@@ -170,11 +174,15 @@ server to the database server and restores from those.
     You can specify a specific recovery point in the `recovery.conf`,
     see the [upstream documentation](https://www.postgresql.org/docs/9.3/recovery-target-settings.html) for more information.
 
- 9. Then start the server and look at the logs to follow the recovery
-    process:
+ 10. Then start the server and look at the logs to follow the recovery
+     process:
 
         service postgresql start
         tail -f /var/log/postgresql/*
+
+ 11. re-enable Puppet, which should clean up the extra SSH key:
+
+        puppet agent -t
 
 When the restore succeeds, the `recovery.conf` file will be renamed to
 `recovery.done` and you will see something like:
@@ -211,21 +219,27 @@ Reminder: this procedure **streams** the files from the backup server
 to the database server and restore directly. See above for more
 information on how to pick a restore procedure.
 
- 1. First install the right PostgreSQL version:
+ 1. First, disable Puppet so you have control on when PostgreSQL is
+    running:
+ 
+        puppet agent --disable 'keeping control of postgresql startup -- anarcat 2019-10-09'
+
+ 2. Then install the right PostgreSQL version and stop the server:
 
         apt install postgres-9.6
+        service postgresql stop
 
     Make sure you run the SAME MAJOR VERSION of PostgreSQL than the
     backup! You cannot restore across versions. This might mean
     installing from backports or an older version of Debian.
 
- 2. On that new PostgreSQL server, show the `postgres` server public
+ 3. On that new PostgreSQL server, show the `postgres` server public
     key, creating it if missing:
 
         [ -f ~postgres/.ssh/id_rsa.pub ] || sudo -u postgres ssh-keygen
         cat ~postgres/.ssh/*.pub
 
- 3. Then on the backup server, allow the user to access backups of the
+ 4. Then on the backup server, allow the user to access backups of the
     old server:
 
         echo "command="/usr/local/bin/debbackup-ssh-wrap --read-allow=/srv/backups/pg/$OLDSERVER $CLIENT",restrict $HOSTKEY" > /etc/ssh/userkeys/torbackup.more
@@ -238,7 +252,7 @@ information on how to pick a restore procedure.
     `/etc/ssh/userkeys/torbackup`, edit the key in there instead in
     that case.
 
- 4. Then you need to find the right `BASE` file to restore from. Each
+ 5. Then you need to find the right `BASE` file to restore from. Each
     `BASE` file has a timestamp in its filename, so just sorting them
     by name should be enough to find the latest one. Uncompress the
     `BASE` file in place, as the `postgres` user:
@@ -260,11 +274,11 @@ information on how to pick a restore procedure.
     `sha512sum` and it takes a while to compute. If it doesn't work,
     use the indirect procedure to restore the `BASE` file.
 
- 5. Make sure the `pg_xlog` directory doesn't contain any files.
+ 6. Make sure the `pg_xlog` directory doesn't contain any files.
  
         rm -f -- /var/lib/postgresql/9.6/main/pg_xlog/*
 
- 6. Then you need to create a `recovery.conf` file in
+ 7. Then you need to create a `recovery.conf` file in
     `/var/lib/postgresql/9.6/main` that will tell postgres where to
     find the WAL files. At least the `restore_command` need to be
     specified. Something like this should work:
@@ -285,7 +299,7 @@ information on how to pick a restore procedure.
         $EDITOR /var/lib/postgresql/9.6/main/recovery.conf
         chown postgres /var/lib/postgresql/9.6/main/recovery.conf
 
- 7. Then start the server and look at the logs to follow the recovery
+ 8. Then start the server and look at the logs to follow the recovery
     process:
 
         service postgresql start
@@ -314,11 +328,15 @@ information on how to pick a restore procedure.
 
     ... and so on.
 
- 8. Then remove the temporary SSH access on the backup server, either
+ 9. Then remove the temporary SSH access on the backup server, either
     by removing the `.more` key file or restoring the previous key
     configuration:
 
         rm /etc/ssh/userkeys/torbackup.more
+
+ 10. re-enable Puppet:
+
+        puppet agent -t
 
 ### Troubleshooting
 
