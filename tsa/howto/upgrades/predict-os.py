@@ -33,7 +33,7 @@ import tempfile
 
 try:
     import pytest
-except ImportError:
+except ImportError:  # pragma: no cover
     pytest = None
 
 import pandas as pd
@@ -280,7 +280,7 @@ def plot_records(records, guessed_date, args):
     if (args.dryrun or
         (args.output == sys.stdout and
          (sys.stdout.isatty() or 'DISPLAY' in os.environ))):
-        plt.show()
+        plt.show()  # pragma: no cover
     else:
         _, ext = os.path.splitext(args.output.name)
         plt.savefig(args.output, format=ext[1:], bbox_inches='tight')
@@ -362,7 +362,7 @@ def test_weird_completion_time(capsys):
         assert 'suspicious completion time in the past' in messages
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     args = parse_args()
     logging.basicConfig(format='%(message)s', level=args.log_level.upper())
     if args.test:
