@@ -2,25 +2,25 @@
 
 = torproject.org Admins =
 
-The '''admin team''' at the Tor project maintains our infrastructure and
+The **admin team** at the Tor project maintains our infrastructure and
 services.
 
-Within the '''admin team''' we have '''system admins''' (or '''sysadmins'''
-or '''TSA''' or '''TPA''') and '''services admins'''. While the distinction
+Within the **admin team** we have **system admins** (or **sysadmins**
+or **TSA** or **TPA**) and **services admins**. While the distinction
 between the two might seem blurry, the rule of thumb is that 
-'''sysadmins''' do not maintain every service that we offer. Rather, they
+**sysadmins** do not maintain every service that we offer. Rather, they
 maintain the underlying computers -- make sure they get package
 updates, make sure they stay on the network, etc.
 
-Then it's up to the '''service admins''' to deploy and maintain their
+Then it's up to the **service admins** to deploy and maintain their
 [[services|https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure]]
 (onionoo, atlas, blog, etc) on top of those machines.
 
-For example, ''"the blog is returning 503 errors"'' is probably the
-responsability service admin, i.e. the blog service is experiencing a
-problem. Instead, ''"the blog doesn't ping"'' or ''"i cannot open a
-TCP connexion"'' is a sysadmin thing, i.e. the machine running the
-blog service has an issue.
+For example, **"the blog is returning 503 errors"** is probably the
+responsability of a **service admin**, i.e. the blog service is
+experiencing a problem. Instead, **"the blog doesn't ping"** or **"i
+cannot open a TCP connexion"** is a **sysadmin** thing, i.e. the
+machine running the blog service has an issue.
 
 == More examples ==
 
@@ -46,4 +46,4 @@ maintained.
 
 A list of development machines can be found
 [[here|https://db.torproject.org/machines.cgi]]. Documentation on
-sysadmin stuff is in *this* wiki, in [[tsa/howto]].
+sysadmin stuff is in **this wiki**, in [[tsa/howto]].
