@@ -342,6 +342,17 @@ information on how to pick a restore procedure.
 
         2019-10-09 23:47:13.446 UTC [16973] LOG:  could not link file "pg_xlog/00000001000005B3000000C3" to "pg_xlog/00000001000005B3000000F9": File exists
 
+    Then the recovery will complete with something like this:
+
+        2019-10-10 01:30:55.460 UTC [16953] LOG:  redo done at 5B8/9C5BE738
+        2019-10-10 01:30:55.460 UTC [16953] LOG:  last completed transaction was at log time 2019-10-10 01:04:23.238233+00
+        2019-10-10 01:31:03.536 UTC [16953] LOG:  restored log file "00000001000005B80000009C" from archive
+        2019-10-10 01:31:06.458 UTC [16953] LOG:  selected new timeline ID: 2
+        2019-10-10 01:31:17.485 UTC [16953] LOG:  archive recovery complete
+        2019-10-10 01:32:11.975 UTC [16953] LOG:  MultiXact member wraparound protections are now enabled
+        2019-10-10 01:32:12.438 UTC [16950] LOG:  database system is ready to accept connections
+        2019-10-10 01:32:12.439 UTC [26501] LOG:  autovacuum launcher started
+
  9. Then remove the temporary SSH access on the backup server, either
     by removing the `.more` key file or restoring the previous key
     configuration:
