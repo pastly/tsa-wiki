@@ -347,121 +347,132 @@ Restore the directory server
 If the storage daemon disappears catastrophically, there's nothing we
 can do: the data is lost. But if the *director* disappears, we can
 still restore from backups. Those instructions should cover the case
-where we need to rebuild the director from backups.
+where we need to rebuild the director from backups. The director is,
+essentially, a PostgreSQL database. Therefore, the restore procedure
+is to restore that database, along with some configuration.
 
-The director is, essentially, a PostgreSQL database. Therefore, the
-restore procedure is to restore that database, along with some
-configuration.
+This procedure can also be used to rotate a replace a still running
+director.
 
-The first step is therefore to create a [[new-machine]] run [[Puppet]]
-with the `roles::backup::director` class applied to the node, say in
-`hiera/nodes/bacula-director-01.yaml`:
+ 1. if the old director is still running, star a fresh backup of the
+    old database cluster from the storage server:
 
-    classes:
-      - roles::backup::director
-    bacula::client::director_server: 'bacula-director-01.torproject.org'
+        sudo -tt bungei sudo -u torbackup postgres-make-base-backups dictyotum.torproject.org:5433 &
 
-This should restore a basic Bacula configuration with the director
-acting, weirdly, as its own director. The last line can be changed in
-`common.yaml` to have all clients refer to this new director, in
-time. Run Puppet by hand on the new director and the storage server a
-few times, so their manifest converge:
-
-    puppet agent -t
-
-The Puppet manifests will fail because PostgreSQL is not
-installed. And even if it would be, it will fail because it doesn't
-have the right passwords. For now, PostgreSQL is configured by hand.
-
-TODO: Do consider deploying it with Puppet, as discussed in
-[[postgresql]].
-
-It might be the case that backups of the director are from an earlier
-version of PostgreSQL than the version available in the new
-machine. In that case, an older `sources.list` needs to be added:
-
-    cat > /etc/apt/sources.list.d/stretch.list <<EOF
-    deb https://deb.debian.org/debian/  stretch  main
-    deb http://security.debian.org/ stretch/updates  main
-    EOF
-    apt update
-    apt install -y postgresql-9.6
-
-Then you need to restore the actual database.  We have
-backups of the bacula postgres cluster on the backup
-storage server (as of 2019-09 that is bungei, and
-the backups are in `/srv/backups/pg/dictyotum`).
-Recover the database as documented in [[postgresql]] or
-on the [postgres site](https://www.postgresql.org/docs/).
-(the BASE tarballs are created with `pg_basebackup`
-and the WALs are also there.)
-
-You will also need to restore the file
-`/etc/dsa/bacula-reader-database` from backups (see "Getting files
-without a director", below), as that file is not (currently) managed
-through [[puppet]] (TODO). Alternatively, that file can be recreated
-by hand, using a syntax like this:
-
-    service=bacula user=bacula-dictyotum-reader password=X
-
-The matching user will need to have its password modified to match
-`X`, obviously.
-
-Once you have the postgres database cluster restored, start the
-director:
-
-    systemctl start bacula-director
-
-Then everything should be fairies and magic and happiness all over
-again. Check that everything works with:
-
-    bconsole
-
-Run a few of the "Basic commands", above just to make sure.
-
-TODO: `15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link`
-
-TODO: how to switch between the two servers? see below
-
-Switching directors
--------------------
-
-TODO: untested procedure.
-
- 1. disable puppet:
+ 2. disable puppet on the old director:
  
-        puppet agent --disable 'disabling scheduler -- anarcat 2019-10-10' 
+        ssh dictyotum.torproject.org puppet agent --disable 'disabling scheduler -- anarcat 2019-10-10' 
 
- 2. disable scheduler, by commenting out the scheduler:
+ 3. disable scheduler, by commenting out the cron job, and wait for
+    jobs to complete, then shutdown the old director:
  
         sed -i '/dsa-bacula-scheduler/s/^/#/' /etc/cron.d/puppet-crontab
-
- 3. wait for jobs to complete:
- 
         watch -c "echo 'status director' | bconsole "
+        service bacula-director stop
 
     TODO: this could be improved: `<weasel> it's idle when there are
     no non-idle 'postgres: bacula bacula' processes and it doesn't
     have any open tcp connections?`
 
- 4. shutdown the director:
- 
-        service bacula-director stop
+ 4. create a [[new-machine]] run [[Puppet]] with the
+    `roles::backup::director` class applied to the node, say in
+    `hiera/nodes/bacula-director-01.yaml`:
 
- 5. switch all nodes to the new director, in
-    `tor-puppet/hiera/common.yaml`:
-    
+        classes:
+        - roles::backup::director
         bacula::client::director_server: 'bacula-director-01.torproject.org'
 
- 6. run [[puppet]] everywhere (or wait for it to run):
- 
-        cumin -b 5 -p 0 -o txt '*' 'puppet agent -t'
+    This should restore a basic Bacula configuration with the director
+    acting, weirdly, as its own director.
 
- 7. synchronize [[postgresql]] backups (TODO: how exactly?)
+ 5. Run Puppet by hand on the new director and the storage server a
+    few times, so their manifest converge:
 
- 8. start the new director:
+        ssh bungei.torproject.org puppet agent -t
+        ssh bacula-director-01.torproject.org puppet agent -t
+        ssh bungei.torproject.org puppet agent -t
+        ssh bacula-director-01.torproject.org puppet agent -t
+        ssh bungei.torproject.org puppet agent -t
+        ssh bacula-director-01.torproject.org puppet agent -t
+        ssh bungei.torproject.org puppet agent -t
+        ssh bacula-director-01.torproject.org puppet agent -t
+
+    The Puppet manifests will fail because PostgreSQL is not
+    installed. And even if it would be, it will fail because it
+    doesn't have the right passwords. For now, PostgreSQL is
+    configured by hand.
+
+    TODO: Do consider deploying it with Puppet, as discussed in
+    [[postgresql]].
+
+ 6. Install the right version of PostgreSQL.
  
-        service bacula-director start
+    It might be the case that backups of the director are from an
+    earlier version of PostgreSQL than the version available in the
+    new machine. In that case, an older `sources.list` needs to be
+    added:
+
+        cat > /etc/apt/sources.list.d/stretch.list <<EOF
+        deb https://deb.debian.org/debian/  stretch  main
+        deb http://security.debian.org/ stretch/updates  main
+        EOF
+        apt update
+
+    Actually install the server:
+
+        apt install -y postgresql-9.6
+
+ 7. Once the base backup from step one is completed (or if there is no
+    old director left), restore the cluster on the new host, see the
+    "Indirect restore procedure" in [[postgresql]]
+
+ 8. You will also need to restore the file
+    `/etc/dsa/bacula-reader-database` from backups (see "Getting files
+    without a director", below), as that file is not (currently)
+    managed through [[puppet]] (TODO). Alternatively, that file can be
+    recreated by hand, using a syntax like this:
+
+        service=bacula user=bacula-dictyotum-reader password=X
+
+    The matching user will need to have its password modified to match
+    `X`, obviously.
+
+ 9. reset the password to the new bacula master, as it changed in
+    puppet:
+    
+        grep dbpassword bacula-dir.conf | cut -f2 -d\"
+        sudo -u postgres psql -c '\password bacula'
+
+ 10. copy over the `pg_hba.conf` from the previous director (TODO: put
+     in [[puppet]])
+
+ 11. Once you have the postgres database cluster restored, start the
+     director:
+
+         systemctl start bacula-director
+
+ 12. Then everything should be fairies and magic and happiness all over
+     again. Check that everything works with:
+
+         bconsole
+
+     Run a few of the "Basic commands", above just to make sure.
+
+ 13. switch all nodes to the new director, in
+     `tor-puppet/hiera/common.yaml`:
+    
+         bacula::client::director_server: 'bacula-director-01.torproject.org'
+
+ 14. run [[puppet]] everywhere (or wait for it to run):
+ 
+         cumin -b 5 -p 0 -o txt '*' 'puppet agent -t'
+
+The old server can now be [[decommissioned|retire-a-host]], if it's
+still around.
+
+TODO: `15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link`
+
+TODO: how to switch between the two servers? see below
 
 Get files without a director
 ----------------------------
