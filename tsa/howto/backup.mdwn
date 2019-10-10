@@ -421,7 +421,47 @@ Run a few of the "Basic commands", above just to make sure.
 
 TODO: `15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link`
 
-TODO: how to switch between the two servers?
+TODO: how to switch between the two servers? see below
+
+Switching directors
+-------------------
+
+TODO: untested procedure.
+
+ 1. disable puppet:
+ 
+        puppet agent --disable 'disabling scheduler -- anarcat 2019-10-10' 
+
+ 2. disable scheduler, by commenting out the scheduler:
+ 
+        sed -i '/dsa-bacula-scheduler/s/^/#/' /etc/cron.d/puppet-crontab
+
+ 3. wait for jobs to complete:
+ 
+        watch -c "echo 'status director' | bconsole "
+
+    TODO: this could be improved: `<weasel> it's idle when there are
+    no non-idle 'postgres: bacula bacula' processes and it doesn't
+    have any open tcp connections?`
+
+ 4. shutdown the director:
+ 
+        service bacula-director stop
+
+ 5. switch all nodes to the new director, in
+    `tor-puppet/hiera/common.yaml`:
+    
+        bacula::client::director_server: 'bacula-director-01.torproject.org'
+
+ 6. run [[puppet]] everywhere (or wait for it to run):
+ 
+        cumin -b 5 -p 0 -o txt '*' 'puppet agent -t'
+
+ 7. synchronize [[postgresql]] backups (TODO: how exactly?)
+
+ 8. start the new director:
+ 
+        service bacula-director start
 
 Get files without a director
 ----------------------------
