@@ -93,7 +93,7 @@ def parse_args(args=sys.argv[1:]):
     return parser.parse_args(args=args)
 
 
-def main(args, now=None):
+def main(args, now=None, session=requests):
     logging.debug('loading previous records from %s', args.path)
     if not os.path.exists(args.path):
         with open(args.path, 'w') as fp:
@@ -103,7 +103,7 @@ def main(args, now=None):
     if args.refresh:
         logging.info('querying PuppetDB on %s', args.puppetdb)
         logging.debug('query: %s', args.query)
-        new_data = puppetdb_query(args.puppetdb, args.query)
+        new_data = puppetdb_query(args.puppetdb, args.query, session)
         logging.info('found %d hosts', len(new_data))
         new_record = count_releases(new_data)
         records = add_releases(records, new_record)
@@ -134,6 +134,29 @@ if pytest is not None:
                 assert os.path.getsize(graph.name) > 0
             captured = capsys.readouterr()
             assert expected in (captured.out + captured.err)
+
+
+def test_main_refresh():
+    import betamax
+    session = requests.Session()
+    recorder = betamax.Betamax(session, cassette_library_dir='cassettes')
+    handler = _setup_memory_handler()
+    with tempfile.NamedTemporaryFile() as csv:
+        os.unlink(csv.name)
+        with tempfile.NamedTemporaryFile(suffix='.png') as graph:
+            args = parse_args(['--path', csv.name, '--output', graph.name,
+                               '--refresh'])
+            with recorder.use_cassette('puppetdb'):
+                main(args, '2019-10-08', session)
+            assert os.path.exists(csv.name)
+            with open(csv.name) as fp:
+                assert fp.read() == '''Date,release,count
+2019-10-09,buster,40
+2019-10-09,stretch,38
+2019-10-09,jessie,1
+'''
+            messages = "\n".join([r.message for r in handler.buffer])
+            assert '''cannot guess completion time''' in messages
 
 
 def load_csv(fp):
