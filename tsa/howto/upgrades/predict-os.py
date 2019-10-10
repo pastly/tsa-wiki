@@ -111,16 +111,8 @@ def main(args, now=None):
             with open(args.path, 'w') as fp:
                 store_csv(fp, records)
     records = prepare_records(records)
-    try:
-        date = guess_completion_time(records, args.source)
-        print("completion time of %s major upgrades: %s" % (args.source, date))
-    except (TypeError, ValueError) as e:
-        logging.warning("cannot guess completion time: %s", e)
-        date = 'N/A'
-    if now is None:
-        now = datetime.today().strftime('%Y-%m-%d')
-    if date < now:
-        logging.warning('suspicious completion time in the past, data may be incomplete: %s', date)  # noqa: E501
+    date = guess_completion_time(records, args.source, now)
+    print("completion time of %s major upgrades: %s" % (args.source, date))
     plot_records(records, date, args)
 
 
@@ -286,7 +278,7 @@ def prepare_records(records):
     return records
 
 
-def guess_completion_time(records, source):
+def guess_completion_time(records, source, now=None):
     '''take the given records and guess the estimated completion time
 
     :param Dataframe records: the records, as loaded from the CSV file
@@ -298,10 +290,20 @@ def guess_completion_time(records, source):
     >>> guess_completion_time(records, 'stretch')
     '2019-03-09'
     '''
+    if now is None:
+        now = datetime.today().strftime('%Y-%m-%d')
     subdf = records[records['release'] == source]
-    fit = np.polyfit(subdf['count'], subdf['datenum'], 1)
-    prediction = np.poly1d(fit)(0)
-    return fake_dates(prediction, None)
+    try:
+        fit = np.polyfit(subdf['count'], subdf['datenum'], 1)
+        prediction = np.poly1d(fit)(0)
+    except (TypeError, ValueError) as e:
+        logging.warning("cannot guess completion time: %s", e)
+        date = 'N/A'
+    else:
+        date = fake_dates(prediction, None)
+        if date < now:
+            logging.warning('suspicious completion time in the past, data may be incomplete: %s', date)  # noqa: E501
+    return date
 
 
 if __name__ == '__main__':
