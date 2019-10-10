@@ -116,24 +116,23 @@ def main(args, now=None, session=requests):
     plot_records(records, date, args)
 
 
-if pytest is not None:
-    @pytest.mark.parametrize("test_input,expected",
-                             [(b'''Date,release,count
+def test_main(capsys):
+    test_input = b'''Date,release,count
 2019-03-01,stretch,74
 2019-08-15,stretch,49
 2019-10-07,stretch,43
 2019-10-08,stretch,38
-''', '''completion time of stretch major upgrades: 2020-06-25''')])
-    def test_main(capsys, test_input, expected):
-        with tempfile.NamedTemporaryFile() as csv:
-            csv.write(test_input)
-            csv.flush()
-            with tempfile.NamedTemporaryFile(suffix='.png') as graph:
-                args = parse_args(['--path', csv.name, '--output', graph.name])
-                main(args, '2019-10-08')
-                assert os.path.getsize(graph.name) > 0
-            captured = capsys.readouterr()
-            assert expected in (captured.out + captured.err)
+'''
+    expected = '''completion time of stretch major upgrades: 2020-06-25'''
+    with tempfile.NamedTemporaryFile() as csv:
+        csv.write(test_input)
+        csv.flush()
+        with tempfile.NamedTemporaryFile(suffix='.png') as graph:
+            args = parse_args(['--path', csv.name, '--output', graph.name])
+            main(args, '2019-10-08')
+            assert os.path.getsize(graph.name) > 0
+        captured = capsys.readouterr()
+        assert expected in (captured.out + captured.err)
 
 
 def test_main_refresh():
@@ -324,14 +323,14 @@ def guess_completion_time(records, source, now=None):
     return date
 
 
-@pytest.mark.parametrize("test_input,expected",
-                         [('''Date,release,count
+def test_guess_completion_time():
+    test_input = '''Date,release,count
 2019-03-01,stretch,74
 2019-08-15,stretch,49
 2019-10-07,stretch,43
 2019-10-08,stretch,38
-''', '''2020-06-25''')])
-def test_guess_completion_time(test_input, expected):
+'''
+    expected = '''2020-06-25'''
     fp = io.StringIO(test_input)
     records = prepare_records(pd.read_csv(fp))
     date = guess_completion_time(records, 'stretch', '2019-10-08')
