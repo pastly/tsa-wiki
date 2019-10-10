@@ -5,11 +5,11 @@
 The **admin team** at the Tor project maintains our infrastructure and
 services.
 
-Within the **admin team** we have **system admins** (or **sysadmins**
-or **TSA** or **TPA**) and **services admins**. While the distinction
-between the two might seem blurry, the rule of thumb is that 
-**sysadmins** do not maintain every service that we offer. Rather, they
-maintain the underlying computers -- make sure they get package
+Within the **admin team** we have **system admins** (also known as
+sysadmins, TSA or TPA) and **services admins**. While the distinction
+between the two might seem blurry, the rule of thumb is that
+**sysadmins** do not maintain every service that we offer. Rather,
+they maintain the underlying computers -- make sure they get package
 updates, make sure they stay on the network, etc.
 
 Then it's up to the **service admins** to deploy and maintain their
