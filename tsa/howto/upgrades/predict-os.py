@@ -366,9 +366,7 @@ if __name__ == '__main__':  # pragma: no cover
     logging.basicConfig(format='%(message)s', level=args.log_level.upper())
     if args.test:
         logging.info('running test suite')
-        try:
-            import pytest
-        except ImportError:
+        if pytest is None:
             logging.error('test suite requires pytest to run properly')
             sys.exit(1)
         shortname, _ = os.path.splitext(os.path.basename(__file__))
