@@ -372,7 +372,9 @@ if __name__ == '__main__':  # pragma: no cover
         except ImportError:
             logging.error('test suite requires pytest to run properly')
             sys.exit(1)
-        sys.exit(pytest.main([__file__]))
+        shortname, _ = os.path.splitext(os.path.basename(__file__))
+        sys.exit(pytest.main(['--doctest-modules', '--cov=%s' % shortname,
+                              __file__]))
     try:
         main(args)
     except Exception as e:
