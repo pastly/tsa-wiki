@@ -93,7 +93,7 @@ def parse_args(args=sys.argv[1:]):
     return parser.parse_args(args=args)
 
 
-def main(args):
+def main(args, now=None):
     logging.debug('loading previous records from %s', args.path)
     if not os.path.exists(args.path):
         with open(args.path, 'w') as fp:
@@ -117,27 +117,33 @@ def main(args):
     except (TypeError, ValueError) as e:
         logging.warning("cannot guess completion time: %s", e)
         date = 'N/A'
+    if now is None:
+        now = datetime.today().strftime('%Y-%m-%d')
+    if date < now:
+        logging.warning('suspicious completion time in the past, data may be incomplete: %s', date)  # noqa: E501
     plot_records(records, date, args)
 
 
 if pytest is not None:
-    @pytest.xfail('not sure why there is no output, but this should work')
     @pytest.mark.parametrize("test_input,expected",
                              [(b'''Date,release,count
 2019-10-08,stretch,83
 2019-10-08,buster,3
 2019-10-08,sid,1
-2019-10-08,jessie,2''', 'cannot guess completion time')])
+2019-10-08,jessie,2''', 'suspicious completion time in the past, data may be incomplete:')])  # noqa: E501
     def test_main(test_input, expected):
         with tempfile.NamedTemporaryFile() as csv:
             csv.write(test_input)
             csv.flush()
             handler = logging.handlers.MemoryHandler(1000)
             handler.setLevel('DEBUG')
-            logging.getLogger('').addHandler(handler)
+            logger = logging.getLogger('')
+            logger.setLevel('DEBUG')
+            logger.addHandler(handler)
             with tempfile.NamedTemporaryFile(suffix='.png') as graph:
                 args = parse_args(['--path', csv.name, '--output', graph.name])
-                main(args)
+                main(args, '2019-10-08')
+                assert os.path.getsize(graph.name) > 0
             output = "\n".join([record.getMessage()
                                 for record in handler.buffer])
             assert expected in output
