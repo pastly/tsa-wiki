@@ -119,26 +119,21 @@ def main(args, now=None):
 if pytest is not None:
     @pytest.mark.parametrize("test_input,expected",
                              [(b'''Date,release,count
-2019-10-08,stretch,83
-2019-10-08,buster,3
-2019-10-08,sid,1
-2019-10-08,jessie,2''', 'suspicious completion time in the past, data may be incomplete:')])  # noqa: E501
-    def test_main(test_input, expected):
+2019-03-01,stretch,74
+2019-08-15,stretch,49
+2019-10-07,stretch,43
+2019-10-08,stretch,38
+''', '''completion time of stretch major upgrades: 2020-06-25''')])
+    def test_main(capsys, test_input, expected):
         with tempfile.NamedTemporaryFile() as csv:
             csv.write(test_input)
             csv.flush()
-            handler = logging.handlers.MemoryHandler(1000)
-            handler.setLevel('DEBUG')
-            logger = logging.getLogger('')
-            logger.setLevel('DEBUG')
-            logger.addHandler(handler)
             with tempfile.NamedTemporaryFile(suffix='.png') as graph:
                 args = parse_args(['--path', csv.name, '--output', graph.name])
                 main(args, '2019-10-08')
                 assert os.path.getsize(graph.name) > 0
-            output = "\n".join([record.getMessage()
-                                for record in handler.buffer])
-            assert expected in output
+            captured = capsys.readouterr()
+            assert expected in (captured.out + captured.err)
 
 
 def load_csv(fp):
@@ -304,6 +299,44 @@ def guess_completion_time(records, source, now=None):
         if date < now:
             logging.warning('suspicious completion time in the past, data may be incomplete: %s', date)  # noqa: E501
     return date
+
+
+@pytest.mark.parametrize("test_input,expected",
+                         [('''Date,release,count
+2019-03-01,stretch,74
+2019-08-15,stretch,49
+2019-10-07,stretch,43
+2019-10-08,stretch,38
+''', '''2020-06-25''')])
+def test_guess_completion_time(test_input, expected):
+    fp = io.StringIO(test_input)
+    records = prepare_records(pd.read_csv(fp))
+    date = guess_completion_time(records, 'stretch', '2019-10-08')
+    assert date == expected
+
+
+def _setup_memory_handler():
+    handler = logging.handlers.MemoryHandler(1000)
+    handler.setLevel('DEBUG')
+    logger = logging.getLogger('')
+    logger.setLevel('DEBUG')
+    logger.addHandler(handler)
+    return handler
+
+
+def test_weird_completion_time(capsys):
+    micah_data = '''Date,release,count
+2019-10-08,stretch,83
+2019-10-08,buster,3
+2019-10-08,sid,1
+2019-10-08,jessie,2'''
+    fp = io.StringIO(micah_data)
+    records = prepare_records(pd.read_csv(fp))
+    with pytest.warns(np.RankWarning):
+        handler = _setup_memory_handler()
+        guess_completion_time(records, 'stretch', '2019-10-08')
+        messages = "\n".join([r.message for r in handler.buffer])
+        assert 'suspicious completion time in the past' in messages
 
 
 if __name__ == '__main__':
