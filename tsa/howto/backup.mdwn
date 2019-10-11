@@ -505,7 +505,7 @@ director.
 
  15. if you held a lock on the scheduler, it can be removed:
  
-        killall flock
+        killall sleep
 
 The new scheduler and director should now have completely taken over
 the new one, and backups should resume. The old server can now be
