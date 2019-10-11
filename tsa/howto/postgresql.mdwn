@@ -180,11 +180,12 @@ server to the database server and restores from those.
         service postgresql start
         tail -f /var/log/postgresql/*
 
- 11. re-enable Puppet, which should clean up the extra SSH key:
+ 11. re-enable Puppet, which should clean up the extra SSH key and
+     firewall rules:
 
         puppet agent -t
     
-     make sure it's okay in `/etc/ssh/userkeys/root`
+     make sure it's okay in `/etc/ssh/userkeys/root` and `iptables -L`.
 
 When the restore succeeds, the `recovery.conf` file will be renamed to
 `recovery.done` and you will see something like:
@@ -284,10 +285,15 @@ information on how to pick a restore procedure.
     beginning, but it should eventually get started and complete. The
     "hang" is because `retrieve-file` sends a header which includes a
     `sha512sum` and it takes a while to compute. The `sed` command in
-    that pipeline is there to skip that header.
+    that pipeline is there to skip that header. Example of a
+    successful restore operated in [#31786][]:
+   
+        ssh torbackup@bungei.torproject.org bacula-director-01 retrieve-file pg dictyotum bacula.BASE.bungei.torproject.org-20191010-184205-dictyotum.torproject.org-bacula-9.6-backup.tar.gz | pv -s 33G | sed '0,/^$/d' | tar -C /var/lib/postgresql/9.6/main -x -z -f -
 
     If the above doesn't work, use the indirect procedure to restore
     the `BASE` file.
+
+[#31786]: https://bugs.torproject.org/31786
 
  6. Make sure the `pg_xlog` directory doesn't contain any files.
  

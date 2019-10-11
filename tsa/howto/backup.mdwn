@@ -509,12 +509,59 @@ director.
  
         killall sleep
 
+ 16. switch the nagios checks over the new director: grep for the old
+     director name in the nagios configuration and fix up some of the
+     checks
+
+        git -C tor-nagios grep dictyotum
+
+ 17. you will also need to restore the password file for the nagios
+     check in `/etc/nagios/bacula-database`
+
 The new scheduler and director should now have completely taken over
 the new one, and backups should resume. The old server can now be
 [[decommissioned|retire-a-host]], if it's still around, when you feel
 comfortable the new setup is working.
 
 TODO: `15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link`
+
+TODO: some psql users still refer to host-specific usernames like
+`bacula-dictyotum-reader`, maybe they should refer to role-specif
+names instead?
+
+### Troubleshooting
+
+If you get this error:
+
+    psycopg2.OperationalError: definition of service "bacula" not found
+
+It's probably the scheduler failing to connect to the database server,
+because the `/etc/dsa/bacula-reader-database` refers to a non-existent
+"service", as defined in
+`/etc/postgresql-common/pg_service.conf`. Either add something like:
+
+    [bacula]
+    dbname=bacula
+    port=5433
+
+to that file, or specify the `dbname` and `port` manually in the
+config file.
+
+If the scheduler is sending you an email every three minutes with this
+error:
+
+    FileNotFoundError: [Errno 2] No such file or directory: '/etc/dsa/bacula-reader-database'
+
+It's because you forgot to create that file, in step 8. Similar errors
+may occur if you forgot to change that password.
+
+If the director takes a long time to start and ultimately fails with:
+
+    oct 10 18:19:41 bacula-director-01 bacula-dir[31276]: bacula-dir JobId 0: Fatal error: Could not open Catalog "MyCatalog", database "bacula".
+    oct 10 18:19:41 bacula-director-01 bacula-dir[31276]: bacula-dir JobId 0: Fatal error: postgresql.c:332 Unable to connect to PostgreSQL server. Database=bacula User=bac
+    oct 10 18:19:41 bacula-director-01 bacula-dir[31276]: Possible causes: SQL server not running; password incorrect; max_connections exceeded.
+
+It's because you forgot to reset the director password, in step 9.
 
 Get files without a director
 ----------------------------
