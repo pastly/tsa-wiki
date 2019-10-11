@@ -440,7 +440,7 @@ director.
  9. reset the password to the new bacula master, as it changed in
     puppet:
     
-        grep dbpassword bacula-dir.conf | cut -f2 -d\"
+        grep dbpassword /etc/bacula/bacula-dir.conf | cut -f2 -d\"
         sudo -u postgres psql -c '\password bacula'
 
  10. copy over the `pg_hba.conf` from the previous director (TODO: put
