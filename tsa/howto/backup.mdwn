@@ -432,10 +432,12 @@ director.
     managed through [[puppet]] (TODO). Alternatively, that file can be
     recreated by hand, using a syntax like this:
 
-        service=bacula user=bacula-dictyotum-reader password=X
+        user=bacula-dictyotum-reader password=X dbname=bacula host=localhost
 
     The matching user will need to have its password modified to match
-    `X`, obviously.
+    `X`, obviously:
+
+        sudo -u postgres psql -c '\password bacula-dictyotum-reader'
 
  9. reset the password to the new bacula master, as it changed in
     puppet:
