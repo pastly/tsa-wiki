@@ -274,6 +274,9 @@ information on how to pick a restore procedure.
        (e.g. usually `main`)
      * `$BASEFILE` with something like
        `$CLUSTERNAME.BASE.$BACKUPSERVER-20191004-062226-$OLDSERVER.torproject.org-$CLUSTERNAME-9.6-backup.tar.gz`
+       or, fully expanded:
+       `bacula.BASE.bungei.torproject.org-20191010-184205-dictyotum.torproject.org-bacula-9.6-backup.tar.gz`
+       where the `$CLUSTERNAME` is the non-default `bacula`
 
     The above might hang for a while (yes, maybe even a minute) in the
     beginning, but it should eventually get started and complete. The

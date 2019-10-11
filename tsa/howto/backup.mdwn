@@ -497,12 +497,22 @@ director.
  
          cumin -b 5 -p 0 -o txt '*' 'puppet agent -t'
 
-The old server can now be [[decommissioned|retire-a-host]], if it's
-still around.
+     Then make sure the storage and director servers are also up to
+     date:
+     
+         ssh bungei.torproject.org puppet agent -t
+         ssh bacula-director-01.torproject.org puppet agent -t
+
+ 15. if you held a lock on the scheduler, it can be removed:
+ 
+        killall flock
+
+The new scheduler and director should now have completely taken over
+the new one, and backups should resume. The old server can now be
+[[decommissioned|retire-a-host]], if it's still around, when you feel
+comfortable the new setup is working.
 
 TODO: `15:19:55 <weasel> and once that's up and running, it'd probably be smart to upgrade it to 11.  pg_upgradecluster -m upgrade --link`
-
-TODO: how to switch between the two servers? see below
 
 Get files without a director
 ----------------------------
