@@ -127,7 +127,7 @@ server to the database server and restores from those.
  3. And on the client, allow the server `$HOSTKEY` (the above `cat
     /etc/ssh/ssh_host_rsa_key.pub` on the backup server):
 
-        echo "$HOSTKEY" >> /etc/ssh/userkeys/root
+        echo "$HOSTKEY" >> /etc/ssh/userkeys/root.more
 
  4. Then, we can transfer files over from the backup server to the
     client:
@@ -183,6 +183,8 @@ server to the database server and restores from those.
  11. re-enable Puppet, which should clean up the extra SSH key:
 
         puppet agent -t
+    
+     make sure it's okay in `/etc/ssh/userkeys/root`
 
 When the restore succeeds, the `recovery.conf` file will be renamed to
 `recovery.done` and you will see something like:
