@@ -80,6 +80,71 @@ session as it will flush the (usually quite long) buffer of
 messages. That way the next time you call the command, you will only
 see the result of your latest jobs.
 
+The short version is to just run the `run` command and pick the server
+to backup.
+
+Longer version:
+
+ 1. enter the console on the bacula director:
+ 
+        ssh -tt bacula-director-01.torproject.org bconsole
+
+ 2. enter the `run` dialog:
+ 
+        *run
+        A job name must be specified.
+        The defined Job resources are:
+             1: RestoreFiles
+             2: alberti.torproject.org
+             3: archive-01.torproject.org
+             [...]
+             59: peninsulare.torproject.org
+
+ 3. pick a server, for example `peninsulare.torproject.org` above is
+    `59`, so enter `59` and confirm by entering `yes`:
+
+        Select Job resource (1-77): 59
+        Run Backup job
+        JobName:  peninsulare.torproject.org
+        Level:    Incremental
+        Client:   peninsulare.torproject.org-fd
+        FileSet:  Standard Set
+        Pool:     poolfull-torproject-peninsulare.torproject.org (From Job resource)
+        Storage:  File-peninsulare.torproject.org (From Pool resource)
+        When:     2019-10-11 20:57:09
+        Priority: 10
+        OK to run? (yes/mod/no): yes
+        Job queued. JobId=113225
+
+ 4. bacula confirms the job is `queued`. you can see the status of the
+    job with `status director`, which should show set of lines like
+    this in the middle:
+    
+        JobId  Type Level     Files     Bytes  Name              Status
+        ======================================================================
+        113226  Back Incr          0         0  peninsulare.torproject.org is running
+
+ 5. this will take more or less time depending on the size of the
+    server. you can call `status director` repeatedly to follow
+    progress (for example, with `watch "echo status director |
+    bconsole"` in another shell or run the `mess` command to see new
+    messages as they progress. when the backup completes, you should
+    see something like this in the `status director` output:
+    
+        Terminated Jobs:
+         JobId  Level      Files    Bytes   Status   Finished        Name 
+        ====================================================================
+        113225  Incr          33    11.67 M  OK       11-Oct-19 20:59 peninsulare.torproject.org
+
+That's it, new files were sucked in and you're good to do whatever
+nasty things you were about to do.
+
+Running a backup
+----------------
+
+Backups are ran regularly by a cron job, but if you need to run a
+backup immediately, this can be done in the `bconsole`.
+
 How to...
 ==========
 
