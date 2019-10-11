@@ -80,6 +80,12 @@ session as it will flush the (usually quite long) buffer of
 messages. That way the next time you call the command, you will only
 see the result of your latest jobs.
 
+Running a backup
+----------------
+
+Backups are ran regularly by a cron job, but if you need to run a
+backup immediately, this can be done in the `bconsole`.
+
 The short version is to just run the `run` command and pick the server
 to backup.
 
@@ -138,12 +144,6 @@ Longer version:
 
 That's it, new files were sucked in and you're good to do whatever
 nasty things you were about to do.
-
-Running a backup
-----------------
-
-Backups are ran regularly by a cron job, but if you need to run a
-backup immediately, this can be done in the `bconsole`.
 
 How to...
 ==========
