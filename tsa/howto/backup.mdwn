@@ -456,7 +456,37 @@ director.
 
          bconsole
 
-     Run a few of the "Basic commands", above just to make sure.
+     Run a few of the "Basic commands" above, to make sure we have
+     everything. For example, `list jobs` should show the latest jobs
+     ran on the director. It's normal that `status director` does
+     *not* show those, however.
+
+ 13. Enable puppet on the director again. 
+ 
+         puppet agent -t
+ 
+     This involves (optionally) keeping a lock on the scheduler so it
+     doesn't immediately start at once. If you're confident (not
+     tested!), this step might be skipped:
+     
+         flock -w 0 -e /usr/local/sbin/dsa-bacula-scheduler sleep infinity
+
+ 12. to switch a single node, configure its director in
+     `tor-puppet/hiera/nodes/$FQDN.yaml` where `$FQDN` is the fully
+     qualified domain name of the machine
+     (e.g. `tor-puppet/hiera/nodes/perdulce.torproject.org.yaml`):
+     
+         bacula::client::director_server: 'bacula-director-01.torproject.org'
+
+     Then run puppet on that node, the storage, and the director
+     server:
+     
+         ssh perdulce.torproject.org puppet agent -t
+         ssh bungei.torproject.org puppet agent -t
+         ssh bacula-director-01.torproject.org puppet agent -t
+
+     Then test a backup job for that host, in `bconsole`, call `run`
+     and pick that server which should now show up.
 
  13. switch all nodes to the new director, in
      `tor-puppet/hiera/common.yaml`:
