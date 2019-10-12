@@ -513,7 +513,11 @@ director.
  10. copy over the `pg_hba.conf` and `postgresql.conf` (now
      `conf.d/tor.conf`) from the previous director cluster
      configuration (e.g. `/var/lib/postgresql/9.6/main`) to the new
-     one (TODO: put in [[puppet]])
+     one (TODO: put in [[puppet]]). Make sure that:
+     
+     * the cluster name (e.g. `main` or `bacula`) is correct in the
+       `archive_command1`
+     * the `ssl_cert_file` and `ssl_key_file` point to valid SSL certs
 
  11. Once you have the postgres database cluster restored, start the
      director:
