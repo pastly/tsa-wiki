@@ -504,11 +504,16 @@ director.
 
         sudo -u postgres psql -c '\password bacula-dictyotum-reader'
 
- 9. reset the password to the new bacula master, as it changed in
+ 9. reset the password of the bacula director, as it changed in
     puppet:
     
         grep dbpassword /etc/bacula/bacula-dir.conf | cut -f2 -d\"
         sudo -u postgres psql -c '\password bacula'
+
+    same for the `tor-backup` user:
+    
+        ssh bungei.torproject.org grep director /home/torbackup/.pgpass
+        ssh bacula-director-01 -tt sudo -u postgres psql -c '\password bacula'
 
  10. copy over the `pg_hba.conf` and `postgresql.conf` (now
      `conf.d/tor.conf`) from the previous director cluster
