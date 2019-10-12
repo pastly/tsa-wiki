@@ -510,8 +510,10 @@ director.
         grep dbpassword /etc/bacula/bacula-dir.conf | cut -f2 -d\"
         sudo -u postgres psql -c '\password bacula'
 
- 10. copy over the `pg_hba.conf` from the previous director (TODO: put
-     in [[puppet]])
+ 10. copy over the `pg_hba.conf` and `postgresql.conf` (now
+     `conf.d/tor.conf`) from the previous director cluster
+     configuration (e.g. `/var/lib/postgresql/9.6/main`) to the new
+     one (TODO: put in [[puppet]])
 
  11. Once you have the postgres database cluster restored, start the
      director:
@@ -582,6 +584,9 @@ director.
 
  17. you will also need to restore the password file for the nagios
      check in `/etc/nagios/bacula-database`
+
+ 18. switch the director in `/etc/dsa/bacula-reader-database` or
+     `/etc/postgresql-common/pg_service.conf` to point to the new host
 
 The new scheduler and director should now have completely taken over
 the new one, and backups should resume. The old server can now be
