@@ -449,6 +449,9 @@ director.
 
     This should restore a basic Bacula configuration with the director
     acting, weirdly, as its own director.
+    
+    TODO: Make sure to tell nagios that this host is suppsoed to run
+    pg, see commit 70447d6 in tor-nagios.
 
  5. Run Puppet by hand on the new director and the storage server a
     few times, so their manifest converge:
