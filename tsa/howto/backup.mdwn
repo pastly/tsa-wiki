@@ -450,8 +450,9 @@ director.
     This should restore a basic Bacula configuration with the director
     acting, weirdly, as its own director.
     
-    TODO: Make sure to tell nagios that this host is suppsoed to run
-    pg, see commit 70447d6 in tor-nagios.
+    When you add the machine to Nagios, make sure to add it to the
+    `postgres96-hosts` group so that the PostgreSQL cluster is
+    correctly monitored.
 
  5. Run Puppet by hand on the new director and the storage server a
     few times, so their manifest converge:
