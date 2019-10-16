@@ -25,7 +25,10 @@ Adding a new component
     The latter is done with [[cumin]], see also [[puppet]] for a way
     to do jobs on all hosts.
 
- 4. add the host to DNS, if not already present, see [[dns]]
+ 4. add the host to DNS, if not already present, see [[dns]], for
+    example add this line in `dns/domains/torproject.org`:
+
+        onionperf	IN	CNAME	static
 
  4. add an Apache virtual host, by adding a line like this in
     [[puppet]] to
