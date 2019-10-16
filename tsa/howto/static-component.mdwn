@@ -17,15 +17,7 @@ Adding a new component
         ssh staticiforme "mkdir -p /srv/onionperf.torproject.org/htdocs/ \
             && chown torwww:torwww /srv/onionperf.torproject.org/{,htdocs}"
 
- 3. run Puppet on the master and mirrors:
- 
-        ssh staticiforme puppet agent -t
-        cumin 'C:roles::static_mirror_web' 'puppet agent -t'
-
-    The latter is done with [[cumin]], see also [[puppet]] for a way
-    to do jobs on all hosts.
-
- 4. add the host to DNS, if not already present, see [[dns]], for
+ 3. add the host to DNS, if not already present, see [[dns]], for
     example add this line in `dns/domains/torproject.org`:
 
         onionperf	IN	CNAME	static
@@ -53,12 +45,20 @@ Adding a new component
             [...]
         }
 
- 4. consider creating a new role and group for the component if none
+ 7. run Puppet on the master and mirrors:
+ 
+        ssh staticiforme puppet agent -t
+        cumin 'C:roles::static_mirror_web' 'puppet agent -t'
+
+    The latter is done with [[cumin]], see also [[puppet]] for a way
+    to do jobs on all hosts.
+
+ 8. consider creating a new role and group for the component if none
     match its purpose, see [[create-a-new-user]] for details:
     
         ssh alberti.torproject.org ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
 
- 5. if you created a new group, you will probably need to modify the
+ 9. if you created a new group, you will probably need to modify the
     `sudoers` file to grant a user access to the role/group, see
     `modules/sudo/files/sudoers` in the `tor-puppet` repository (and
     [[puppet]] to learn about how to make changes to
