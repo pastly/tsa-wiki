@@ -3,14 +3,17 @@
 
 **onionoo-ops** - Onionoo Operations
 
-# SERVICE DESCRIPTION
+# DESCRIPTION
 
 Onionoo is a web-based protocol to learn about currently running Tor relays and
 bridges. Onionoo itself was not designed as a service for human beings&#8212;at least
 not directly. Onionoo provides the data for other applications and websites
 which in turn present Tor network status information to humans.
 
-# SERVICE CONTACTS
+The primary interface to Onionoo is via HTTPS using the round-robin DNS name
+[onionoo.torproject.org](https://onionoo.torproject.org/)
+
+# CONTACTS
 
 The primary contact for this service is the
 Metrics Team &lt;[metrics-team@lists.torproject.org](mailto:metrics-team@lists.torproject.org)&gt;.
@@ -22,19 +25,77 @@ or
 in
 [#tor-project](ircs://irc.oftc.net:6697/tor-project).
 
-# SERVICE OVERVIEW
+# OVERVIEW
 
 The underlying infrastructure for the Onionoo service is provided by the
-Tor Sysadmin Team.
+Tor Sysadmin Team (TSA). There are a number of varnish caches
+(*onionoo-frontend-\*.torproject.org*)
+that sit in front of a number of backends
+(*onionoo-backend-\*.torproject.org*).
+The frontends are entirely managed by TSA.
+The frontends communicate with the backends via IPsec tunnels managed by TSA.
+The backend hosts are managed by TSA with the Onionoo services being managed
+by Metrics Team.
+
+## Onionoo Service Architecture
+
+The Onionoo service consists of two parts: the hourly updater and the web
+server.
+Both parts run on each backend host and the parts run with privilege seperation.
+
+## Hourly Updater
+
+The hourly updater is contained in the JAR file, which is built from the
+sources with:
+
+	ant jar
+
+The JAR file is also included in the tarballs made available with releases in
+the
+*generated/dist/*
+folder.
+The filename will look like
+*onionoo-{protocol version}-{software version}.jar*
+and on the backend host should be found in
+*/srv/onionoo.torproject.org/onionoo/*.
+
+## Web Server
+
+The web server is contained in the WAR file, which is built from the
+sources with:
+
+	ant war
+
+The WAR file is also included in the tarballs made available with releases in
+the
+*generated/dist/*
+folder.
+The filename will look like
+*onionoo-{protocol version}-{software version}.jar*
+and on the backend host should be found in
+*/srv/onionoo.torproject.org/onionoo/*.
+
+# SOURCES
+
+Onionoo releases are available
+[from dist.torproject.org](https://dist.torproject.org/onionoo/)
+with the source code available
+[from Tor Project git](https://gitweb.torproject.org/onionoo.git).
+
+Deployment and maintainence scripts are part of
+[metrics-cloud](https://gitweb.torproject.org/metrics-cloud.git).
+
+# DEPLOYMENT
 
 # DIAGNOSTICS
 
-# ERRORS
+# MONITORING
+
+# DISASTER RECOVERY
+
+# SERVICE LEVEL AGREEMENT
 
 # SEE ALSO
-
-java(1),
-systemd-logind(8)
 
 # STANDARDS
 
