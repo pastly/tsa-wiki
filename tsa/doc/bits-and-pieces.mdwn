@@ -6,7 +6,7 @@ being expanded a bit to deserve their own page.
 ## Backups
 
 * We use [[Bacula|https://en.wikipedia.org/wiki/Bacula]] to make
-  backups, with one host running a director (currently dictyotum.tpo)
+  backups, with one host running a director (currently bacula-director-01.tpo)
   and another host for storage (currently brulloi.tpo).
 * There are `BASE` files and `WAL` files, the latter for incremental
   backups.

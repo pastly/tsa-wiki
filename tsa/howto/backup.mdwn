@@ -14,8 +14,8 @@ All commands below are ran from the `bconsole` shell, which can be ran
 on the director with:
 
 ```
-root@dictyotum:~# bconsole 
-Connecting to Director dictyotum.torproject.org:9101
+root@bacula-director-01:~# bconsole 
+Connecting to Director bacula-director-01.torproject.org:9101
 1000 OK: 103 torproject-dir Version: 9.4.2 (04 February 2019)
 Enter a period to cancel a command.
 *
@@ -166,7 +166,7 @@ Restore files
 
 Short version:
 
-    $ ssh -tt dictyotum.torproject.org bconsole
+    $ ssh -tt bacula-director-01.torproject.org bconsole
     *restore
 
 ... and follow instructions. Reminder: by default, backups are
@@ -385,7 +385,7 @@ for a long time. You can hit "enter" to see if there are new messages.
       Build OS:               x86_64-pc-linux-gnu debian 9.7
       JobId:                  107697
       Job:                    RestoreFiles.2019-08-02_16.43.40_17
-      Restore Client:         dictyotum.torproject.org-fd
+      Restore Client:         bacula-director-01.torproject.org-fd
       Where:                  /var/tmp/bacula-restores
       Replace:                Always
       Start time:             02-Aug-2019 16:43:42
@@ -715,7 +715,7 @@ Bacula splits the different responsabilities of the backup system
 among multiple components, namely:
 
  * storage daemon (`bacula::storage` in Puppet, currently `bungei`)
- * director (`bacula::director` in Puppet, currently `dictyotum`,
+ * director (`bacula::director` in Puppet, currently `bacula-director-01`,
    PostgreSQL configured by hand)
  * file daemon (`bacula::client`, on all nodes)
 
