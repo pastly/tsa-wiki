@@ -1,0 +1,61 @@
+# Discussion
+
+Some notes on the various softwares that could be used for this.
+
+## Possible solutions
+
+### Apache Traffic Server
+
+Pros:
+ * HTTPS
+ * HTTP/2
+ * industry leader (behind cloudflare)
+
+Cons:
+ * load balancing is an experimental plugin (at least in 2016)
+ * no static file serving? or slower?
+ * no commercial support
+ * configuration seems a bit obscure
+
+Used by Yahoo, Apple and Comcast.
+
+### Nginx
+
+Pros:
+ * provides full webserver stack means much more flexibility,
+   possibility of converging over a single solution across the
+   infrastructure
+ * very popular
+ * load balancing
+ * can serve static content
+ * HTTP/2
+ * HTTPS
+
+Cons:
+ * provides full webserver stack (!) means larger attack surface
+ * no ESI or ICP?
+ * does not cache out of the box, requires config which might imply
+   lesser performance
+
+Used by Cloudflare, MaxCDN and Netflix.
+
+### Varnish
+
+Pros:
+ * specifically built for caching
+ * very flexible
+ * grace mode can keep objects even after TTL expired (when backends
+   go down)
+
+Cons:
+ * no HTTPS support on frontend or backend in the free version
+ * configuration is compiled and a bit weird
+ * static content needs to be generated in the config file, or sidecar
+ * no HTTP/2 support
+
+Used by Fastly.
+
+## Sources
+
+ * [Bizety: Nginx vs Varnish vs Apache Traffic Server - High Level Comparison](https://www.bizety.com/2016/01/07/nginx-vs-varnish-vs-apache-traffic-server-high-level-comparison/)
+ * [ScaleScale: Nginx vs Varnish: which one is better?](https://www.scalescale.com/tips/nginx/nginx-vs-varnish/)
