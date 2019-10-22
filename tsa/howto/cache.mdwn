@@ -6,6 +6,8 @@ server.
 
 # Discussion
 
+A discussion of the design of the new service, mostly.
+
 ## Overview
 
 The original goal of this project is to create a pair of caching
@@ -40,7 +42,11 @@ charged there.
 
 ## Proposed Solution
 
-TBD.
+TBD (To Be Determined). Considering either Apache Traffic Server or
+Nginx on a pair of servers.
+
+TODO: In the gnt-fsn cluster if cost-effective, otherwise maybe in two
+Hetzner VMs?
 
 ## Launch checklist
 
@@ -58,7 +64,7 @@ Disaster recovery:
 
 ## Benchmarking procedures
 
-Will require a test VM (or two?).
+Will require a test VM (or two?) to hit the caches.
 
 ### Siege
 
@@ -168,12 +174,28 @@ Pros:
 
 Cons:
 
- * no HTTPS support on frontend or backend in the free version
+ * no HTTPS support on frontend or backend in the free version, would
+   require stunnel hacks
  * configuration is compiled and a bit weird
  * static content needs to be generated in the config file, or sidecar
  * no HTTP/2 support
 
 Used by Fastly.
+
+### Fastly itself
+
+We could just put Fastly in front of all this and shove the costs on
+there.
+
+Pros:
+
+ * easy
+ * possibly free
+
+Cons:
+
+ * might go over our quotas during large campaigns
+ * sending more of our visitors to Fastly, non-anonymously
 
 ## Sources
 
