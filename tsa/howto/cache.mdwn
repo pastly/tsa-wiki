@@ -120,7 +120,33 @@ limited, here's a set of interesting alternatives:
 
 ## Cost
 
-TBD.
+Somewhere between 11EUR and 100EUR/mth for bandwidth and hardware.
+
+We're getting apparently around 2.2M "page views" per month at
+Pantheon. That is about 1 hit per second and 12 terabyte per month,
+36Mbit/s on average:
+
+    $ qalc
+    > 2 200 000 ∕ (30d) to hertz
+
+      2200000 / (30 * day) = approx. 0.84876543 Hz
+
+    > 2 200 000 * 5Mibyte
+
+      2200000 * (5 * mebibyte) = 11.534336 terabytes
+
+    > 2 200 000 * 5Mibyte/(30d) to megabit / s
+
+      (2200000 * (5 * mebibyte)) / (30 * day) = approx. 35.599802 megabits / s
+
+Hetzner charges 1EUR/TB/month over our 1TB quota, so bandwidth would
+cost 11EUR/month on average. If costs become prohibitive, we could
+switch to a Hetzner VM which includ 20TB of traffic per month at costs
+ranging from 3EUR/mth to 30EUR/mth depending on the VPS size (between
+1 vCPU, 2GB ram, 20GB SSD and 8vCPU, 32GB ram and 240GB SSD).
+
+Dedicated servers start at 34EUR/mth (`EX42`, 64GB ram 2x4TB HDD) for
+unlimited gigabit.
 
 ## Alternatives considered
 
