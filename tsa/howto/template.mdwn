@@ -1,0 +1,63 @@
+<!-- include a simple ovrview of the service here -->
+
+[[!toc levels=3]]
+
+<!-- note: this template was designed based on multiple sources: -->
+<!-- https://www.divio.com/blog/documentation/ -->
+<!-- http://opsreportcard.com/section/9-->
+<!-- http://opsreportcard.com/section/11 -->
+<!-- comments like this one should be removed on instanciation -->
+
+# Tutorial
+
+<!-- simple, brainless step-by-step instructions requiring little or -->
+<!-- no technical background -->
+
+# How-to
+
+<!-- more in-depth procedure that may require interpretation -->
+
+## Pager playbook
+## Disaster recovery
+
+# Reference
+
+## Installation
+<!-- how to setup the service from scratch -->
+
+## Design
+<!-- how this is build -->
+<!-- should reuse and expand on the "proposed solution", it's a -->
+<!-- "as-built" documented, whereas the "Proposed solution" is an -->
+<!-- "architectural" document, which the final result might differ -->
+<!-- from, sometimes significantly -->
+
+## SLA
+<!-- this describes an acceptable level of service for this service -->
+
+# Discussion
+
+## Overview
+
+## Goals
+<!-- include bugs to be fixed -->
+
+### Must have
+
+### Nice to have
+
+### Approvals required
+<!-- for example, legal, "vegas", accounting -->
+
+## Non-Goals
+
+## Proposed Solution
+
+## Security
+
+## Disaster Recovery
+<!-- specifically for the launch -->
+
+## Cost
+
+## Alternatives considered
