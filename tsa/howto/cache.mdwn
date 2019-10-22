@@ -1,8 +1,122 @@
+A caching service is a set of services keeping a smaller cache of
+content in memory to speed up access to resources on a slower backend
+server.
+
+[[!toc levels=3]]
+
 # Discussion
 
-Some notes on the various softwares that could be used for this.
+## Overview
 
-## Possible solutions
+The original goal of this project is to create a pair of caching
+servers in front of the blog to reduce the bandwidth costs we're being
+charged there.
+
+## Goals
+
+### Must have
+
+ * reduce the traffic on the blog, hosted at a costly provider (#32090)
+ * HTTPS support in the frontend and backend
+ * deployment through Puppet
+ * anonymized logs
+
+### Nice to have
+
+ * provide a frontend for our existing mirror infrastructure, a
+   home-made CDN for TBB and other releases
+ * no on-disk logs
+ * cute dashboard or grafana integration
+ * well-maintained upstream Puppet module
+
+### Approvals required
+
+ * approved and requested by vegas
+
+## Non-Goals
+
+ * global CDN for users outside of TPO
+ * geoDNS
+
+## Proposed Solution
+
+TBD.
+
+## Launch checklist
+
+ 1. alternatives listing and comparison (done)
+ 2. benchmark selected alternatives on throw-away VMs
+ 3. deploy a test virtual machine with Puppet (say `cache-01.tpo`)
+ 4. validation benchmark against the node
+ 5. lower DNS to 300 seconds, wait an hour
+ 6. flip DNS to the cache node, wait and monitor for 5 minutes
+ 7. raise DNS back to 1h if all goes well.
+
+Disaster recovery:
+
+ 1. flip DNS back to pantheon
+
+## Benchmarking procedures
+
+Will require a test VM (or two?).
+
+### Siege
+
+Siege configuration sample:
+
+```
+verbose = false
+fullurl = true
+concurrent = 100
+time = 2M
+url = http://www.example.com/
+delay = 1
+internet = false
+benchmark = true
+```
+
+Might require this, which might work only with varnish:
+
+```
+proxy-host = 209.44.112.101
+proxy-port = 80
+```
+
+Alternative is to hack `/etc/hosts`.
+
+### apachebench
+
+Classic commandline:
+
+    ab2 -n 1000 -c 100 -X cache01.torproject.org https://example.com/
+
+### Other tools
+
+Siege has trouble going above ~100 concurrent clients because of its
+design (and ulimit) limitations. Its interactive features are also
+limited, here's a set of interesting alternatives:
+
+ * [bombardier](https://github.com/codesenberg/bombardier) - golang, HTTP/2, better performance than siege in
+   my (2017) tests
+ * [boom](https://github.com/tarekziade/boom) - python rewrite of apachebench, supports duration,
+   HTTP/2, not in debian, unsearchable name
+ * [go-wrk](https://github.com/adjust/go-wrk/) - golang rewrite of wrk with HTTPS, had performance
+   issues in my first tests (2017), [no duration target](https://github.com/adjust/go-wrk/issues/2), not in
+   Debian
+ * [hey](https://github.com/rakyll/hey) - golang rewrite of apachebench, similar to boom, not in
+   debian, unsearchable name
+ * [Jmeter](https://jmeter.apache.org/) - interactive behavior, can replay recorded sessions
+   from browsers
+ * [Locust](https://locust.io/) - distributed, can model login and interactive
+   behavior, not in Debian
+ * [Tsung](http://tsung.erlang-projects.org/1/01/about/) - multi-protocol, distributed, erlang
+ * [wrk](https://github.com/wg/wrk/) - multithreaded, epoll, Lua scriptable, no HTTPS
+
+## Cost
+
+TBD.
+
+## Alternatives considered
 
 ### Apache Traffic Server
 
