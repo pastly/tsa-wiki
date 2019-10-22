@@ -97,6 +97,11 @@ vocabulary:
 
 TODO: the above doesn't include the private network configuration.
 
+WARNING: there is a bug in `ganeti-instance-debootstrap` which
+misconfigures `ping` (among other things), see [bug #31781](https://bugs.torproject.org/31781). It's
+currently patched on the two known Ganeti nodes, but that patch might
+disappear if there's a spurious upgrade of the package.
+
 This configures the following:
 
  * redundant disks in a DRBD mirror, use `-t plain` instead of `-t drbd` for
