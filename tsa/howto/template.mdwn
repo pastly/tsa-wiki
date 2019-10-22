@@ -53,10 +53,9 @@
 
 ## Proposed Solution
 
-## Security
+## Launch checklist
 
-## Disaster Recovery
-<!-- specifically for the launch -->
+<!-- include disaster recovery -->
 
 ## Cost
 
