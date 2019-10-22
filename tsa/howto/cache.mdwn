@@ -121,11 +121,13 @@ TBD.
 ### Apache Traffic Server
 
 Pros:
+
  * HTTPS
  * HTTP/2
  * industry leader (behind cloudflare)
 
 Cons:
+
  * load balancing is an experimental plugin (at least in 2016)
  * no static file serving? or slower?
  * no commercial support
@@ -136,6 +138,7 @@ Used by Yahoo, Apple and Comcast.
 ### Nginx
 
 Pros:
+
  * provides full webserver stack means much more flexibility,
    possibility of converging over a single solution across the
    infrastructure
@@ -146,6 +149,7 @@ Pros:
  * HTTPS
 
 Cons:
+
  * provides full webserver stack (!) means larger attack surface
  * no ESI or ICP?
  * does not cache out of the box, requires config which might imply
@@ -156,12 +160,14 @@ Used by Cloudflare, MaxCDN and Netflix.
 ### Varnish
 
 Pros:
+
  * specifically built for caching
  * very flexible
  * grace mode can keep objects even after TTL expired (when backends
    go down)
 
 Cons:
+
  * no HTTPS support on frontend or backend in the free version
  * configuration is compiled and a bit weird
  * static content needs to be generated in the config file, or sidecar
