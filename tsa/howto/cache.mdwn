@@ -4,6 +4,20 @@ server.
 
 [[!toc levels=3]]
 
+# Design
+
+## Nginx
+
+picking the "light" debian package. The modules that would be
+interesting in others would be "cache purge" (from extras) and "geoip"
+(from full):
+
+    apt install nginx-light
+
+## ATS
+
+    apt install trafficserver
+
 # Discussion
 
 A discussion of the design of the new service, mostly.
