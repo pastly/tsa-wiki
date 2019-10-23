@@ -150,6 +150,13 @@ unlimited gigabit.
 
 ## Alternatives considered
 
+Four alternatives were considered:
+
+ * Apache Traffic Server
+ * Nginx proxying + caching
+ * Varnish + stunnel
+ * Fastly
+
 ### Apache Traffic Server
 
 Pros:
@@ -157,6 +164,7 @@ Pros:
  * HTTPS
  * HTTP/2
  * industry leader (behind cloudflare)
+ * out of the box clustering support
 
 Cons:
 
@@ -175,7 +183,7 @@ Pros:
    possibility of converging over a single solution across the
    infrastructure
  * very popular
- * load balancing
+ * load balancing (but no active check in free version)
  * can serve static content
  * HTTP/2
  * HTTPS
@@ -186,8 +194,14 @@ Cons:
  * no ESI or ICP?
  * does not cache out of the box, requires config which might imply
    lesser performance
+ * opencore model with paid features, especially "active health
+   checks", "Cache Purging API" (although there are [hackish ways to
+   clear the cache](https://stackoverflow.com/questions/6236078/how-to-clear-the-cache-of-nginx) and [a module](https://github.com/nginx-modules/ngx_cache_purge)), and "session persistence
+   based on cookies"
+ * most plugins are statically compiled in different "flavors",
+   although it's possible to have dynamic modules
 
-Used by Cloudflare, MaxCDN and Netflix.
+Used by Cloudflare, [Dropbox](https://blogs.dropbox.com/tech/2017/09/optimizing-web-servers-for-high-throughput-and-low-latency/), MaxCDN and Netflix.
 
 ### Varnish
 
@@ -197,6 +211,7 @@ Pros:
  * very flexible
  * grace mode can keep objects even after TTL expired (when backends
    go down)
+ * third most popular, after Cloudflare and ATS
 
 Cons:
 
@@ -225,5 +240,24 @@ Cons:
 
 ## Sources
 
- * [Bizety: Nginx vs Varnish vs Apache Traffic Server - High Level Comparison](https://www.bizety.com/2016/01/07/nginx-vs-varnish-vs-apache-traffic-server-high-level-comparison/)
- * [ScaleScale: Nginx vs Varnish: which one is better?](https://www.scalescale.com/tips/nginx/nginx-vs-varnish/)
+ * [Bizety: Nginx vs Varnish vs Apache Traffic Server - High Level
+   Comparison](https://www.bizety.com/2016/01/07/nginx-vs-varnish-vs-apache-traffic-server-high-level-comparison/) - "Each proxy server has strengths and weakness"
+ * [ScaleScale: Nginx vs Varnish: which one is better?](https://www.scalescale.com/tips/nginx/nginx-vs-varnish/) - nginx +
+   tmpfs good alternative to varnish
+ * [garron.me: Nginx + Varnish compared to Nginx](https://www.garron.me/en/go2linux/nginx-varnish-vs-nginx-alone-compared.html) - equivalent
+ * [Uptime Made Easy: Nginx or Varnish Which is Faster?](http://www.uptimemadeeasy.com/cloud/nginx-or-varnish-which-is-faster/) -
+   equivalent
+ * [kpayne.me: Apache Traffic Server as a Reverse Proxy](https://kpayne.me/2012/04/10/apache-traffic-server-as-a-reverse-proxy/) -
+   "According to blitz.io, Varnish and Traffic Server benchmark
+   results are close. According to ab, Traffic Server is twice as fast
+   as Varnish"
+ * [University of Oslo: Performance Evaluation of the Apache Traffic
+   Server and Varnish Reverse Proxies](https://pdfs.semanticscholar.org/157b/bec8591a9fdb21e90831309f10ff6705b70d.pdf) - "Varnish seems the more
+   promising reverse proxy server"
+ * [Apache.org: Why Apache Traffic Server](https://svn.apache.org/repos/infra/websites/production/trafficserver/content/why-ats.html) - upstream docs
+ * [czerasz.com: Nginx Caching Tutorial - You Can Run Faster](https://czerasz.com/2015/03/30/nginx-caching-tutorial/) -
+   tutorial
+ * [Igor Cicimov: Apache Traffic Server as Caching Reverse Proxy](https://icicimov.github.io/blog/server/Apache-Traffic-Server-as-Caching-Reverse-Proxy/) -
+   tutorial, "Apache TS presents a stable, fast and scalable caching
+   proxy platform"
+ * [Datanyze.com: Web Accelerators Market Share Report](https://www.datanyze.com/market-share/accelerators)
