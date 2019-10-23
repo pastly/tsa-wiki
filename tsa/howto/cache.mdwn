@@ -50,17 +50,7 @@ Hetzner VMs?
 
 ## Launch checklist
 
- 1. alternatives listing and comparison (done)
- 2. benchmark selected alternatives on throw-away VMs
- 3. deploy a test virtual machine with Puppet (say `cache-01.tpo`)
- 4. validation benchmark against the node
- 5. lower DNS to 300 seconds, wait an hour
- 6. flip DNS to the cache node, wait and monitor for 5 minutes
- 7. raise DNS back to 1h if all goes well.
-
-Disaster recovery:
-
- 1. flip DNS back to pantheon
+See [#32239](https://trac.torproject.org/projects/tor/ticket/32239).
 
 ## Benchmarking procedures
 
