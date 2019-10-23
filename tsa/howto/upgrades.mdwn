@@ -16,11 +16,9 @@ major release. Here are the currently documented ones:
 <figcaption>
 
 The above graphic shows the progress of the migration between major
-releases. It can be regenerated with the [[predict-os.py]] script in
-the subdirectory. It pulls information from [[puppet]] to update a
-[[CSV file|data.csv]] to keep track of progress over time. See [[the
-script|predict-os.py]] for details. 
-
+releases. It can be regenerated with the [predict-os](https://gitlab.com/anarcat/predict-os) script. It
+pulls information from [[puppet]] to update a [[CSV file|data.csv]] to
+keep track of progress over time.
 </figure>
 
 Minor upgrades
