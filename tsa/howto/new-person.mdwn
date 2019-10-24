@@ -1,0 +1,81 @@
+[[!meta title="New person"]]
+
+How to get a new Tor System Administrator on board
+==================================================
+
+## Glossary
+
+ * TSA: Tor System Administrators
+ * TPA: Tor Project Admins, synonymous with TSA?
+ * TPO: TorProject.Org, machines officially managed by TSA
+ * TPN? torproject.net, machines in DNS but not officially managed by TSA
+ * a sysadmin can also be a service admin, and that can be paid work
+
+## Accounts required for a sysadmin
+
+ 1. LDAP (see [[tsa/doc/accounts]]), which provides includes SSH
+    access (see [[tsa/doc/ssh-jump-host/]]). person will receive an
+    email that looks like:
+    
+        Subject: New ud-ldap account for <your name here>
+    
+    and includes information about how to configure email forwarding
+    and SSH keys
+
+ 2. tor-internal@ and other mailing lists (also see below)
+
+ 3. [[puppet]] git repository in `ssh://pauli.torproject.org/srv/puppet.torproject.org/git/tor-puppet`
+    
+ 4. Trac: passwords in `troodi:/srv/trac.torproject.org/trac-var/trac.users`
+
+ 5. TPA password manager is in `ssh://git@git-rw.torproject.org/admin/tor-passwords.git`
+
+ 6. RT: find the password in `hosts-extra-info` in the password
+    manager, login as root and create an account member of `rt-admin`
+    
+ 7. [[nagios]] access, contact should be created in
+    `ssh://git@git-rw.torproject.org/admin/tor-nagios`, password in
+    `/etc/icinga/htpasswd.users` directly on the server
+
+ 8. this wiki: `git@git-rw.torproject.org:project/help/wiki.git`
+
+ 9. bio + avatar on: <https://torproject.org/about/people>
+
+ 10. ask `iaas@cloud.ipnett.se` to grant access to the new sysadmin
+     (e.g. `Message-ID: <87bm1gb5wk.fsf@nordberg.se>`)
+
+## Orienteering
+
+ * sysadmin (this) wiki: <https://help.torproject.org/tsa/>
+ * list of services:
+   <https://trac.torproject.org/projects/tor/wiki/org/operations/Infrastructure>
+   (not the purview of TSA directly, but maye be interesting)
+ * TPO machines list: <https://db.torproject.org/machines.cgi>, key machines:
+   * puppet: `pauli`
+   * [[jump host|tsa/doc/ssh-jump-host]]: `perdulce` or `peninsulare` on some hosts
+   * nagios: `hetzner-hel1-01.torproject.org`
+   * LDAP: `alberti`
+ * key services:
+   * git: <https://gitweb.torproject.org/>, or `git@git-rw.torproject.org` over SSH
+   * trac: <https://trac.torproject.org/> - issue tracking and project management
+   * RT: <https://rt.torproject.org/> - not really used by TSA yet
+   * spec: <https://spec.torproject.org/> - for a series of permalinks
+     to use everywhere, including especially `bugs.tpo/NNN`
+ * key mailing lists:
+   * <tor-project@lists.torproject.org> - Open list where anyone is welcome to watch but posting is moderated. Please favor using this when you can.
+   * <tor-internal@lists.torproject.org> - If something truly can't include the wider community then this is the spot.
+   * <tor-team@lists.torproject.org> - Exact same as tor-internal@ except that the list will accept email from non-members. If you need a cc when emailing a non-tor person then this is the place.
+   * <tor-employees@lists.torproject.org> - TPI staff mailing list
+   * <tor-meeting@lists.torproject.org> - for public meetings
+   * <torproject-admin@torproject.org> - TPA-specific mailing list,
+     not a mailing list but an alias
+ * IRC channels:
+   * `#tor-project` - general torproject channel
+   * `#tpo-admin` - channel for TPA specific stuff
+   * `#tor-internal` - channel for private discussions, need secret
+     password and being added to the `@tor-tpomember` with GroupServ,
+     part of the `tor-internal@lists.tpo` welcome email)
+   * `#tor-bots` - where a lot of bots live
+   * `#tor-nagios` ... except the nagios bot, which lives here
+   * `#tor-meeting` - where some meetings are held
+   * `#tor-meeting2` - fallback for the above
