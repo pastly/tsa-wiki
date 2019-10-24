@@ -18,7 +18,7 @@
  5. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any `sudo` passwords users might have configured for that host
  6. if it has any associated records in `tor-dns/domains` or `auto-dns`, or upstream's reverse dns thing, remove it from there too
  7. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
- 8. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up
+ 8. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up; also look for files with hostname in their name
  9. clean host from `tor-passwords`
  10. remove from the machine from this wiki (if present in
      documentation), the [Nextcloud spreadsheet](https://nc.riseup.net/remote.php/webdav/tpa/Tor%20VM%20Hosts.xlsx), and, if it's an
