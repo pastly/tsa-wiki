@@ -17,6 +17,9 @@ All commands to be run as root unless otherwise noted.
 
 * set a hostname - pick an unused one from the [[doc/naming-scheme]]
 
+* allocate and document the machine in the [Nextcloud spreadsheet](https://nc.riseup.net/remote.php/webdav/tpa/Tor%20VM%20Hosts.xlsx), and the
+  [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's a new service
+
 * set new root password, and document it
 
 * swap and tmp
@@ -139,6 +142,3 @@ All commands to be run as root unless otherwise noted.
         reboot
 
 * add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
-
-* document the machine in the [Nextcloud spreadsheet](https://nc.riseup.net/remote.php/webdav/tpa/Tor%20VM%20Hosts.xlsx), and the
-  [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's a new service
