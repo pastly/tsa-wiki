@@ -9,11 +9,11 @@ How to get a new Tor System Administrator on board
  * TPA: Tor Project Admins, synonymous with TSA?
  * TPO: TorProject.Org, machines officially managed by TSA
  * TPN? torproject.net, machines in DNS but not officially managed by TSA
- * a sysadmin can also be a service admin, and that can be paid work
+ * a sysadmin can also be a service admin, and both can be paid work
 
 ## Accounts required for a sysadmin
 
- 1. LDAP (see [[tsa/doc/accounts]]), which provides includes SSH
+ 1. LDAP (see [[tsa/doc/accounts]]), which includes SSH
     access (see [[tsa/doc/ssh-jump-host/]]). person will receive an
     email that looks like:
     
@@ -41,7 +41,7 @@ How to get a new Tor System Administrator on board
 
  9. bio + avatar on: <https://torproject.org/about/people>
 
- 10. ask `iaas@cloud.ipnett.se` to grant access to the new sysadmin
+ 10. ask linus to get access for the new sysadmin in the sunet cloud
      (e.g. `Message-ID: <87bm1gb5wk.fsf@nordberg.se>`)
 
 ## Orienteering
@@ -79,3 +79,4 @@ How to get a new Tor System Administrator on board
    * `#tor-nagios` ... except the nagios bot, which lives here
    * `#tor-meeting` - where some meetings are held
    * `#tor-meeting2` - fallback for the above
+ * TPI stuff: see employee handbook from HR
