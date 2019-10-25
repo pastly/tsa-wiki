@@ -273,6 +273,17 @@ Cons:
 
 Used by Yahoo, Apple and Comcast.
 
+First impressions:
+
+ * configuration spread out over many different configuration file
+ * complex and arcane configuration language (e.g. try to guess what
+   this actually does:: `CONFIG proxy.config.http.server_ports STRING
+   8080:ipv6:tr-full 443:ssl
+   ip-in=192.168.17.1:80:ip-out=[fc01:10:10:1::1]:ip-out=10.10.10.1`)
+ * configuration syntax varies across config files and plugins
+ * good documentation, but a bit lacking in tutorials
+ * couldn't decouple backend hostname and passed `Host` header
+
 ### Nginx
 
 Pros:
