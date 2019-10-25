@@ -18,6 +18,86 @@ interesting in others would be "cache purge" (from extras) and "geoip"
 
     apt install trafficserver
 
+Default Debian config seems sane when compared to the [Civimov
+tutorial][civimov]. On thing we will need to change is the [default listening
+port][], which is by default:
+
+[default listening port]: https://docs.trafficserver.apache.org/en/8.0.x/admin-guide/files/records.config.en.html#proxy.config.http.server_ports
+
+    CONFIG proxy.config.http.server_ports STRING 8080 8080:ipv6
+
+We want something more like this:
+
+    CONFIG proxy.config.http.server_ports STRING 80 80:ipv6 443:ssl 443:ssl:ipv6
+
+Then we also need to configure the path to the SSL certs, we use the
+self-signed certs for benchmarking:
+
+    CONFIG proxy.config.ssl.server.cert.path STRING /etc/ssl/torproject-auto/servercerts/
+    CONFIG proxy.config.ssl.server.private_key.path STRING /etc/ssl/torproject-auto/serverkeys/
+
+We need to add trafficserver to the `ssl-cert` group so it can read
+those:
+
+    adduser trafficserver ssl-cert
+
+Then we setup this remapping rule:
+
+    map https://blog.torproject.org/ https://backend.example.com/
+
+(`backend.example.com` is the prod alias of our backend.)
+
+And finally curl is able to talk to the proxy:
+
+    curl --proxy-cacert /etc/ssl/torproject-auto/servercerts/ca.crt --proxy https://cache01.torproject.org/ https://blog.torproject.org
+
+TODO: proxy fails to hit backend:
+
+    # curl --proxy-cacert /etc/ssl/torproject-auto/servercerts/ca.crt --proxy https://cache01.torproject.org/ https://blog.torproject.org
+    curl: (56) Received HTTP code 404 from proxy after CONNECT
+
+Same with plain `GET`:
+
+    # curl -s -k -I --resolve *:443:127.0.0.1 https://blog.torproject.org | head -1
+    HTTP/1.1 404 Not Found on Accelerator
+
+It seems that the backend needs to respond on the right-side of the
+remap rule correctly, as ATS doesn't reuse the `Host` header
+correctly, which is kind of a problem because the backend wants to
+redirect everything to the canonical hostname for SEO purposes. We
+*could* tweak that and make `backend.example.com` the canonical host,
+but then it would make disaster recovery much harder, and could make
+some links point there instead of the real canonical host.
+
+I tried the mysterious regex_remap plugin:
+
+    map http://cache01.torproject.org/ http://localhost:8000/ @plugin=regex_remap.so @pparam=maps.reg @pparam=host
+
+with this in `maps.reg`:
+
+    .* $s://$f/$P/
+
+... which basically means "redirect everything to the original scheme,
+host and path", but that (obviously, maybe) fails with:
+
+    # curl -I -s http://cache01.torproject.org/ | head -1
+    HTTP/1.1 400 Multi-Hop Cycle Detected
+
+It feels it *really* doesn't want to act as a transparent proxy...
+
+I also tried a header rewrite:
+
+    map http://cache01.torproject.org/ http://localhost:8000/ @plugin=header_rewrite.so @pparam=rules1.conf
+
+with `rules1.conf` like:
+
+    set-header host cache01.torproject.org
+    set-header foo bar
+
+... and the `Host` header is untouched. The rule works though because
+the `Foo` header appears in the request.
+
+
 # Discussion
 
 A discussion of the design of the new service, mostly.
@@ -276,13 +356,19 @@ Benchmarks:
    promising reverse proxy server"
  * [Loggly: Benchmarking 5 Popular Load Balancers: Nginx, HAProxy,
    Envoy, Traefik, and ALB](https://www.loggly.com/blog/benchmarking-5-popular-load-balancers-nginx-haproxy-envoy-traefik-and-alb/)
+ * [SpinupWP: Page Caching: Varnish Vs Nginx FastCGI Cache 2018
+   Update](https://spinupwp.com/page-caching-varnish-vs-nginx-fastcgi-cache-2018/) - "Nginx FastCGI Cache is the clear winner when it comes
+   to outright performance. It’s not only able to handle more requests
+   per second, but also serve each request 55ms quicker on average."
 
 Tutorials and documentation:
 
  * [Apache.org: Why Apache Traffic Server](https://svn.apache.org/repos/infra/websites/production/trafficserver/content/why-ats.html) - upstream docs
  * [czerasz.com: Nginx Caching Tutorial - You Can Run Faster](https://czerasz.com/2015/03/30/nginx-caching-tutorial/) -
    tutorial
- * [Igor Cicimov: Apache Traffic Server as Caching Reverse Proxy](https://icicimov.github.io/blog/server/Apache-Traffic-Server-as-Caching-Reverse-Proxy/) -
+ * [Igor Cicimov: Apache Traffic Server as Caching Reverse Proxy][Igor Cicimov] -
    tutorial, "Apache TS presents a stable, fast and scalable caching
    proxy platform"
  * [Datanyze.com: Web Accelerators Market Share Report](https://www.datanyze.com/market-share/accelerators)
+
+[cicimov]: https://icicimov.github.io/blog/server/Apache-Traffic-Server-as-Caching-Reverse-Proxy/
