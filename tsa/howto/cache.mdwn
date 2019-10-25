@@ -283,6 +283,7 @@ First impressions:
  * configuration syntax varies across config files and plugins
  * good documentation, but a bit lacking in tutorials
  * couldn't decouple backend hostname and passed `Host` header
+ * no query logging by default (good?)
 
 ### Nginx
 
