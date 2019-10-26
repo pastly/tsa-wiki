@@ -18,8 +18,8 @@ interesting in others would be "cache purge" (from extras) and "geoip"
 
     apt install trafficserver
 
-Default Debian config seems sane when compared to the [Civimov
-tutorial][civimov]. On thing we will need to change is the [default listening
+Default Debian config seems sane when compared to the [Cicimov
+tutorial][cicimov]. On thing we will need to change is the [default listening
 port][], which is by default:
 
 [default listening port]: https://docs.trafficserver.apache.org/en/8.0.x/admin-guide/files/records.config.en.html#proxy.config.http.server_ports
@@ -97,6 +97,16 @@ with `rules1.conf` like:
 ... and the `Host` header is untouched. The rule works though because
 the `Foo` header appears in the request.
 
+Solution:
+
+    CONFIG proxy.config.url_remap.pristine_host_hdr INT 1
+
+It's clearly stated in [the tutorial](https://docs.trafficserver.apache.org/en/latest/admin-guide/configuration/redirecting-http-requests.en.html), but mistakenly in
+[Cicimov's][cicimov].
+
+Next hurdle: no HTTP/2 support, even when using `proto=http2;http`
+(falls back on `HTTP/1.1`) and `proto=http2` only (fails with
+`WARNING: Unregistered protocol type 0`).
 
 # Discussion
 
