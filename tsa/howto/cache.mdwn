@@ -267,6 +267,8 @@ Other alternatives were ignored:
 [Envoy]: https://www.envoyproxy.io/
 ### Apache Traffic Server
 
+#### Summary of online reviews
+
 Pros:
 
  * HTTPS
@@ -279,11 +281,12 @@ Cons:
  * load balancing is an experimental plugin (at least in 2016)
  * no static file serving? or slower?
  * no commercial support
- * configuration seems a bit obscure
 
 Used by Yahoo, Apple and Comcast.
 
-First impressions:
+#### First impressions
+
+Cons:
 
  * configuration spread out over many different configuration file
  * complex and arcane configuration language (e.g. try to guess what
@@ -291,9 +294,16 @@ First impressions:
    8080:ipv6:tr-full 443:ssl
    ip-in=192.168.17.1:80:ip-out=[fc01:10:10:1::1]:ip-out=10.10.10.1`)
  * configuration syntax varies across config files and plugins
- * good documentation, but a bit lacking in tutorials
- * couldn't decouple backend hostname and passed `Host` header
+ * <del>couldn't decouple backend hostname and passed `Host`
+   header</del> bad random tutorial found on the internet
+ * couldn't figure out how to make HTTP/2 work
+
+Pros:
+
  * no query logging by default (good?)
+ * good documentation, but a bit lacking in tutorials
+ * nice little dashboard shipped by default (`traffic_top`) although
+   it could be more useful (doesn't seem to show hit ratio clearly)
 
 ### Nginx
 
