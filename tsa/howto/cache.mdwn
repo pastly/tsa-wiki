@@ -108,6 +108,118 @@ Next hurdle: no HTTP/2 support, even when using `proto=http2;http`
 (falls back on `HTTP/1.1`) and `proto=http2` only (fails with
 `WARNING: Unregistered protocol type 0`).
 
+### Preliminary benchmarks
+
+With `blog.tpo` in `/etc/hosts`, because `proxy-host` doesn't work, and
+running on the same host as the proxy (!), cold cache:
+
+    root@cache01:~# siege https://blog.torproject.org/
+    ** SIEGE 4.0.4
+    ** Preparing 100 concurrent users for battle.
+    The server is now under siege...
+    Lifting the server siege...
+    Transactions:                  68068 hits
+    Availability:                 100.00 %
+    Elapsed time:                 119.53 secs
+    Data transferred:             654.47 MB
+    Response time:                  0.18 secs
+    Transaction rate:             569.46 trans/sec
+    Throughput:                     5.48 MB/sec
+    Concurrency:                   99.67
+    Successful transactions:       68068
+    Failed transactions:               0
+    Longest transaction:            0.56
+    Shortest transaction:           0.00
+
+Warm cache:
+
+    root@cache01:~# siege https://blog.torproject.org/
+    ** SIEGE 4.0.4
+    ** Preparing 100 concurrent users for battle.
+    The server is now under siege...
+    Lifting the server siege...
+    Transactions:                  65953 hits
+    Availability:                 100.00 %
+    Elapsed time:                 119.71 secs
+    Data transferred:             634.13 MB
+    Response time:                  0.18 secs
+    Transaction rate:             550.94 trans/sec
+    Throughput:                     5.30 MB/sec
+    Concurrency:                   99.72
+    Successful transactions:       65953
+    Failed transactions:               0
+    Longest transaction:            0.62
+    Shortest transaction:           0.00
+
+And `traffic_top` looks like this after the second run:
+
+             CACHE INFORMATION                     CLIENT REQUEST & RESPONSE        
+    Disk Used   77.8K    Ram Hit     99.9%   GET         98.7%    200         98.3%
+    Disk Total 268.1M    Fresh       98.2%   HEAD         0.0%    206          0.0%
+    Ram Used    16.5K    Revalidate   0.0%   POST         0.0%    301          0.0%
+    Ram Total  352.3K    Cold         0.0%   2xx         98.3%    302          0.0%
+    Lookups    134.2K    Changed      0.1%   3xx          0.0%    304          0.0%
+    Writes      13.0     Not Cache    0.0%   4xx          2.0%    404          0.4%
+    Updates      1.0     No Cache     0.0%   5xx          0.0%    502          0.0%
+    Deletes      0.0     Fresh (ms)   8.6M   Conn Fail    0.0     100 B        0.1%
+    Read Activ   0.0     Reval (ms)   0.0    Other Err    2.8K    1 KB         2.0%
+    Writes Act   0.0     Cold (ms)   26.2G   Abort      111.0     3 KB         0.0%
+    Update Act   0.0     Chang (ms)  11.0G                        5 KB         0.0%
+    Entries      2.0     Not (ms)     0.0                         10 KB       98.2%
+    Avg Size    38.9K    No (ms)      0.0                         1 MB         0.0%
+    DNS Lookup 156.0     DNS Hit     89.7%                        > 1 MB       0.0%
+    DNS Hits   140.0     DNS Entry    2.0   
+                 CLIENT                                ORIGIN SERVER                
+    Requests   136.5K    Head Bytes 151.6M   Requests   152.0     Head Bytes 156.5K
+    Req/Conn     1.0     Body Bytes   1.4G   Req/Conn     1.1     Body Bytes   1.1M
+    New Conn   137.0K    Avg Size    11.0K   New Conn   144.0     Avg Size     8.0K
+    Curr Conn    0.0     Net (bits)  12.0G   Curr Conn    0.0     Net (bits)   9.8M
+    Active Con   0.0     Resp (ms)    1.2   
+    Dynamic KA   0.0                        
+    cache01                                    (r)esponse (q)uit (h)elp (A)bsolute
+
+ab:
+
+    Server Software:        ATS/8.0.2
+    Server Hostname:        blog.torproject.org
+    Server Port:            443
+    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,2048,256
+    Server Temp Key:        X25519 253 bits
+    TLS Server Name:        blog.torproject.org
+
+    Document Path:          /
+    Document Length:        52873 bytes
+
+    Concurrency Level:      100
+    Time taken for tests:   1.248 seconds
+    Complete requests:      1000
+    Failed requests:        0
+    Total transferred:      53974000 bytes
+    HTML transferred:       52873000 bytes
+    Requests per second:    801.43 [#/sec] (mean)
+    Time per request:       124.776 [ms] (mean)
+    Time per request:       1.248 [ms] (mean, across all concurrent requests)
+    Transfer rate:          42242.72 [Kbytes/sec] received
+
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        8   47  20.5     46     121
+    Processing:     6   75  16.2     76     116
+    Waiting:        1   13   6.8     12      49
+    Total:         37  122  21.6    122     196
+
+    Percentage of the requests served within a certain time (ms)
+      50%    122
+      66%    128
+      75%    133
+      80%    137
+      90%    151
+      95%    160
+      98%    169
+      99%    172
+     100%    196 (longest request)
+
+
 # Discussion
 
 A discussion of the design of the new service, mostly.
@@ -189,6 +301,8 @@ Alternative is to hack `/etc/hosts`.
 Classic commandline:
 
     ab2 -n 1000 -c 100 -X cache01.torproject.org https://example.com/
+
+`-X` also doesn't work with ATS, hacked `/etc/hosts`.
 
 ### Other tools
 
