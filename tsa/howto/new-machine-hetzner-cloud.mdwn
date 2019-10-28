@@ -20,19 +20,23 @@ Then, since we actually want our own Debian install, and since we want the root 
 continue with:
 
  1. Continue on Hetzner's web interface, select the server.
- 1. ISO-Images: Mount SystemRescueCD (2018-04-02)
- 1. open the console (the icon is near the top right)
- 1. reboot the system (either using Ctrl-Alt-Del at the console or using the Power tab on the web interface) and it will boot into the rescue system
- 1. set a root password in the rescue system
- 1. get the `ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub` output
- 1. on your host, ssh-copy-id root@&lt;ipaddr&gt;  (find the ip address either on the web interface, or ask `ip a`)
- 1. then copy over `/usr/share/keyrings/debian-archive-keyring.gpg` and `tor-install-hetzner` to the new host,
- 1. log into the host and run `./tor-install-hetzner` (the ipv6 address prefix you find on the web interface.  Make it end in ::1.)
- 1. once done, note down all the info and poweroff the VM (from the shell is fine)
- 1. you might have to kill this terminal since the rescue system has done weird copy-paste settings to your terminal  (you will know once the passphrase is not accepted in the initrd when you copy/paste it a few steps down)
- 1. unmount the iso (ISO Images tab), start the VM (power tab or top right).
- 1. `ssh -o FingerprintHash=sha1 root@<ipaddr>`  to unlock the host, (to compare ssh's base64 output to dropbear's b16, you can use `perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'` to convert base64 to base16.
- 1. `ssh root@<ipaddr>` to access it once booted and then
+ 2. Reboot into the rescue system ("Rescue, Enable rescue & Power
+    cycle", pick linux64 and your SSH key). this will give you a root
+    password
+ 3. open the console (the icon is near the top right) and login with
+    the root password
+ 4. get the `ssh-keygen -l -f /etc/ssh/ssh_host_*.pub` output. NOTE: the Hetzner
+    consoles use a different keyboard mapping than "US". Hint: `-` is
+    on the `/` key, `/` is on shift-7 and `*` is on shift-`]`
+ 5. login to the new host: `ssh root@$IPADDRESS`, check the
+    fingerprint matches above
+ 6. start a `screen` session
+ 7. clone `tsa-misc` to the new host: `git clone
+    https://git.torproject.org/admin/tsa-misc`
+ 8. run `./tsa-misc/tor-install-hetzner` (the ipv6 address prefix you find on the web interface.  Make it end in `::1`)
+ 9. once done, note down all the info and reboot the VM: `reboot`
+ 10. `ssh -o FingerprintHash=sha1 root@<ipaddr>`  to unlock the host, (to compare ssh's base64 output to dropbear's b16, you can use `perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'` to convert base64 to base16.
+ 11. `ssh root@<ipaddr>` to access it once booted
 
 Then
 
