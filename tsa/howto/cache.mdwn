@@ -35,11 +35,28 @@ We want something more like this:
 
     CONFIG proxy.config.http.server_ports STRING 80 80:ipv6 443:ssl 443:ssl:ipv6
 
+We also need to tell ATS to keep the original Host header:
+
+    CONFIG proxy.config.url_remap.pristine_host_hdr INT 1
+
+It's clearly stated in [the tutorial](https://docs.trafficserver.apache.org/en/latest/admin-guide/configuration/redirecting-http-requests.en.html), but mistakenly in
+[Cicimov's][cicimov].
+
 Then we also need to configure the path to the SSL certs, we use the
 self-signed certs for benchmarking:
 
     CONFIG proxy.config.ssl.server.cert.path STRING /etc/ssl/torproject-auto/servercerts/
     CONFIG proxy.config.ssl.server.private_key.path STRING /etc/ssl/torproject-auto/serverkeys/
+
+When we have a real cert created in let's encrypt, we can use:
+
+    CONFIG proxy.config.ssl.server.cert.path STRING /etc/ssl/torproject/certs/
+    CONFIG proxy.config.ssl.server.private_key.path STRING /etc/ssl/private/
+
+Either way, we need to tell ATS about those certs:
+
+    #dest_ip=* ssl_cert_name=thishost.crt ssl_key_name=thishost.key
+    ssl_cert_name=blog.torproject.org.crt ssl_key_name=blog.torproject.org.key
 
 We need to add trafficserver to the `ssl-cert` group so it can read
 those:
@@ -56,7 +73,9 @@ And finally curl is able to talk to the proxy:
 
     curl --proxy-cacert /etc/ssl/torproject-auto/servercerts/ca.crt --proxy https://cache01.torproject.org/ https://blog.torproject.org
 
-TODO: proxy fails to hit backend:
+### Troubleshooting
+
+#### Proxy fails to hit backend:
 
     curl: (56) Received HTTP code 404 from proxy after CONNECT
 
@@ -101,18 +120,18 @@ with `rules1.conf` like:
 ... and the `Host` header is untouched. The rule works though because
 the `Foo` header appears in the request.
 
-Solution:
+The solution to this is the `proxy.config.url_remap.pristine_host_hdr`
+documented above.
 
-    CONFIG proxy.config.url_remap.pristine_host_hdr INT 1
-
-It's clearly stated in [the tutorial](https://docs.trafficserver.apache.org/en/latest/admin-guide/configuration/redirecting-http-requests.en.html), but mistakenly in
-[Cicimov's][cicimov].
+#### HTTP/2 support missing
 
 Next hurdle: no HTTP/2 support, even when using `proto=http2;http`
 (falls back on `HTTP/1.1`) and `proto=http2` only (fails with
 `WARNING: Unregistered protocol type 0`).
 
-### Preliminary benchmarks
+### Benchmarks
+
+#### Same host tests
 
 With `blog.tpo` in `/etc/hosts`, because `proxy-host` doesn't work, and
 running on the same host as the proxy (!), cold cache:
