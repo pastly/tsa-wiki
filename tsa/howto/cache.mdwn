@@ -271,6 +271,20 @@ See [#32239](https://trac.torproject.org/projects/tor/ticket/32239).
 
 Will require a test VM (or two?) to hit the caches.
 
+### Common procedure
+
+ 1. punch a hole in the firewall to allow cache2 to access cache1
+
+        iptables -I INPUT -s 78.47.61.104 -j ACCEPT
+        ip6tables -I INPUT -s 2a01:4f8:c010:25ff::1 -j ACCEPT
+
+ 2. point the blog to cache1 on cache2:
+
+        116.202.120.172	blog.torproject.org
+        2a01:4f8:fff0:4f:266:37ff:fe26:d6e1 blog.torproject.org
+
+ 3. launch the benchmark
+
 ### Siege
 
 Siege configuration sample:
