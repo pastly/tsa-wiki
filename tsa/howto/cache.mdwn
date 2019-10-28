@@ -203,6 +203,8 @@ And `traffic_top` looks like this after the second run:
 
 ab:
 
+    # ab -c 100 -n 1000 https://blog.torproject.org/
+    [...]
     Server Software:        ATS/8.0.2
     Server Hostname:        blog.torproject.org
     Server Port:            443
@@ -438,12 +440,16 @@ Will require a test VM (or two?) to hit the caches.
         iptables -I INPUT -s 78.47.61.104 -j ACCEPT
         ip6tables -I INPUT -s 2a01:4f8:c010:25ff::1 -j ACCEPT
 
- 2. point the blog to cache1 on cache2:
+ 2. point the blog to cache1 on cache2 in `/etc/hosts`:
 
         116.202.120.172	blog.torproject.org
         2a01:4f8:fff0:4f:266:37ff:fe26:d6e1 blog.torproject.org
 
- 3. launch the benchmark
+ 3. disable Puppet:
+ 
+        puppet agent --disable 'benchmarking requires /etc/hosts override'
+
+ 4. launch the benchmark
 
 ### Siege
 
