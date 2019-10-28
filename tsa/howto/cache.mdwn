@@ -223,6 +223,142 @@ ab:
       99%    172
      100%    196 (longest request)
 
+#### Separate host
+
+Those tests were performed from one cache server to the other, to
+avoid the benchmarking tool fighting for resources with the server.
+
+In `.siege/siege.conf`:
+
+    verbose = false
+    fullurl = true
+    concurrent = 100
+    time = 2M
+    url = https://blog.torproject.org/
+    delay = 1
+    internet = false
+    benchmark = true
+
+Siege:
+
+    root@cache-02:~# siege
+    ** SIEGE 4.0.4
+    ** Preparing 100 concurrent users for battle.
+    The server is now under siege...
+    Lifting the server siege...
+    Transactions:		       28895 hits
+    Availability:		      100.00 %
+    Elapsed time:		      119.73 secs
+    Data transferred:	      285.18 MB
+    Response time:		        0.40 secs
+    Transaction rate:	      241.33 trans/sec
+    Throughput:		        2.38 MB/sec
+    Concurrency:		       96.77
+    Successful transactions:       28895
+    Failed transactions:	           0
+    Longest transaction:	        1.26
+    Shortest transaction:	        0.05
+
+Load went to about 2 (`Load average: 1.65 0.80 0.36` after test), with
+one CPU constantly busy and the other at about 50%, memory usage was
+low (~800M).
+
+ab:
+
+    # ab -c 100 -n 1000 https://blog.torproject.org/
+    [...]
+    Server Software:        ATS/8.0.2
+    Server Hostname:        blog.torproject.org
+    Server Port:            443
+    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,4096,256
+    Server Temp Key:        X25519 253 bits
+    TLS Server Name:        blog.torproject.org
+
+    Document Path:          /
+    Document Length:        53320 bytes
+
+    Concurrency Level:      100
+    Time taken for tests:   4.010 seconds
+    Complete requests:      1000
+    Failed requests:        0
+    Total transferred:      54421000 bytes
+    HTML transferred:       53320000 bytes
+    Requests per second:    249.37 [#/sec] (mean)
+    Time per request:       401.013 [ms] (mean)
+    Time per request:       4.010 [ms] (mean, across all concurrent requests)
+    Transfer rate:          13252.82 [Kbytes/sec] received
+
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:       23  254 150.0    303     549
+    Processing:    14  119  89.3    122     361
+    Waiting:        5  105  89.7    105     356
+    Total:         37  373 214.9    464     738
+
+    Percentage of the requests served within a certain time (ms)
+      50%    464
+      66%    515
+      75%    549
+      80%    566
+      90%    600
+      95%    633
+      98%    659
+      99%    675
+     100%    738 (longest request)
+
+Bombardier results are much better and pretty much max out the gigabit
+connexion:
+
+    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
+    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
+    [=========================================================================] 2m0s
+    Done!
+    Statistics        Avg      Stdev        Max
+      Reqs/sec      2049.82     533.46    7083.03
+      Latency       49.75ms    20.82ms   837.07ms
+      Latency Distribution
+         50%    48.53ms
+         75%    57.98ms
+         90%    69.05ms
+         95%    78.44ms
+         99%   128.34ms
+      HTTP codes:
+        1xx - 0, 2xx - 241187, 3xx - 0, 4xx - 0, 5xx - 0
+        others - 0
+      Throughput:   104.67MB/s
+
+It might be because it supports doing HTTP/2 requests and, indeed, the
+`Throughput` drops down to `14MB/s` when we use the `--http1` flag,
+along with rates closer to ab:
+
+    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/ --http1 -c 100
+    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
+    [=========================================================================] 2m0s
+    Done!
+    Statistics        Avg      Stdev        Max
+      Reqs/sec      1322.21     253.18    1911.21
+      Latency       78.40ms    18.65ms   688.60ms
+      Latency Distribution
+         50%    75.53ms
+         75%    88.52ms
+         90%   101.30ms
+         95%   110.68ms
+         99%   132.89ms
+      HTTP codes:
+        1xx - 0, 2xx - 153114, 3xx - 0, 4xx - 0, 5xx - 0
+        others - 0
+      Throughput:    14.22MB/s
+
+Inter-server communication is good, according to `iperf3`:
+
+    [ ID] Interval           Transfer     Bitrate
+    [  5]   0.00-10.04  sec  1.00 GBytes   859 Mbits/sec                  receiver
+
+So we see the roundtrip does add significant overhead to ab and
+siege. It's possible this is due to the nature of the virtual server,
+much less powerful than the server. This seems to be confirmed by
+`bombardieer`'s success, since it's possibly better designed than the
+other two to maximize resources on the client side.
 
 # Discussion
 
@@ -322,6 +458,20 @@ Classic commandline:
 
 `-X` also doesn't work with ATS, hacked `/etc/hosts`.
 
+### bombardier
+
+Unfortunately, the [bombardier package in Debian](https://tracker.debian.org/pkg/bombardier) is *not* the HTTP
+benchmarking tool but a commandline game. It's still possible to
+install it in Debian with:
+
+    export GOPATH=$HOME/go
+    apt install golang
+    go get -v github.com/codesenberg/bombardier
+
+Then running the benchmark is as simple as:
+
+    ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/
+
 ### Other tools
 
 Siege has trouble going above ~100 concurrent clients because of its
@@ -329,7 +479,7 @@ design (and ulimit) limitations. Its interactive features are also
 limited, here's a set of interesting alternatives:
 
  * [bombardier](https://github.com/codesenberg/bombardier) - golang, HTTP/2, better performance than siege in
-   my (2017) tests
+   my (2017) tests, not in debian
  * [boom](https://github.com/tarekziade/boom) - python rewrite of apachebench, supports duration,
    HTTP/2, not in debian, unsearchable name
  * [go-wrk](https://github.com/adjust/go-wrk/) - golang rewrite of wrk with HTTPS, had performance
@@ -342,7 +492,8 @@ limited, here's a set of interesting alternatives:
  * [Locust](https://locust.io/) - distributed, can model login and interactive
    behavior, not in Debian
  * [Tsung](http://tsung.erlang-projects.org/1/01/about/) - multi-protocol, distributed, erlang
- * [wrk](https://github.com/wg/wrk/) - multithreaded, epoll, Lua scriptable, no HTTPS
+ * [wrk](https://github.com/wg/wrk/) - multithreaded, epoll, Lua scriptable, no HTTPS, only in
+   Debian unstable
 
 ## Cost
 
