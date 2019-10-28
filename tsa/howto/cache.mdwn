@@ -14,6 +14,11 @@ interesting in others would be "cache purge" (from extras) and "geoip"
 
     apt install nginx-light
 
+References:
+
+ * [NGINX Content Caching](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
+ * [NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+
 ## ATS
 
     apt install trafficserver
