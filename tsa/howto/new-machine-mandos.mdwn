@@ -15,4 +15,6 @@ Here's how you add a new client to our setup:
          mandos-keygen --passfile "$t"
 
  1. add the output of `mandos-keygen` from above to `/etc/mandos/clients.conf` on the mandos-server and `service mandos restart` and `puppet agent -t` (to update the firewall after you added the host to ldap)
+
+ 2. add the machine to the `roles::fde` class in Puppet
  1. rebuild the initrd on the new host `update-initramfs -u` and reboot
