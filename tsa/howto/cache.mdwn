@@ -14,10 +14,138 @@ interesting in others would be "cache purge" (from extras) and "geoip"
 
     apt install nginx-light
 
+Then drop this config file in `/etc/nginx/sites-available` and symlink
+into `sites-enabled`:
+
+    server_names_hash_bucket_size 64;
+    proxy_cache_path /var/cache/nginx/ levels=1:2 keys_zone=blog:10m;
+
+    server {
+        listen 80;
+        listen [::]:80;
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        ssl_certificate /etc/ssl/torproject/certs/blog.torproject.org.crt-chained;
+        ssl_certificate_key /etc/ssl/private/blog.torproject.org.key;
+
+        server_name blog.torproject.org;
+        proxy_cache blog;
+
+        location / {
+            proxy_pass https://live-tor-blog-8.pantheonsite.io;
+            proxy_set_header Host       $host;
+
+            # cache 304
+            proxy_cache_revalidate on;
+
+            # add cookie to cache key
+            #proxy_cache_key "$host$request_uri$cookie_user";
+            # not sure what the cookie name is
+            proxy_cache_key $scheme$proxy_host$request_uri;
+
+            # allow serving stale content on error, timeout, or refresh
+            proxy_cache_use_stale error timeout updating;
+            # allow only first request through backend
+            proxy_cache_lock on;
+
+            # add header
+            add_header X-Cache-Status $upstream_cache_status;
+        }
+    }
+
+... and reload nginx.
+
 References:
 
  * [NGINX Content Caching](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
  * [NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+
+### Benchmarks
+
+ab:
+
+    root@cache-02:~# ab -c 100 -n 1000 https://blog.torproject.org/
+    [...]
+    Server Software:        nginx/1.14.2
+    Server Hostname:        blog.torproject.org
+    Server Port:            443
+    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,4096,256
+    Server Temp Key:        X25519 253 bits
+    TLS Server Name:        blog.torproject.org
+
+    Document Path:          /
+    Document Length:        53313 bytes
+
+    Concurrency Level:      100
+    Time taken for tests:   3.083 seconds
+    Complete requests:      1000
+    Failed requests:        0
+    Total transferred:      54458000 bytes
+    HTML transferred:       53313000 bytes
+    Requests per second:    324.31 [#/sec] (mean)
+    Time per request:       308.349 [ms] (mean)
+    Time per request:       3.083 [ms] (mean, across all concurrent requests)
+    Transfer rate:          17247.25 [Kbytes/sec] received
+
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:       30  255  78.0    262     458
+    Processing:    18   35  19.2     28     119
+    Waiting:        7   19   7.4     18      58
+    Total:         81  290  88.3    291     569
+
+    Percentage of the requests served within a certain time (ms)
+      50%    291
+      66%    298
+      75%    303
+      80%    306
+      90%    321
+      95%    533
+      98%    561
+      99%    562
+     100%    569 (longest request)
+
+About 50% faster than ATS.
+
+Siege:
+
+    Transactions:		       32246 hits
+    Availability:		      100.00 %
+    Elapsed time:		      119.57 secs
+    Data transferred:	     1639.49 MB
+    Response time:		        0.37 secs
+    Transaction rate:	      269.68 trans/sec
+    Throughput:		       13.71 MB/sec
+    Concurrency:		       99.60
+    Successful transactions:       32246
+    Failed transactions:	           0
+    Longest transaction:	        1.65
+    Shortest transaction:	        0.23
+
+Almost an order of magnitude faster than ATS.
+
+Bombardier:
+
+    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
+    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
+    [=========================================================================] 2m0s
+    Done!
+    Statistics        Avg      Stdev        Max
+      Reqs/sec      2116.74     506.01    5495.77
+      Latency       48.42ms    34.25ms      2.15s
+      Latency Distribution
+         50%    37.19ms
+         75%    50.44ms
+         90%    89.58ms
+         95%   109.59ms
+         99%   169.69ms
+      HTTP codes:
+        1xx - 0, 2xx - 247827, 3xx - 0, 4xx - 0, 5xx - 0
+        others - 0
+      Throughput:   107.43MB/s
+
+Also maxes out the gigabit connexion, but only marginally faster
+(~3%?) than ATS.
 
 ## ATS
 
@@ -618,6 +746,8 @@ Pros:
 
 ### Nginx
 
+#### Summary of online reviews
+
 Pros:
 
  * provides full webserver stack means much more flexibility,
@@ -643,6 +773,28 @@ Cons:
    although it's possible to have dynamic modules
 
 Used by Cloudflare, [Dropbox](https://blogs.dropbox.com/tech/2017/09/optimizing-web-servers-for-high-throughput-and-low-latency/), MaxCDN and Netflix.
+
+#### First impressions
+
+Pros:
+
+ * single file configuration
+ * config easy to understand and fairly straightforward
+ * just frigging works
+ * easy to serve static content in case of problems
+ * can be leveraged for other applications
+ * performance comparable or better than ATS
+
+Cons:
+
+ * default caching module [uses MD5 as a hashing algorithm](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_path)
+ * configuration refers to magic variables that are [documented all
+   over the place](https://nginx.org/en/docs/varindex.html) (e.g. what is `$proxy_host` vs `$host`?)
+ * [documentation](https://docs.nginx.com/nginx/) mixes content from the commercial version which
+   makes it difficult to tell what is actually possible
+ * reload may crash the server (instead of not reloading) on config errors
+ * no shiny dashboard like ATS
+ * manual cache sizing?
 
 ### Varnish
 
