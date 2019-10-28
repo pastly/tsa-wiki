@@ -53,7 +53,6 @@ And finally curl is able to talk to the proxy:
 
 TODO: proxy fails to hit backend:
 
-    # curl --proxy-cacert /etc/ssl/torproject-auto/servercerts/ca.crt --proxy https://cache01.torproject.org/ https://blog.torproject.org
     curl: (56) Received HTTP code 404 from proxy after CONNECT
 
 Same with plain `GET`:
@@ -381,6 +380,7 @@ Other alternatives were not:
  * [Traefik](https://traefik.io/) - [not designed for caching](https://github.com/containous/traefik/issues/878)
 
 [Envoy]: https://www.envoyproxy.io/
+
 ### Apache Traffic Server
 
 #### Summary of online reviews
@@ -514,7 +514,7 @@ Tutorials and documentation:
  * [Apache.org: Why Apache Traffic Server](https://svn.apache.org/repos/infra/websites/production/trafficserver/content/why-ats.html) - upstream docs
  * [czerasz.com: Nginx Caching Tutorial - You Can Run Faster](https://czerasz.com/2015/03/30/nginx-caching-tutorial/) -
    tutorial
- * [Igor Cicimov: Apache Traffic Server as Caching Reverse Proxy][Igor Cicimov] -
+ * [Igor Cicimov: Apache Traffic Server as Caching Reverse Proxy][cicimov] -
    tutorial, "Apache TS presents a stable, fast and scalable caching
    proxy platform"
  * [Datanyze.com: Web Accelerators Market Share Report](https://www.datanyze.com/market-share/accelerators)
