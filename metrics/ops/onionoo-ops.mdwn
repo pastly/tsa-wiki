@@ -87,11 +87,65 @@ Deployment and maintainence scripts are part of
 
 # DEPLOYMENT
 
+## Initial deployment
+
+The initial deployment procedure is split into 3 parts:
+
+* System setup
+* Importing history
+* Installing and starting the service
+
+### Development/testing in AWS
+
+For development or testing in AWS, a CloudFormation template is available
+named
+*[onionoo-dev.yml](https://gitweb.torproject.org/metrics-cloud.git/plain/cloudformation/onionoo-dev.yml)*.
+The header for this template includes the command required to deploy the stack.
+It will deploy in your local user's namespace (the output of whoami) and must
+be provided with the name of your SSH key pair.
+
+From the CloudFormation portal, select your stack and view the outputs. You
+will find here the public IP address for the EC2 instance that has been created.
+Add this instance to *ansible/dev* in your local copy of metrics-cloud.git
+under "[onionoo-backends]".
+
+You can now setup the machine with Ansible by running:
+
+```
+ansible-playbook -i dev oninooo-backends-aws.yml
+```
+
+### Fresh machine from TSA
+
+Begin by copying the *state* and *out* directories from another Onionoo backend
+to */srv/onionoo.torproject.org/onionoo/{state,out}*.
+
+Add the host name of the new instance to *ansible/production* in your local
+copy of metrics-cloud.git under "[onionoo-backends]" and commit the change.
+
+You can now setup the machine with Ansible by running:
+
+```
+ansible-playbook -i production onionoo-backends.yml
+```
+
+## Upgrade
+
 # DIAGNOSTICS
+
+Logs for the hourly updater can be found in
+*/srv/onionoo.torproject.org/logs/*, and for the web server in
+*/srv/onionoo.torproject.org/web-logs/*.
 
 # MONITORING
 
 # DISASTER RECOVERY
+
+## Single backend failure
+
+## Total loss
+
+## Total loss including all backups
 
 # SERVICE LEVEL AGREEMENT
 
