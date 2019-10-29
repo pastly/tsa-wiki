@@ -141,11 +141,45 @@ Logs for the hourly updater can be found in
 
 # DISASTER RECOVERY
 
-## Single backend failure
+## Single backend data corruption, no hardware failure
+
+```
+sudo -u onionoo -i bash -c 'systemctl --user stop onionoo'
+sudo -u onionoo-unpriv -i bash -c 'systemctl --user stop onionoo-web'
+rm -rf /srv/onionoo.torproject.org/onionoo/home/{.,}\*
+rm -rf /srv/onionoo.torproject.org/onionoo/home-unpriv/{.,}\*
+rm -rf /srv/onionoo.torproject.org/onionoo/onionoo/{.,}\*
+```
+
+Then pretend you are deploying a new backend from the instructions above.
+
+
+## Single backend failure, hardware failure
+
+In the event of a single backend failure, ask TSA to trash it and make a new
+one. Once Puppet has configured their side of it, pretend you are deploying a
+new backend from the instructions above.
 
 ## Total loss
 
+In the event of a total loss, ask TSA to trash all the backends and make new
+ones. Once Puppet has configured one host, restore the state and out
+directories from the latest good backup. It may be necessary to refer to the
+logs to work out when the latest good backup might be, which should also be
+backed up. Once state and out are in place, pretend you are deploying a new
+backend from the instructions above.
+
 ## Total loss including all backups
+
+In the event that the backups have also been lost, it will not be possible to
+restore history. The data does exist in CollecTor to do this, but there is no
+code that actually does it.
+
+If no out directory is present on the instance when the Ansible playbook is run
+to install and start the service, it will perform an initial single run of the
+updater to bootstrap. This will be where history starts.
+
+Try to avoid this happening.
 
 # SERVICE LEVEL AGREEMENT
 
