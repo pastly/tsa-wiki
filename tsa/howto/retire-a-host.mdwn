@@ -6,8 +6,8 @@
 
     * If the VM is on a KVM host: `virsh shutdown $host`, or at least stop the
     primary service on the machine
-    
-    * If the machine is on ganeti: gnt-instance remove $host
+
+    * If the machine is on ganeti: `gnt-instance remove $host`
 
  3. On KVM hosts, undefine the VM: `virsh undefine $host`
 
