@@ -2,15 +2,22 @@
 
  1. long before (weeks or months) the machine is decomissioned, make
     sure users are aware it will go away and of its replacement services
- 2. if applicable, stop the VM: `virsh shutdown $host`, or at least
-    stop the primary service on the machine
- 3. if applicable, undefine the VM: `virsh undefine $host`
+ 2. if applicable, stop the VM:
+
+    * If the VM is on a KVM host: `virsh shutdown $host`, or at least stop the
+    primary service on the machine
+    
+    * If the machine is on ganeti: gnt-instance remove $host
+
+ 3. On KVM hosts, undefine the VM: `virsh undefine $host`
+
  4. wipe host data, possibly with a delay:
-  
-    * if applicable, remove the LVM logical volumes or virtual disk
-      files:
-      
-          echo 'lvremove -y vgname/lvname' | at now + 7 days
+
+    * On KVM hosts, remove the LVM logical volumes or virtual disk files:
+
+        `lvs` will list the logical volumes on the machine
+
+        `echo 'lvremove -y vgname/lvname' | at now + 7 days`
 
     * for a normal machine or a machine we do not own the parent host
       for, wipe the disks using the method described below
