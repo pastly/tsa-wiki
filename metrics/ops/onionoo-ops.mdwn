@@ -143,7 +143,7 @@ Login to each of the Onionoo backends and check the logs for the hourly updater
 to ensure it's not mid-update. If everything is idle:
 
 ```
-systemctl -u onionoo -i bash -c 'systemctl --user stop onionoo'
+sudo -u onionoo -i bash -c 'systemctl --user stop onionoo'
 ```
 
 You can now run the Ansible playbook to update the installed versions and
