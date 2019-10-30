@@ -55,10 +55,17 @@ into `sites-enabled`:
 
 ... and reload nginx.
 
+I tested that logged in users bypass the cache.
+
 References:
 
+ * [NGINX Alphabetical index of variables](https://nginx.org/en/docs/varindex.html)
+ * [NGINX Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
  * [NGINX Content Caching](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
  * [NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+ * [perusio@github.com: Nginx configuration for running Drupal](https://github.com/perusio/drupal-with-nginx) -
+   interesting [snippet](https://github.com/perusio/drupal-with-nginx/blob/D7/apps/drupal/map_cache.conf) for cookies handling, not required
+ * [NGINX: Maximizing Drupal 8 Performance with NGINX, Part 2: Caching and Load Balancing](https://www.nginx.com/blog/maximizing-drupal-8-performance-nginx-part-ii-caching-load-balancing/)
 
 ### Benchmarks
 
