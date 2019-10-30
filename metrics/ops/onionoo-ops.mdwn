@@ -104,16 +104,20 @@ The header for this template includes the command required to deploy the stack.
 It will deploy in your local user's namespace (the output of whoami) and must
 be provided with the name of your SSH key pair.
 
-From the CloudFormation portal, select your stack and view the outputs. You
-will find here the public IP address for the EC2 instance that has been created.
-Add this instance to *ansible/dev* in your local copy of metrics-cloud.git
-under "[onionoo-backends]".
+From the [CloudFormation
+portal](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks),
+select your stack and view the outputs. You will find here the public IP
+address for the EC2 instance that has been created.  Add this instance to
+*ansible/dev* in your local copy of metrics-cloud.git under
+"[onionoo-backends]".
 
 You can now setup the machine with Ansible by running:
 
 ```
 ansible-playbook -i dev oninooo-backends-aws.yml
 ```
+
+Note that the AWS AMI used has passwordless sudo, so no password need be given.
 
 ### Fresh machine from TSA
 
@@ -126,10 +130,28 @@ copy of metrics-cloud.git under "[onionoo-backends]" and commit the change.
 You can now setup the machine with Ansible by running:
 
 ```
-ansible-playbook -i production onionoo-backends.yml
+ansible-playbook -i production -K onionoo-backends.yml
 ```
 
 ## Upgrade
+
+The version number of Onionoo to install is stored as a variable in the main
+onionoo-backends.yml playbook. Begin by changing this to the new version number
+in your local clone, commit and push the change.
+
+Login to each of the Onionoo backends and check the logs for the hourly updater
+to ensure it's not mid-update. If everything is idle:
+
+```
+systemctl -u onionoo -i bash -c 'systemctl --user stop onionoo'
+```
+
+You can now run the Ansible playbook to update the installed versions and
+restart the services:
+
+```
+ansible-playbook -i production -K onionoo-backends.yml
+```
 
 # DIAGNOSTICS
 
@@ -152,7 +174,6 @@ rm -rf /srv/onionoo.torproject.org/onionoo/onionoo/{.,}\*
 ```
 
 Then pretend you are deploying a new backend from the instructions above.
-
 
 ## Single backend failure, hardware failure
 
