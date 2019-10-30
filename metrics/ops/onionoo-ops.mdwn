@@ -155,11 +155,30 @@ ansible-playbook -i production -K onionoo-backends.yml
 
 # DIAGNOSTICS
 
+## Logs
+
 Logs for the hourly updater can be found in
 */srv/onionoo.torproject.org/logs/*, and for the web server in
 */srv/onionoo.torproject.org/web-logs/*.
 
+## Web Server Direct Connection
+
+It may be necessary to determine if an issue is caused by a frontend or a
+backend.
+
+To connect directly to an Onionoo backend's web server, you will need to use
+SSH port forwarding. This is because the web server is not available for
+incoming connections on its Internet address. For example:
+
+```
+ssh -L8039:localhost:8080 onionoo-backend-01.torproject.org
+```
+
+You'll then be able to connect to localhost:8039 in your web browser.
+
 # MONITORING
+
+
 
 # DISASTER RECOVERY
 
