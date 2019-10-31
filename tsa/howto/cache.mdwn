@@ -55,7 +55,29 @@ into `sites-enabled`:
 
 ... and reload nginx.
 
-I tested that logged in users bypass the cache.
+I tested that logged in users bypass the cache and things generally
+work well.
+
+A key problem with Nginx is getting decent statistics out. The
+[upstream nginx exporter](https://github.com/nginxinc/nginx-prometheus-exporter) supports only (basically) hits per second
+through the [stub status module](http://nginx.org/en/docs/http/ngx_http_stub_status_module.html) a very limited module shipped with
+core Nginx. The commercial version, Nginx Plus, supports a [more
+extensive API](https://nginx.org/en/docs/http/ngx_http_api_module.html#api) which includes the hit rate, but that's not an
+option for us.
+
+There are two solutions to work around this problem:
+
+ * create our own metrics using the [Nginx Lua Prometheus module](https://github.com/knyar/nginx-lua-prometheus):
+   this can have performance impacts and involves a custom
+   configuration
+ * write and parse log files, that's the way the [munin plugin](https://github.com/munin-monitoring/contrib/blob/master/plugins/nginx/nginx-cache-hit-rate)
+   works - this could possibly be fed *directly* into [mtail](https://github.com/google/mtail) to
+   avoid storing logs on disk but still get the date (include
+   [`$upstream_cache_status`](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#var_upstream_cache_status) in the logs)
+ * use a third-party module like [vts](https://github.com/vozlt/nginx-module-vts) or [sts](https://github.com/vozlt/nginx-module-sts) and the
+   [exporter](https://github.com/hnlq715/nginx-vts-exporter) to expose those metrics - the vts module doesn't seem
+   to be very well maintained (no release since 2018) and it's unclear
+   if this will work for our use case
 
 References:
 
@@ -534,6 +556,7 @@ charged there.
  * HTTPS support in the frontend and backend
  * deployment through Puppet
  * anonymized logs
+ * hit rate stats
 
 ### Nice to have
 
@@ -827,7 +850,9 @@ Cons:
  * reload may crash the server (instead of not reloading) on config errors
  * no shiny dashboard like ATS
  * manual cache sizing?
+ * [detailed cache stats][] are only in the "plus" version
 
+[detailed cache stats]: https://docs.nginx.com/nginx/admin-guide/monitoring/live-activity-monitoring/
 ### Varnish
 
 Pros:
