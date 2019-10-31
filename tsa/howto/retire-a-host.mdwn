@@ -43,7 +43,9 @@
      Also clean up the relevant files on the letsencrypt master
      (currently nevii.  Use find to find those.)
  14. if it's a physical machine or a virtual host we don't control,
-     schedule removal from racks or hosts with upstream
+     schedule removal from racks or hosts with upstream 
+ 15. if the machine is handling mail, remove it from [dnswl.org](https://www.dnswl.org/)
+     (password in tor-passwords, `hosts-extra-info`)
 
 TODO: remove the client from the Bacula catalog, see <https://trac.torproject.org/projects/tor/ticket/30880>.
 

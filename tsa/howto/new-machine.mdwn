@@ -142,3 +142,6 @@ All commands to be run as root unless otherwise noted.
         reboot
 
 * add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
+
+* if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/) (password
+  in tor-passwords, `hosts-extra-info`)
