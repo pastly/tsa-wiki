@@ -178,7 +178,14 @@ You'll then be able to connect to localhost:8039 in your web browser.
 
 # MONITORING
 
+Onionoo is monitored by the **TSA** Nagios instance (future task: add to Metrics
+Nagios) using the
+[tor-check-onionoo](https://gitweb.torproject.org/admin/tor-nagios.git/tree/tor-nagios-checks/checks/tor-check-onionoo)
+plugin. The frontends and backends are each monitored. The check is simple:
+it looks for the last time that bridge and relay information was updated and
+alerts if they are too old.
 
+Alerts are sent to the metrics-alerts mailing list.
 
 # DISASTER RECOVERY
 
@@ -226,6 +233,9 @@ Try to avoid this happening.
 # SEE ALSO
 
 # STANDARDS
+
+The Onionoo service implements the [Onionoo
+protocol](https://metrics.torproject.org/onionoo.html).
 
 # HISTORY
 
