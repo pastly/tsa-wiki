@@ -800,6 +800,7 @@ Cons:
  * <del>couldn't decouple backend hostname and passed `Host`
    header</del> bad random tutorial found on the internet
  * couldn't figure out how to make HTTP/2 work
+ * no prometheus exporters
 
 ### Nginx
 
