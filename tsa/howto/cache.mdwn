@@ -577,11 +577,14 @@ charged there.
 
 ## Proposed Solution
 
-TBD (To Be Determined). Considering either Apache Traffic Server or
-Nginx on a pair of servers.
+Nginx will be deployed on two servers. ATS was found to be somewhat
+difficult to configure and debug, while Nginx has a more "regular"
+configuration file format. Furthermore, performance was equivalent or
+better in Nginx. 
 
-TODO: In the gnt-fsn cluster if cost-effective, otherwise maybe in two
-Hetzner VMs?
+Finally, there is the possibility of converging all HTTP services
+towards Nginx if desired, which would reduce the number of moving
+parts in the infrastructure.
 
 ## Launch checklist
 
