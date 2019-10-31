@@ -632,6 +632,29 @@ Then running the benchmark is as simple as:
 
     ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/
 
+Baseline benchmark, from cache02:
+
+    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
+    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
+    [================================================================================================================================================================] 2m0s
+    Done!
+    Statistics        Avg      Stdev        Max
+      Reqs/sec      2796.01     716.69    6891.48
+      Latency       35.96ms    22.59ms      1.02s
+      Latency Distribution
+         50%    33.07ms
+         75%    40.06ms
+         90%    47.91ms
+         95%    54.66ms
+         99%    75.69ms
+      HTTP codes:
+        1xx - 0, 2xx - 333646, 3xx - 0, 4xx - 0, 5xx - 0
+        others - 0
+      Throughput:   144.79MB/s
+
+This is strangely much higher, in terms of throughput, and faster, in
+terms of latency, than testing against our own servers.
+
 ### Other tools
 
 Siege has trouble going above ~100 concurrent clients because of its
