@@ -746,6 +746,7 @@ Cons:
 
 Pros:
 
+ * [Puppet module available](https://forge.puppet.com/brainsware/trafficserver)
  * no query logging by default (good?)
  * good documentation, but a bit lacking in tutorials
  * nice little dashboard shipped by default (`traffic_top`) although
@@ -785,6 +786,7 @@ Used by Cloudflare, [Dropbox](https://blogs.dropbox.com/tech/2017/09/optimizing-
 
 Pros:
 
+ * ["approved" Puppet module](https://forge.puppet.com/puppet/nginx)
  * single file configuration
  * config easy to understand and fairly straightforward
  * just frigging works
