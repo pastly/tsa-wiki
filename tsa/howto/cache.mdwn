@@ -781,6 +781,14 @@ Used by Yahoo, Apple and Comcast.
 
 #### First impressions
 
+Pros:
+
+ * [Puppet module available](https://forge.puppet.com/brainsware/trafficserver)
+ * no query logging by default (good?)
+ * good documentation, but a bit lacking in tutorials
+ * nice little dashboard shipped by default (`traffic_top`) although
+   it could be more useful (doesn't seem to show hit ratio clearly)
+
 Cons:
 
  * configuration spread out over many different configuration file
@@ -792,14 +800,6 @@ Cons:
  * <del>couldn't decouple backend hostname and passed `Host`
    header</del> bad random tutorial found on the internet
  * couldn't figure out how to make HTTP/2 work
-
-Pros:
-
- * [Puppet module available](https://forge.puppet.com/brainsware/trafficserver)
- * no query logging by default (good?)
- * good documentation, but a bit lacking in tutorials
- * nice little dashboard shipped by default (`traffic_top`) although
-   it could be more useful (doesn't seem to show hit ratio clearly)
 
 ### Nginx
 
