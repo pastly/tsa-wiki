@@ -1,0 +1,48 @@
+[[!toc levels=2]]
+
+# Roll call: who's there and emergencies
+# What has everyone been up to
+
+## anarcat
+
+ * blog service damage control (#32090)
+ * new caching service (#32239)
+ * try to kick cymru back into life (#29397)
+ * jabber service shutdown (#31700)
+ * prometheus/ipsec reliability issues (#31916)
+ * bumped prometheus retention to 5m/365d, bumped back to 1m/365d after i realized it broke the graphs (#31244)
+ * LDAP sudo transition (#6367)
+ * finished director replacement (#31786)
+ * archived public SVN (#15948)
+ * shutdown SVN internal (#15949)
+ * fix "ping on new VMs" bug on ganeti hosts (#31781)
+ * review Fastly contracts and contacts
+ * became a blog maintainer (#23007)
+ * clarified hardware donation policy in FAQ (#32044)
+ * tracking major upgrades progress (fancy graphs!), visible at https://help.torproject.org/tsa/howto/upgrades/ - current est: june 2020
+ * joined a call with giant rabbit about finances, security and cost, hiro also talked with them about upgrading their CiviCRM, some downtimes to be announced soon-ish
+ * massive (~20%) trac ticket cleanup in the "trac" component
+ * daily grind: email aliases, pgp key updates, full disks, security upgrades, reboots, performance problems
+ * worked sysadmin onboarding process docs (ticket #29395)
+ * drafted a template for service documentation in https://help.torproject.org/tsa/howto/template/
+
+# What we're up to next
+
+## anarcat
+
+New:
+
+ * caching server launch and followup, missing stats (#32239)
+
+Continued/stalled:
+
+ * followup on SVN shutdown, only corp missing (#17202)
+ * upstreaming ganeti installer fix and audit of the others (#31781)
+ * followup with email services improvements (#30608)
+ * followup on SVN decomissionning (#17202)
+ * send root@ emails to RT (#31242)
+ * continue prometheus module merges
+
+# Other discussions
+# Next meeting
+
