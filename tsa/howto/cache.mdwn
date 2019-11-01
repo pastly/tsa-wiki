@@ -79,6 +79,38 @@ There are two solutions to work around this problem:
    to be very well maintained (no release since 2018) and it's unclear
    if this will work for our use case
 
+Here's an example of how to do the mtail hack. First tell nginx to
+write to syslog, to act as a buffer, so that parsing doesn't slow
+processing, excerpt from the [nginx.conf snippet](https://git.autistici.org/ai3/float/blob/master/roles/nginx/templates/config/nginx.conf#L34):
+
+    # Log response times so that we can compute latency histograms
+    # (using mtail). Works around the lack of Prometheus
+    # instrumentation in NGINX.
+    log_format extended '$server_name:$server_port '
+                '$remote_addr - $remote_user [$time_local] '
+                '"$request" $status $body_bytes_sent '
+                '"$http_referer" "$http_user_agent" '
+                '$upstream_addr $upstream_response_time $request_time';
+
+    access_log syslog:server=unix:/dev/log,facility=local3,tag=nginx_access extended;
+
+(We would also need to add `$upstream_cache_status` in that format.)
+
+Then count the different stats using mtail, excerpt from the [mtail
+config snippet](https://git.autistici.org/ai3/float/blob/master/roles/base/files/mtail/nginx.mtail):
+
+    # Define the exported metrics.
+    counter nginx_http_request_total
+    counter nginx_http_requests by host, vhost, method, code, backend
+    counter nginx_http_bytes by host, vhost, method, code, backend
+    counter nginx_http_requests_ms by le, host, vhost, method, code, backend 
+
+    /(?P<hostname>[-0-9A-Za-z._:]+) nginx_access: (?P<vhost>[-0-9A-Za-z._:]+) (?P<remote_addr>[0-9a-f\.:]+) - - \[[^\]]+\] "(?P<request_method>[A-Z]+) (?P<request_uri>\S+) (?P<http_version>HTTP\/[0-9\.]+)" (?P<status>\d{3}) ((?P<response_size>\d+)|-) "[^"]*" "[^"]*" (?P<upstream_addr>[-0-9A-Za-z._:]+) ((?P<ups_resp_seconds>\d+\.\d+)|-) (?P<request_seconds>\d+)\.(?P<request_milliseconds>\d+)/ {
+
+    	nginx_http_request_total++
+
+We'd also need to check the cache statuf in that parser.
+
 References:
 
  * [NGINX Alphabetical index of variables](https://nginx.org/en/docs/varindex.html)
