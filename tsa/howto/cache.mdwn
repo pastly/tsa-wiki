@@ -205,8 +205,12 @@ Bombardier:
         others - 0
       Throughput:   107.43MB/s
 
-Also maxes out the gigabit connexion, but only marginally faster
-(~3%?) than ATS.
+Almost maxes out the gigabit connexion as well, but only marginally
+faster (~3%?) than ATS.
+
+Does not max theoritical gigabit maximal performance, which [is
+apparently](http://rickardnobel.se/actual-throughput-on-gigabit-ethernet/) at around 118MB/s without jumbo frames (and 123MB/s
+with).
 
 ## ATS
 
@@ -516,7 +520,7 @@ ab:
       99%    675
      100%    738 (longest request)
 
-Bombardier results are much better and pretty much max out the gigabit
+Bombardier results are much better and almost max out the gigabit
 connexion:
 
     anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
@@ -711,7 +715,20 @@ Baseline benchmark, from cache02:
       Throughput:   144.79MB/s
 
 This is strangely much higher, in terms of throughput, and faster, in
-terms of latency, than testing against our own servers.
+terms of latency, than testing against our own servers. Different
+avenues were explored to explain that disparity with our servers:
+
+ * jumbo frames? nope, both connexions see packets larger than 1500
+   bytes
+ * protocol differences? nope, both go over IPv6 and (probably) HTTP/2
+   (at least not over UDP)
+ * different link speeds
+
+The last theory is currently the only one standing. Indeed, 144.79MB/s
+should not be possible on regular gigabit ethernet (GigE), as it is
+actually *more* than 1000Mbit/s (1158.32Mbit/s). Sometimes the above
+benchmark even gives 152MB/s (1222Mbit/s), way beyond what a regular
+GigE link should be able to provide.
 
 ### Other tools
 
