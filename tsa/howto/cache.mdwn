@@ -744,7 +744,7 @@ limited, here's a set of interesting alternatives:
    issues in my first tests (2017), [no duration target](https://github.com/adjust/go-wrk/issues/2), not in
    Debian
  * [hey](https://github.com/rakyll/hey) - golang rewrite of apachebench, similar to boom, not in
-   debian, unsearchable name
+   debian ([ITP #943596](https://bugs.debian.org/943596)), unsearchable name
  * [Jmeter](https://jmeter.apache.org/) - interactive behavior, can replay recorded sessions
    from browsers
  * [Locust](https://locust.io/) - distributed, can model login and interactive
