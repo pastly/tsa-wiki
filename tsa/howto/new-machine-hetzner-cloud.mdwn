@@ -2,6 +2,8 @@ Go to the [Heztner console][] and clikety on the web interface to get
 a new instance. Credentials are in `tor-passwords.git` in
 `hosts-extra-info` under `hetzner`.
 
+TODO: consider using the [`hcloud`](https://github.com/hetznercloud/cli) command insted.
+
  [Heztner console]: https://console.hetzner.cloud/
 
 Pick the following settings:
