@@ -30,8 +30,8 @@ usual channels.
 
 When a few pending upgrades have piled up, a batch of upgrades can be
 done with the `torproject-upgrade-prepare` command, which is available
-in the `admin/tor-misc.git` project in git-rw, followed by the 
-`tor-project-upgrade` script.
+in the `admin/tsa-misc.git` project in git-rw, followed by the 
+`torproject-upgrade` script.
 
 ### Restarting services
 
