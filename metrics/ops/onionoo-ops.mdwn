@@ -114,7 +114,7 @@ address for the EC2 instance that has been created.  Add this instance to
 You can now setup the machine with Ansible by running:
 
 ```
-ansible-playbook -i dev oninooo-backends-aws.yml
+ansible-playbook -i dev onionoo-backends-aws.yml
 ```
 
 Note that the AWS AMI used has passwordless sudo, so no password need be given.
