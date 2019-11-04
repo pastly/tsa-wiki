@@ -45,7 +45,10 @@
  14. if it's a physical machine or a virtual host we don't control,
      schedule removal from racks or hosts with upstream 
  15. if the machine is handling mail, remove it from [dnswl.org](https://www.dnswl.org/)
-     (password in tor-passwords, `hosts-extra-info`)
+     (password in tor-passwords, `hosts-extra-info`) - consider that
+     it can take a long time (weeks? months?) to be able to "re-add"
+     an IP address in that service, so if that IP can eventually be
+     reused, it might be better to keep it there in the short term
 
 TODO: remove the client from the Bacula catalog, see <https://trac.torproject.org/projects/tor/ticket/30880>.
 
