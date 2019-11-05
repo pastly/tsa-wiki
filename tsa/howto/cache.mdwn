@@ -4,6 +4,48 @@ server.
 
 [[!toc levels=3]]
 
+# Tutorial
+
+<!-- simple, brainless step-by-step instructions requiring little or -->
+<!-- no technical background -->
+
+# How-to
+
+<!-- more in-depth procedure that may require interpretation -->
+
+## Pager playbook
+## Disaster recovery
+
+In case of fire, head to the `torproject.org` zone in the
+`dns/domains` and flip the DNS record of the affected service back to
+the backend. See [ticket #32239](https://trac.torproject.org/projects/tor/ticket/32239) for details on that.
+
+TODO: this could be improved. How to deal with DDOS? Memory, disk
+exhaustion? Performance issues?
+
+# Reference
+
+## Installation
+<!-- how to setup the service from scratch -->
+
+Include `roles::cache` in Puppet.
+
+TODO: document how to add new sites in the cache.
+
+## Design
+<!-- how this is build -->
+<!-- should reuse and expand on the "proposed solution", it's a -->
+<!-- "as-built" documented, whereas the "Proposed solution" is an -->
+<!-- "architectural" document, which the final result might differ -->
+<!-- from, sometimes significantly -->
+
+To be clarified.
+
+## SLA
+<!-- this describes an acceptable level of service for this service -->
+
+TBD.
+
 # Design
 
 ## Nginx
