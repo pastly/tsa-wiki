@@ -704,8 +704,8 @@ role `roles::monitoring` follows that pattern correctly.
 
 On top of the host configuration, some node-specific configuration can
 be performed from Hiera. This should be avoided as much as possible,
-but sometimes there is just no other way. A good example are the
-`build-arm-*` nodes which include the following configuration:
+but sometimes there is just no other way. A good example was the
+`build-arm-*` nodes which included the following configuration:
 
     bacula::client::ensure: "absent"
 
