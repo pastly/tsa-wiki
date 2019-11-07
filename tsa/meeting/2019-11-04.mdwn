@@ -1,6 +1,10 @@
 [[!toc levels=2]]
 
 # Roll call: who's there and emergencies
+
+anarcat, hiro, qbi present, ln5 and weasel couldn't make it but still
+sent updates.
+
 # What has everyone been up to
 
 ## anarcat
@@ -10,7 +14,8 @@
  * try to kick cymru back into life (#29397)
  * jabber service shutdown (#31700)
  * prometheus/ipsec reliability issues (#31916)
- * bumped prometheus retention to 5m/365d, bumped back to 1m/365d after i realized it broke the graphs (#31244)
+ * bumped prometheus retention to 5m/365d, bumped back to 1m/365d
+   after i realized it broke the graphs (#31244)
  * LDAP sudo transition (#6367)
  * finished director replacement (#31786)
  * archived public SVN (#15948)
@@ -19,12 +24,49 @@
  * review Fastly contracts and contacts
  * became a blog maintainer (#23007)
  * clarified hardware donation policy in FAQ (#32044)
- * tracking major upgrades progress (fancy graphs!), visible at https://help.torproject.org/tsa/howto/upgrades/ - current est: june 2020
- * joined a call with giant rabbit about finances, security and cost, hiro also talked with them about upgrading their CiviCRM, some downtimes to be announced soon-ish
+ * tracking major upgrades progress (fancy graphs!), visible at
+   https://help.torproject.org/tsa/howto/upgrades/ - current est:
+   april 2020
+ * joined a call with giant rabbit about finances, security and cost,
+   hiro also talked with them about upgrading their CiviCRM, some
+   downtimes to be announced soon-ish
  * massive (~20%) trac ticket cleanup in the "trac" component
- * daily grind: email aliases, pgp key updates, full disks, security upgrades, reboots, performance problems
  * worked sysadmin onboarding process docs (ticket #29395)
- * drafted a template for service documentation in https://help.torproject.org/tsa/howto/template/
+ * drafted a template for service documentation in
+   https://help.torproject.org/tsa/howto/template/
+ * daily grind: email aliases, pgp key updates, full disks, security
+   upgrades, reboots, performance problems
+
+## hiro
+
+ * website maintenance and eoy campaign
+ * retire getulum
+ * make a new machine for gettor
+ * crm stuff with giant rabbit
+ * some security updates and service documentation. Testing out
+   ansible for scripts. Happy with the current setup used for gettor
+   with everything else in puppet.
+ * some gettor updates and maintenance
+ * started creating the dev website
+ * survey update
+ * nagios gettor status check
+ * dip updates and maintenance
+
+## weasel
+
+ * moving onionoo forward to new VMs (#31659 and linked)
+ * moved more things off metal we want to get rid of
+ * includes preparing a new IRC host (#32281); the old one is not yet
+   gone
+
+## qbi
+
+ * created tor-moderators@
+ * updated some machines (apt uprade)
+
+## linus
+
+ * followed up with nextcloud launch
 
 # What we're up to next
 
@@ -43,6 +85,47 @@ Continued/stalled:
  * send root@ emails to RT (#31242)
  * continue prometheus module merges
 
+## hiro
+
+ * Lektor package upgrade
+ * More website maintenance
+ * nagios bridgedb status check
+ * investigating occasional websites build failures
+ * move translations / majus out of moly
+ * finish prometheus tasks w/ anticensorship-team
+ * why is gitlab giving an error when creating a MR from a forked
+   repository?
+
+## ln5
+
+ * nextcloud migration
+ 
+## qbi
+
+ * Upgrade some hosts (<5) to buster
+
 # Other discussions
+
+No planned discussion.
+
 # Next meeting
 
+qbi can't on dec 2nd and we missed two people this time, so it make sense to do it a week earlier...
+
+november 25th 1500UTC, which is 1600CET and 1000EST
+
+# Metrics of the month
+
+Access and transfer rates are an average over the last 30 days.
+
+ * hosts in Puppet: 75, LDAP: 79, Prometheus exporters: 120
+ * number of apache servers monitored: 32, hits per second: 203
+ * number of self-hosted nameservers: 5, mail servers: 10
+ * pending upgrades: 5, reboots: 0
+ * average load: 0.94, memory available: 303.76 GiB/946.18 GiB,
+   running processes: 387
+ * bytes sent: 200.05 MB/s, received: 132.90 MB/s
+
+Now also available as the main Grafana dashboard. Head to
+<https://grafana.torproject.org/>, change the time period to 30 days,
+and wait a while for results to render.
