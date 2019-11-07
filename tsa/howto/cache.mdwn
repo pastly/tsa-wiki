@@ -153,6 +153,10 @@ config snippet](https://git.autistici.org/ai3/float/blob/master/roles/base/files
 
 We'd also need to check the cache statuf in that parser.
 
+Update: cache status now written to on-disk, anonymised, log files and
+can be parsed with lnav. see ticket #32239 for details, hit ratio
+between 70 and 80% based on preliminary results.
+
 References:
 
  * [NGINX Alphabetical index of variables](https://nginx.org/en/docs/varindex.html)
