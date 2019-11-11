@@ -67,7 +67,8 @@ exhaustion? Performance issues?
 
 Include `roles::cache` in Puppet.
 
-TODO: document how to add new sites in the cache.
+TODO: document how to add new sites in the cache. See
+[ticket#32462](https://trac.torproject.org/projects/tor/ticket/32462) for that project.
 
 ## SLA
 
