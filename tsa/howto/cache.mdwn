@@ -121,6 +121,16 @@ the time of writing, is about 88% for the blog.
 There is no issue tracker specifically for this project, file and
 serch for issues in [internal services](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FTor+Sysadmin+Team).
 
+## Sources
+
+ * [NGINX Alphabetical index of variables](https://nginx.org/en/docs/varindex.html)
+ * [NGINX Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
+ * [NGINX Content Caching](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
+ * [NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+ * [perusio@github.com: Nginx configuration for running Drupal](https://github.com/perusio/drupal-with-nginx) -
+   interesting [snippet](https://github.com/perusio/drupal-with-nginx/blob/D7/apps/drupal/map_cache.conf) for cookies handling, not required
+ * [NGINX: Maximizing Drupal 8 Performance with NGINX, Part 2: Caching and Load Balancing](https://www.nginx.com/blog/maximizing-drupal-8-performance-nginx-part-ii-caching-load-balancing/)
+
 # Discussion
 
 This section regroups notes that were gathered during the research,
@@ -927,15 +937,6 @@ config snippet](https://git.autistici.org/ai3/float/blob/master/roles/base/files
 
 We'd also need to check the cache statuf in that parser.
 
-References:
-
- * [NGINX Alphabetical index of variables](https://nginx.org/en/docs/varindex.html)
- * [NGINX Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
- * [NGINX Content Caching](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
- * [NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
- * [perusio@github.com: Nginx configuration for running Drupal](https://github.com/perusio/drupal-with-nginx) -
-   interesting [snippet](https://github.com/perusio/drupal-with-nginx/blob/D7/apps/drupal/map_cache.conf) for cookies handling, not required
- * [NGINX: Maximizing Drupal 8 Performance with NGINX, Part 2: Caching and Load Balancing](https://www.nginx.com/blog/maximizing-drupal-8-performance-nginx-part-ii-caching-load-balancing/)
 
 #### Benchmarks
 
