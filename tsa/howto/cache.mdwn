@@ -122,8 +122,8 @@ This section regroups notes that were gathered during the research,
 configuration, and deployment of the service. That includes goals,
 cost, benchmarks and configuration samples.
 
-Launch was done in the first week of November 2019 as part of [ticket
-#32239](https://trac.torproject.org/projects/tor/ticket/32239), to front the <https://blog.torproject.org/> site.
+Launch was done in the first week of November 2019 as part of
+[ticket#32239](https://trac.torproject.org/projects/tor/ticket/32239), to front the <https://blog.torproject.org/> site.
 
 ## Overview
 
