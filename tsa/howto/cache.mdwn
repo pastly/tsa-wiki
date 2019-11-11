@@ -6,14 +6,51 @@ server.
 
 # Tutorial
 
-<!-- simple, brainless step-by-step instructions requiring little or -->
-<!-- no technical background -->
+To inspect the current cache hit ratio, head over to the [cache health
+dashboard](https://grafana.torproject.org/d/p21-cvJWk/cache-health) in [[grafana]]. It should be at least 75% and generally
+over or close to 90%.
 
 # How-to
 
-<!-- more in-depth procedure that may require interpretation -->
+## Traffic inspection
+
+A quick way to see how much traffic is flowing through the cache is to
+fire up [slurm](https://screenshots.debian.net/package/slurm) on the public interface:
+
+    slurm -i eth0
+
+This will display a realtime graphic of the traffic going in and out
+of the server. It should be below 1Gbit/s (or around 120MB/s).
+
+Another way to see throughput is to use [iftop](https://screenshots.debian.net/package/iftop), in a similar way:
+
+    iftop -i eth0 -n
+
+This will show *per host* traffic statistics, which might allow
+pinpointing possible abusers. Hit the `L` key to turn on the
+logarithmic scale, without which the display quickly becomes
+unreadable.
+
+Log files are in `/var/log/nginx` (although those might eventually go
+away, see [ticket #32461](https://trac.torproject.org/projects/tor/ticket/32461)). The [lnav](https://screenshots.debian.net/package/lnav) program can be used to
+show those log files in a pretty way and do extensive queries on
+them. Hit the `i` button to flip to the "histogram" view and `z`
+multiple times to zoom all the way into a per-second hit rate
+view. Hit `q` to go back to the normal view, which is useful to
+inspect individual hits and diagnose why they fail to be cached, for
+example.
 
 ## Pager playbook
+
+The only monitoring for this service is to ensure the proper number of
+nginx processes are running. If this gets triggered, the fix might be
+to just restart nginx:
+
+    service nginx restart
+
+... although it might be a sign of a deeper issue requiring further
+traffic inspection.
+
 ## Disaster recovery
 
 In case of fire, head to the `torproject.org` zone in the
@@ -32,19 +69,52 @@ Include `roles::cache` in Puppet.
 
 TODO: document how to add new sites in the cache.
 
-## Design
-<!-- how this is build -->
-<!-- should reuse and expand on the "proposed solution", it's a -->
-<!-- "as-built" documented, whereas the "Proposed solution" is an -->
-<!-- "architectural" document, which the final result might differ -->
-<!-- from, sometimes significantly -->
-
-To be clarified.
-
 ## SLA
 <!-- this describes an acceptable level of service for this service -->
 
 TBD.
+
+## Design
+
+The cache service generally constitutes of two or more servers in
+geographically distinct areas that run a webserver acting as a
+[reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy). In our case, we run the [Nginx webserver](https://nginx.org/) with
+the [proxy module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) for the <https://blog.torproject.org/> website
+(and eventually others, see [ticket #32462](https://trac.torproject.org/projects/tor/ticket/32462)). DNS for the site
+points to `cache.torproject.org`, an alias for the caching servers,
+which are currently two: `cache01.torproject.org` [sic] and
+`cache-02`. An HTTPS certificate for the site was issued through
+[[letsencrypt]]. Like the Nginx configuration, the certificate is
+deployed by Puppet in the `roles::cache` class.
+
+When a user hits the cache server, content is served from the cache
+stored in `/var/cache/nginx`, with a filename derived from the
+[`proxy_cache_key`](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_key) and [`proxy_cache_path`](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_path) settings. Those
+files should end up being cached by the kernel in virtual memory,
+which should make those accesses fast. If the cache is present and
+valid, it is returned directly to the user. If it is missing or
+invalid, it is fetched from the backend immediately. The backend is
+configured in Puppet as well.
+
+Requests to the cache are logged to the disk in
+`/var/log/nginx/ssl.$hostname.access.log`, with IP address and user
+agent removed. Then [mtail](https://github.com/google/mtail) parses those log files and increments
+various counters and exposes those as metrics that are then scraped by
+[[prometheus]]. We use [[grafana]] to display that hit ratio which, at
+the time of writing, is about 88% for the blog.
+
+## Issues
+
+ * logs should not be written to disk, but instead piped directly into
+   mtail (or through syslog as a buffer), see [ticket #32461](https://trac.torproject.org/projects/tor/ticket/32461)
+ * we use other caches and load balancers elsewhere (haproxy and
+   varnish), we should converge over nginx everywhere for consistency,
+   see [ticket #32462](https://trac.torproject.org/projects/tor/ticket/32462) for the varnish conversion
+ * the cipher suite is an old hardcoded copy derived from Apache, see
+   [ticket #32351](https://trac.torproject.org/projects/tor/ticket/32351)
+
+There is no issue tracker specifically for this project, file and
+serch for issues in [internal services](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FTor+Sysadmin+Team).
 
 # Discussion
 
