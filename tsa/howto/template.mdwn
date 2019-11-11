@@ -25,19 +25,27 @@
 ## Installation
 <!-- how to setup the service from scratch -->
 
+## SLA
+<!-- this describes an acceptable level of service for this service -->
+
 ## Design
-<!-- how this is build -->
+<!-- how this is built -->
 <!-- should reuse and expand on the "proposed solution", it's a -->
 <!-- "as-built" documented, whereas the "Proposed solution" is an -->
 <!-- "architectural" document, which the final result might differ -->
 <!-- from, sometimes significantly -->
 
-## SLA
-<!-- this describes an acceptable level of service for this service -->
+## Issues
+
+<!-- such projects are never over. add a pointer to well-known issues -->
+<!-- and show how to report problems. usually a link to the bugtracker -->
 
 # Discussion
 
 ## Overview
+
+<!-- describe the overall project. should include a link to a ticket -->
+<!-- that has a launch checklist -->
 
 ## Goals
 <!-- include bugs to be fixed -->
@@ -47,16 +55,14 @@
 ### Nice to have
 
 ### Approvals required
-<!-- for example, legal, "vegas", accounting -->
+<!-- for example, legal, "vegas", accounting, current maintainer -->
 
 ## Non-Goals
 
 ## Proposed Solution
 
-## Launch checklist
-
-<!-- include disaster recovery -->
-
 ## Cost
 
 ## Alternatives considered
+
+<!-- include benchmarks and procedure if relevant -->
