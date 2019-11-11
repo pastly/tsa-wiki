@@ -46,580 +46,6 @@ To be clarified.
 
 TBD.
 
-# Design
-
-## Nginx
-
-picking the "light" debian package. The modules that would be
-interesting in others would be "cache purge" (from extras) and "geoip"
-(from full):
-
-    apt install nginx-light
-
-Then drop this config file in `/etc/nginx/sites-available` and symlink
-into `sites-enabled`:
-
-    server_names_hash_bucket_size 64;
-    proxy_cache_path /var/cache/nginx/ levels=1:2 keys_zone=blog:10m;
-
-    server {
-        listen 80;
-        listen [::]:80;
-        listen 443 ssl;
-        listen [::]:443 ssl;
-        ssl_certificate /etc/ssl/torproject/certs/blog.torproject.org.crt-chained;
-        ssl_certificate_key /etc/ssl/private/blog.torproject.org.key;
-
-        server_name blog.torproject.org;
-        proxy_cache blog;
-
-        location / {
-            proxy_pass https://live-tor-blog-8.pantheonsite.io;
-            proxy_set_header Host       $host;
-
-            # cache 304
-            proxy_cache_revalidate on;
-
-            # add cookie to cache key
-            #proxy_cache_key "$host$request_uri$cookie_user";
-            # not sure what the cookie name is
-            proxy_cache_key $scheme$proxy_host$request_uri;
-
-            # allow serving stale content on error, timeout, or refresh
-            proxy_cache_use_stale error timeout updating;
-            # allow only first request through backend
-            proxy_cache_lock on;
-
-            # add header
-            add_header X-Cache-Status $upstream_cache_status;
-        }
-    }
-
-... and reload nginx.
-
-I tested that logged in users bypass the cache and things generally
-work well.
-
-A key problem with Nginx is getting decent statistics out. The
-[upstream nginx exporter](https://github.com/nginxinc/nginx-prometheus-exporter) supports only (basically) hits per second
-through the [stub status module](http://nginx.org/en/docs/http/ngx_http_stub_status_module.html) a very limited module shipped with
-core Nginx. The commercial version, Nginx Plus, supports a [more
-extensive API](https://nginx.org/en/docs/http/ngx_http_api_module.html#api) which includes the hit rate, but that's not an
-option for us.
-
-There are two solutions to work around this problem:
-
- * create our own metrics using the [Nginx Lua Prometheus module](https://github.com/knyar/nginx-lua-prometheus):
-   this can have performance impacts and involves a custom
-   configuration
- * write and parse log files, that's the way the [munin plugin](https://github.com/munin-monitoring/contrib/blob/master/plugins/nginx/nginx-cache-hit-rate)
-   works - this could possibly be fed *directly* into [mtail](https://github.com/google/mtail) to
-   avoid storing logs on disk but still get the date (include
-   [`$upstream_cache_status`](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#var_upstream_cache_status) in the logs)
- * use a third-party module like [vts](https://github.com/vozlt/nginx-module-vts) or [sts](https://github.com/vozlt/nginx-module-sts) and the
-   [exporter](https://github.com/hnlq715/nginx-vts-exporter) to expose those metrics - the vts module doesn't seem
-   to be very well maintained (no release since 2018) and it's unclear
-   if this will work for our use case
-
-Here's an example of how to do the mtail hack. First tell nginx to
-write to syslog, to act as a buffer, so that parsing doesn't slow
-processing, excerpt from the [nginx.conf snippet](https://git.autistici.org/ai3/float/blob/master/roles/nginx/templates/config/nginx.conf#L34):
-
-    # Log response times so that we can compute latency histograms
-    # (using mtail). Works around the lack of Prometheus
-    # instrumentation in NGINX.
-    log_format extended '$server_name:$server_port '
-                '$remote_addr - $remote_user [$time_local] '
-                '"$request" $status $body_bytes_sent '
-                '"$http_referer" "$http_user_agent" '
-                '$upstream_addr $upstream_response_time $request_time';
-
-    access_log syslog:server=unix:/dev/log,facility=local3,tag=nginx_access extended;
-
-(We would also need to add `$upstream_cache_status` in that format.)
-
-Then count the different stats using mtail, excerpt from the [mtail
-config snippet](https://git.autistici.org/ai3/float/blob/master/roles/base/files/mtail/nginx.mtail):
-
-    # Define the exported metrics.
-    counter nginx_http_request_total
-    counter nginx_http_requests by host, vhost, method, code, backend
-    counter nginx_http_bytes by host, vhost, method, code, backend
-    counter nginx_http_requests_ms by le, host, vhost, method, code, backend 
-
-    /(?P<hostname>[-0-9A-Za-z._:]+) nginx_access: (?P<vhost>[-0-9A-Za-z._:]+) (?P<remote_addr>[0-9a-f\.:]+) - - \[[^\]]+\] "(?P<request_method>[A-Z]+) (?P<request_uri>\S+) (?P<http_version>HTTP\/[0-9\.]+)" (?P<status>\d{3}) ((?P<response_size>\d+)|-) "[^"]*" "[^"]*" (?P<upstream_addr>[-0-9A-Za-z._:]+) ((?P<ups_resp_seconds>\d+\.\d+)|-) (?P<request_seconds>\d+)\.(?P<request_milliseconds>\d+)/ {
-
-    	nginx_http_request_total++
-
-We'd also need to check the cache statuf in that parser.
-
-Update: cache status now written to on-disk, anonymised, log files and
-can be parsed with lnav. see ticket #32239 for details, hit ratio
-between 70 and 80% based on preliminary results.
-
-References:
-
- * [NGINX Alphabetical index of variables](https://nginx.org/en/docs/varindex.html)
- * [NGINX Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
- * [NGINX Content Caching](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
- * [NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
- * [perusio@github.com: Nginx configuration for running Drupal](https://github.com/perusio/drupal-with-nginx) -
-   interesting [snippet](https://github.com/perusio/drupal-with-nginx/blob/D7/apps/drupal/map_cache.conf) for cookies handling, not required
- * [NGINX: Maximizing Drupal 8 Performance with NGINX, Part 2: Caching and Load Balancing](https://www.nginx.com/blog/maximizing-drupal-8-performance-nginx-part-ii-caching-load-balancing/)
-
-### Benchmarks
-
-ab:
-
-    root@cache-02:~# ab -c 100 -n 1000 https://blog.torproject.org/
-    [...]
-    Server Software:        nginx/1.14.2
-    Server Hostname:        blog.torproject.org
-    Server Port:            443
-    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,4096,256
-    Server Temp Key:        X25519 253 bits
-    TLS Server Name:        blog.torproject.org
-
-    Document Path:          /
-    Document Length:        53313 bytes
-
-    Concurrency Level:      100
-    Time taken for tests:   3.083 seconds
-    Complete requests:      1000
-    Failed requests:        0
-    Total transferred:      54458000 bytes
-    HTML transferred:       53313000 bytes
-    Requests per second:    324.31 [#/sec] (mean)
-    Time per request:       308.349 [ms] (mean)
-    Time per request:       3.083 [ms] (mean, across all concurrent requests)
-    Transfer rate:          17247.25 [Kbytes/sec] received
-
-    Connection Times (ms)
-                  min  mean[+/-sd] median   max
-    Connect:       30  255  78.0    262     458
-    Processing:    18   35  19.2     28     119
-    Waiting:        7   19   7.4     18      58
-    Total:         81  290  88.3    291     569
-
-    Percentage of the requests served within a certain time (ms)
-      50%    291
-      66%    298
-      75%    303
-      80%    306
-      90%    321
-      95%    533
-      98%    561
-      99%    562
-     100%    569 (longest request)
-
-About 50% faster than ATS.
-
-Siege:
-
-    Transactions:		       32246 hits
-    Availability:		      100.00 %
-    Elapsed time:		      119.57 secs
-    Data transferred:	     1639.49 MB
-    Response time:		        0.37 secs
-    Transaction rate:	      269.68 trans/sec
-    Throughput:		       13.71 MB/sec
-    Concurrency:		       99.60
-    Successful transactions:       32246
-    Failed transactions:	           0
-    Longest transaction:	        1.65
-    Shortest transaction:	        0.23
-
-Almost an order of magnitude faster than ATS.
-
-Bombardier:
-
-    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
-    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
-    [=========================================================================] 2m0s
-    Done!
-    Statistics        Avg      Stdev        Max
-      Reqs/sec      2116.74     506.01    5495.77
-      Latency       48.42ms    34.25ms      2.15s
-      Latency Distribution
-         50%    37.19ms
-         75%    50.44ms
-         90%    89.58ms
-         95%   109.59ms
-         99%   169.69ms
-      HTTP codes:
-        1xx - 0, 2xx - 247827, 3xx - 0, 4xx - 0, 5xx - 0
-        others - 0
-      Throughput:   107.43MB/s
-
-Almost maxes out the gigabit connexion as well, but only marginally
-faster (~3%?) than ATS.
-
-Does not max theoritical gigabit maximal performance, which [is
-apparently](http://rickardnobel.se/actual-throughput-on-gigabit-ethernet/) at around 118MB/s without jumbo frames (and 123MB/s
-with).
-
-## ATS
-
-    apt install trafficserver
-
-Default Debian config seems sane when compared to the [Cicimov
-tutorial][cicimov]. On thing we will need to change is the [default listening
-port][], which is by default:
-
-[default listening port]: https://docs.trafficserver.apache.org/en/8.0.x/admin-guide/files/records.config.en.html#proxy.config.http.server_ports
-
-    CONFIG proxy.config.http.server_ports STRING 8080 8080:ipv6
-
-We want something more like this:
-
-    CONFIG proxy.config.http.server_ports STRING 80 80:ipv6 443:ssl 443:ssl:ipv6
-
-We also need to tell ATS to keep the original Host header:
-
-    CONFIG proxy.config.url_remap.pristine_host_hdr INT 1
-
-It's clearly stated in [the tutorial](https://docs.trafficserver.apache.org/en/latest/admin-guide/configuration/redirecting-http-requests.en.html), but mistakenly in
-[Cicimov's][cicimov].
-
-Then we also need to configure the path to the SSL certs, we use the
-self-signed certs for benchmarking:
-
-    CONFIG proxy.config.ssl.server.cert.path STRING /etc/ssl/torproject-auto/servercerts/
-    CONFIG proxy.config.ssl.server.private_key.path STRING /etc/ssl/torproject-auto/serverkeys/
-
-When we have a real cert created in let's encrypt, we can use:
-
-    CONFIG proxy.config.ssl.server.cert.path STRING /etc/ssl/torproject/certs/
-    CONFIG proxy.config.ssl.server.private_key.path STRING /etc/ssl/private/
-
-Either way, we need to tell ATS about those certs:
-
-    #dest_ip=* ssl_cert_name=thishost.crt ssl_key_name=thishost.key
-    ssl_cert_name=blog.torproject.org.crt ssl_key_name=blog.torproject.org.key
-
-We need to add trafficserver to the `ssl-cert` group so it can read
-those:
-
-    adduser trafficserver ssl-cert
-
-Then we setup this remapping rule:
-
-    map https://blog.torproject.org/ https://backend.example.com/
-
-(`backend.example.com` is the prod alias of our backend.)
-
-And finally curl is able to talk to the proxy:
-
-    curl --proxy-cacert /etc/ssl/torproject-auto/servercerts/ca.crt --proxy https://cache01.torproject.org/ https://blog.torproject.org
-
-### Troubleshooting
-
-#### Proxy fails to hit backend:
-
-    curl: (56) Received HTTP code 404 from proxy after CONNECT
-
-Same with plain `GET`:
-
-    # curl -s -k -I --resolve *:443:127.0.0.1 https://blog.torproject.org | head -1
-    HTTP/1.1 404 Not Found on Accelerator
-
-It seems that the backend needs to respond on the right-side of the
-remap rule correctly, as ATS doesn't reuse the `Host` header
-correctly, which is kind of a problem because the backend wants to
-redirect everything to the canonical hostname for SEO purposes. We
-*could* tweak that and make `backend.example.com` the canonical host,
-but then it would make disaster recovery much harder, and could make
-some links point there instead of the real canonical host.
-
-I tried the mysterious regex_remap plugin:
-
-    map http://cache01.torproject.org/ http://localhost:8000/ @plugin=regex_remap.so @pparam=maps.reg @pparam=host
-
-with this in `maps.reg`:
-
-    .* $s://$f/$P/
-
-... which basically means "redirect everything to the original scheme,
-host and path", but that (obviously, maybe) fails with:
-
-    # curl -I -s http://cache01.torproject.org/ | head -1
-    HTTP/1.1 400 Multi-Hop Cycle Detected
-
-It feels it *really* doesn't want to act as a transparent proxy...
-
-I also tried a header rewrite:
-
-    map http://cache01.torproject.org/ http://localhost:8000/ @plugin=header_rewrite.so @pparam=rules1.conf
-
-with `rules1.conf` like:
-
-    set-header host cache01.torproject.org
-    set-header foo bar
-
-... and the `Host` header is untouched. The rule works though because
-the `Foo` header appears in the request.
-
-The solution to this is the `proxy.config.url_remap.pristine_host_hdr`
-documented above.
-
-#### HTTP/2 support missing
-
-Next hurdle: no HTTP/2 support, even when using `proto=http2;http`
-(falls back on `HTTP/1.1`) and `proto=http2` only (fails with
-`WARNING: Unregistered protocol type 0`).
-
-### Benchmarks
-
-#### Same host tests
-
-With `blog.tpo` in `/etc/hosts`, because `proxy-host` doesn't work, and
-running on the same host as the proxy (!), cold cache:
-
-    root@cache01:~# siege https://blog.torproject.org/
-    ** SIEGE 4.0.4
-    ** Preparing 100 concurrent users for battle.
-    The server is now under siege...
-    Lifting the server siege...
-    Transactions:                  68068 hits
-    Availability:                 100.00 %
-    Elapsed time:                 119.53 secs
-    Data transferred:             654.47 MB
-    Response time:                  0.18 secs
-    Transaction rate:             569.46 trans/sec
-    Throughput:                     5.48 MB/sec
-    Concurrency:                   99.67
-    Successful transactions:       68068
-    Failed transactions:               0
-    Longest transaction:            0.56
-    Shortest transaction:           0.00
-
-Warm cache:
-
-    root@cache01:~# siege https://blog.torproject.org/
-    ** SIEGE 4.0.4
-    ** Preparing 100 concurrent users for battle.
-    The server is now under siege...
-    Lifting the server siege...
-    Transactions:                  65953 hits
-    Availability:                 100.00 %
-    Elapsed time:                 119.71 secs
-    Data transferred:             634.13 MB
-    Response time:                  0.18 secs
-    Transaction rate:             550.94 trans/sec
-    Throughput:                     5.30 MB/sec
-    Concurrency:                   99.72
-    Successful transactions:       65953
-    Failed transactions:               0
-    Longest transaction:            0.62
-    Shortest transaction:           0.00
-
-And `traffic_top` looks like this after the second run:
-
-             CACHE INFORMATION                     CLIENT REQUEST & RESPONSE        
-    Disk Used   77.8K    Ram Hit     99.9%   GET         98.7%    200         98.3%
-    Disk Total 268.1M    Fresh       98.2%   HEAD         0.0%    206          0.0%
-    Ram Used    16.5K    Revalidate   0.0%   POST         0.0%    301          0.0%
-    Ram Total  352.3K    Cold         0.0%   2xx         98.3%    302          0.0%
-    Lookups    134.2K    Changed      0.1%   3xx          0.0%    304          0.0%
-    Writes      13.0     Not Cache    0.0%   4xx          2.0%    404          0.4%
-    Updates      1.0     No Cache     0.0%   5xx          0.0%    502          0.0%
-    Deletes      0.0     Fresh (ms)   8.6M   Conn Fail    0.0     100 B        0.1%
-    Read Activ   0.0     Reval (ms)   0.0    Other Err    2.8K    1 KB         2.0%
-    Writes Act   0.0     Cold (ms)   26.2G   Abort      111.0     3 KB         0.0%
-    Update Act   0.0     Chang (ms)  11.0G                        5 KB         0.0%
-    Entries      2.0     Not (ms)     0.0                         10 KB       98.2%
-    Avg Size    38.9K    No (ms)      0.0                         1 MB         0.0%
-    DNS Lookup 156.0     DNS Hit     89.7%                        > 1 MB       0.0%
-    DNS Hits   140.0     DNS Entry    2.0   
-                 CLIENT                                ORIGIN SERVER                
-    Requests   136.5K    Head Bytes 151.6M   Requests   152.0     Head Bytes 156.5K
-    Req/Conn     1.0     Body Bytes   1.4G   Req/Conn     1.1     Body Bytes   1.1M
-    New Conn   137.0K    Avg Size    11.0K   New Conn   144.0     Avg Size     8.0K
-    Curr Conn    0.0     Net (bits)  12.0G   Curr Conn    0.0     Net (bits)   9.8M
-    Active Con   0.0     Resp (ms)    1.2   
-    Dynamic KA   0.0                        
-    cache01                                    (r)esponse (q)uit (h)elp (A)bsolute
-
-ab:
-
-    # ab -c 100 -n 1000 https://blog.torproject.org/
-    [...]
-    Server Software:        ATS/8.0.2
-    Server Hostname:        blog.torproject.org
-    Server Port:            443
-    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,2048,256
-    Server Temp Key:        X25519 253 bits
-    TLS Server Name:        blog.torproject.org
-
-    Document Path:          /
-    Document Length:        52873 bytes
-
-    Concurrency Level:      100
-    Time taken for tests:   1.248 seconds
-    Complete requests:      1000
-    Failed requests:        0
-    Total transferred:      53974000 bytes
-    HTML transferred:       52873000 bytes
-    Requests per second:    801.43 [#/sec] (mean)
-    Time per request:       124.776 [ms] (mean)
-    Time per request:       1.248 [ms] (mean, across all concurrent requests)
-    Transfer rate:          42242.72 [Kbytes/sec] received
-
-    Connection Times (ms)
-                  min  mean[+/-sd] median   max
-    Connect:        8   47  20.5     46     121
-    Processing:     6   75  16.2     76     116
-    Waiting:        1   13   6.8     12      49
-    Total:         37  122  21.6    122     196
-
-    Percentage of the requests served within a certain time (ms)
-      50%    122
-      66%    128
-      75%    133
-      80%    137
-      90%    151
-      95%    160
-      98%    169
-      99%    172
-     100%    196 (longest request)
-
-#### Separate host
-
-Those tests were performed from one cache server to the other, to
-avoid the benchmarking tool fighting for resources with the server.
-
-In `.siege/siege.conf`:
-
-    verbose = false
-    fullurl = true
-    concurrent = 100
-    time = 2M
-    url = https://blog.torproject.org/
-    delay = 1
-    internet = false
-    benchmark = true
-
-Siege:
-
-    root@cache-02:~# siege
-    ** SIEGE 4.0.4
-    ** Preparing 100 concurrent users for battle.
-    The server is now under siege...
-    Lifting the server siege...
-    Transactions:		       28895 hits
-    Availability:		      100.00 %
-    Elapsed time:		      119.73 secs
-    Data transferred:	      285.18 MB
-    Response time:		        0.40 secs
-    Transaction rate:	      241.33 trans/sec
-    Throughput:		        2.38 MB/sec
-    Concurrency:		       96.77
-    Successful transactions:       28895
-    Failed transactions:	           0
-    Longest transaction:	        1.26
-    Shortest transaction:	        0.05
-
-Load went to about 2 (`Load average: 1.65 0.80 0.36` after test), with
-one CPU constantly busy and the other at about 50%, memory usage was
-low (~800M).
-
-ab:
-
-    # ab -c 100 -n 1000 https://blog.torproject.org/
-    [...]
-    Server Software:        ATS/8.0.2
-    Server Hostname:        blog.torproject.org
-    Server Port:            443
-    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,4096,256
-    Server Temp Key:        X25519 253 bits
-    TLS Server Name:        blog.torproject.org
-
-    Document Path:          /
-    Document Length:        53320 bytes
-
-    Concurrency Level:      100
-    Time taken for tests:   4.010 seconds
-    Complete requests:      1000
-    Failed requests:        0
-    Total transferred:      54421000 bytes
-    HTML transferred:       53320000 bytes
-    Requests per second:    249.37 [#/sec] (mean)
-    Time per request:       401.013 [ms] (mean)
-    Time per request:       4.010 [ms] (mean, across all concurrent requests)
-    Transfer rate:          13252.82 [Kbytes/sec] received
-
-    Connection Times (ms)
-                  min  mean[+/-sd] median   max
-    Connect:       23  254 150.0    303     549
-    Processing:    14  119  89.3    122     361
-    Waiting:        5  105  89.7    105     356
-    Total:         37  373 214.9    464     738
-
-    Percentage of the requests served within a certain time (ms)
-      50%    464
-      66%    515
-      75%    549
-      80%    566
-      90%    600
-      95%    633
-      98%    659
-      99%    675
-     100%    738 (longest request)
-
-Bombardier results are much better and almost max out the gigabit
-connexion:
-
-    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
-    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
-    [=========================================================================] 2m0s
-    Done!
-    Statistics        Avg      Stdev        Max
-      Reqs/sec      2049.82     533.46    7083.03
-      Latency       49.75ms    20.82ms   837.07ms
-      Latency Distribution
-         50%    48.53ms
-         75%    57.98ms
-         90%    69.05ms
-         95%    78.44ms
-         99%   128.34ms
-      HTTP codes:
-        1xx - 0, 2xx - 241187, 3xx - 0, 4xx - 0, 5xx - 0
-        others - 0
-      Throughput:   104.67MB/s
-
-It might be because it supports doing HTTP/2 requests and, indeed, the
-`Throughput` drops down to `14MB/s` when we use the `--http1` flag,
-along with rates closer to ab:
-
-    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/ --http1 -c 100
-    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
-    [=========================================================================] 2m0s
-    Done!
-    Statistics        Avg      Stdev        Max
-      Reqs/sec      1322.21     253.18    1911.21
-      Latency       78.40ms    18.65ms   688.60ms
-      Latency Distribution
-         50%    75.53ms
-         75%    88.52ms
-         90%   101.30ms
-         95%   110.68ms
-         99%   132.89ms
-      HTTP codes:
-        1xx - 0, 2xx - 153114, 3xx - 0, 4xx - 0, 5xx - 0
-        others - 0
-      Throughput:    14.22MB/s
-
-Inter-server communication is good, according to `iperf3`:
-
-    [ ID] Interval           Transfer     Bitrate
-    [  5]   0.00-10.04  sec  1.00 GBytes   859 Mbits/sec                  receiver
-
-So we see the roundtrip does add significant overhead to ab and
-siege. It's possible this is due to the nature of the virtual server,
-much less powerful than the server. This seems to be confirmed by
-`bombardieer`'s success, since it's possibly better designed than the
-other two to maximize resources on the client side.
-
 # Discussion
 
 A discussion of the design of the new service, mostly.
@@ -656,6 +82,36 @@ charged there.
 
  * global CDN for users outside of TPO
  * geoDNS
+
+## Cost
+
+Somewhere between 11EUR and 100EUR/mth for bandwidth and hardware.
+
+We're getting apparently around 2.2M "page views" per month at
+Pantheon. That is about 1 hit per second and 12 terabyte per month,
+36Mbit/s on average:
+
+    $ qalc
+    > 2 200 000 ∕ (30d) to hertz
+
+      2200000 / (30 * day) = approx. 0.84876543 Hz
+
+    > 2 200 000 * 5Mibyte
+
+      2200000 * (5 * mebibyte) = 11.534336 terabytes
+
+    > 2 200 000 * 5Mibyte/(30d) to megabit / s
+
+      (2200000 * (5 * mebibyte)) / (30 * day) = approx. 35.599802 megabits / s
+
+Hetzner charges 1EUR/TB/month over our 1TB quota, so bandwidth would
+cost 11EUR/month on average. If costs become prohibitive, we could
+switch to a Hetzner VM which includ 20TB of traffic per month at costs
+ranging from 3EUR/mth to 30EUR/mth depending on the VPS size (between
+1 vCPU, 2GB ram, 20GB SSD and 8vCPU, 32GB ram and 240GB SSD).
+
+Dedicated servers start at 34EUR/mth (`EX42`, 64GB ram 2x4TB HDD) for
+unlimited gigabit.
 
 ## Proposed Solution
 
@@ -799,36 +255,6 @@ limited, here's a set of interesting alternatives:
  * [wrk](https://github.com/wg/wrk/) - multithreaded, epoll, Lua scriptable, no HTTPS, only in
    Debian unstable
 
-## Cost
-
-Somewhere between 11EUR and 100EUR/mth for bandwidth and hardware.
-
-We're getting apparently around 2.2M "page views" per month at
-Pantheon. That is about 1 hit per second and 12 terabyte per month,
-36Mbit/s on average:
-
-    $ qalc
-    > 2 200 000 ∕ (30d) to hertz
-
-      2200000 / (30 * day) = approx. 0.84876543 Hz
-
-    > 2 200 000 * 5Mibyte
-
-      2200000 * (5 * mebibyte) = 11.534336 terabytes
-
-    > 2 200 000 * 5Mibyte/(30d) to megabit / s
-
-      (2200000 * (5 * mebibyte)) / (30 * day) = approx. 35.599802 megabits / s
-
-Hetzner charges 1EUR/TB/month over our 1TB quota, so bandwidth would
-cost 11EUR/month on average. If costs become prohibitive, we could
-switch to a Hetzner VM which includ 20TB of traffic per month at costs
-ranging from 3EUR/mth to 30EUR/mth depending on the VPS size (between
-1 vCPU, 2GB ram, 20GB SSD and 8vCPU, 32GB ram and 240GB SSD).
-
-Dedicated servers start at 34EUR/mth (`EX42`, 64GB ram 2x4TB HDD) for
-unlimited gigabit.
-
 ## Alternatives considered
 
 Four alternatives were seriously considered:
@@ -897,6 +323,369 @@ Cons:
  * couldn't figure out how to make HTTP/2 work
  * no prometheus exporters
 
+
+#### Configuration
+
+    apt install trafficserver
+
+Default Debian config seems sane when compared to the [Cicimov
+tutorial][cicimov]. On thing we will need to change is the [default listening
+port][], which is by default:
+
+[default listening port]: https://docs.trafficserver.apache.org/en/8.0.x/admin-guide/files/records.config.en.html#proxy.config.http.server_ports
+
+    CONFIG proxy.config.http.server_ports STRING 8080 8080:ipv6
+
+We want something more like this:
+
+    CONFIG proxy.config.http.server_ports STRING 80 80:ipv6 443:ssl 443:ssl:ipv6
+
+We also need to tell ATS to keep the original Host header:
+
+    CONFIG proxy.config.url_remap.pristine_host_hdr INT 1
+
+It's clearly stated in [the tutorial](https://docs.trafficserver.apache.org/en/latest/admin-guide/configuration/redirecting-http-requests.en.html), but mistakenly in
+[Cicimov's][cicimov].
+
+Then we also need to configure the path to the SSL certs, we use the
+self-signed certs for benchmarking:
+
+    CONFIG proxy.config.ssl.server.cert.path STRING /etc/ssl/torproject-auto/servercerts/
+    CONFIG proxy.config.ssl.server.private_key.path STRING /etc/ssl/torproject-auto/serverkeys/
+
+When we have a real cert created in let's encrypt, we can use:
+
+    CONFIG proxy.config.ssl.server.cert.path STRING /etc/ssl/torproject/certs/
+    CONFIG proxy.config.ssl.server.private_key.path STRING /etc/ssl/private/
+
+Either way, we need to tell ATS about those certs:
+
+    #dest_ip=* ssl_cert_name=thishost.crt ssl_key_name=thishost.key
+    ssl_cert_name=blog.torproject.org.crt ssl_key_name=blog.torproject.org.key
+
+We need to add trafficserver to the `ssl-cert` group so it can read
+those:
+
+    adduser trafficserver ssl-cert
+
+Then we setup this remapping rule:
+
+    map https://blog.torproject.org/ https://backend.example.com/
+
+(`backend.example.com` is the prod alias of our backend.)
+
+And finally curl is able to talk to the proxy:
+
+    curl --proxy-cacert /etc/ssl/torproject-auto/servercerts/ca.crt --proxy https://cache01.torproject.org/ https://blog.torproject.org
+
+#### Troubleshooting
+
+##### Proxy fails to hit backend:
+
+    curl: (56) Received HTTP code 404 from proxy after CONNECT
+
+Same with plain `GET`:
+
+    # curl -s -k -I --resolve *:443:127.0.0.1 https://blog.torproject.org | head -1
+    HTTP/1.1 404 Not Found on Accelerator
+
+It seems that the backend needs to respond on the right-side of the
+remap rule correctly, as ATS doesn't reuse the `Host` header
+correctly, which is kind of a problem because the backend wants to
+redirect everything to the canonical hostname for SEO purposes. We
+*could* tweak that and make `backend.example.com` the canonical host,
+but then it would make disaster recovery much harder, and could make
+some links point there instead of the real canonical host.
+
+I tried the mysterious regex_remap plugin:
+
+    map http://cache01.torproject.org/ http://localhost:8000/ @plugin=regex_remap.so @pparam=maps.reg @pparam=host
+
+with this in `maps.reg`:
+
+    .* $s://$f/$P/
+
+... which basically means "redirect everything to the original scheme,
+host and path", but that (obviously, maybe) fails with:
+
+    # curl -I -s http://cache01.torproject.org/ | head -1
+    HTTP/1.1 400 Multi-Hop Cycle Detected
+
+It feels it *really* doesn't want to act as a transparent proxy...
+
+I also tried a header rewrite:
+
+    map http://cache01.torproject.org/ http://localhost:8000/ @plugin=header_rewrite.so @pparam=rules1.conf
+
+with `rules1.conf` like:
+
+    set-header host cache01.torproject.org
+    set-header foo bar
+
+... and the `Host` header is untouched. The rule works though because
+the `Foo` header appears in the request.
+
+The solution to this is the `proxy.config.url_remap.pristine_host_hdr`
+documented above.
+
+##### HTTP/2 support missing
+
+Next hurdle: no HTTP/2 support, even when using `proto=http2;http`
+(falls back on `HTTP/1.1`) and `proto=http2` only (fails with
+`WARNING: Unregistered protocol type 0`).
+
+#### Benchmarks
+
+##### Same host tests
+
+With `blog.tpo` in `/etc/hosts`, because `proxy-host` doesn't work, and
+running on the same host as the proxy (!), cold cache:
+
+    root@cache01:~# siege https://blog.torproject.org/
+    ** SIEGE 4.0.4
+    ** Preparing 100 concurrent users for battle.
+    The server is now under siege...
+    Lifting the server siege...
+    Transactions:                  68068 hits
+    Availability:                 100.00 %
+    Elapsed time:                 119.53 secs
+    Data transferred:             654.47 MB
+    Response time:                  0.18 secs
+    Transaction rate:             569.46 trans/sec
+    Throughput:                     5.48 MB/sec
+    Concurrency:                   99.67
+    Successful transactions:       68068
+    Failed transactions:               0
+    Longest transaction:            0.56
+    Shortest transaction:           0.00
+
+Warm cache:
+
+    root@cache01:~# siege https://blog.torproject.org/
+    ** SIEGE 4.0.4
+    ** Preparing 100 concurrent users for battle.
+    The server is now under siege...
+    Lifting the server siege...
+    Transactions:                  65953 hits
+    Availability:                 100.00 %
+    Elapsed time:                 119.71 secs
+    Data transferred:             634.13 MB
+    Response time:                  0.18 secs
+    Transaction rate:             550.94 trans/sec
+    Throughput:                     5.30 MB/sec
+    Concurrency:                   99.72
+    Successful transactions:       65953
+    Failed transactions:               0
+    Longest transaction:            0.62
+    Shortest transaction:           0.00
+
+And `traffic_top` looks like this after the second run:
+
+             CACHE INFORMATION                     CLIENT REQUEST & RESPONSE        
+    Disk Used   77.8K    Ram Hit     99.9%   GET         98.7%    200         98.3%
+    Disk Total 268.1M    Fresh       98.2%   HEAD         0.0%    206          0.0%
+    Ram Used    16.5K    Revalidate   0.0%   POST         0.0%    301          0.0%
+    Ram Total  352.3K    Cold         0.0%   2xx         98.3%    302          0.0%
+    Lookups    134.2K    Changed      0.1%   3xx          0.0%    304          0.0%
+    Writes      13.0     Not Cache    0.0%   4xx          2.0%    404          0.4%
+    Updates      1.0     No Cache     0.0%   5xx          0.0%    502          0.0%
+    Deletes      0.0     Fresh (ms)   8.6M   Conn Fail    0.0     100 B        0.1%
+    Read Activ   0.0     Reval (ms)   0.0    Other Err    2.8K    1 KB         2.0%
+    Writes Act   0.0     Cold (ms)   26.2G   Abort      111.0     3 KB         0.0%
+    Update Act   0.0     Chang (ms)  11.0G                        5 KB         0.0%
+    Entries      2.0     Not (ms)     0.0                         10 KB       98.2%
+    Avg Size    38.9K    No (ms)      0.0                         1 MB         0.0%
+    DNS Lookup 156.0     DNS Hit     89.7%                        > 1 MB       0.0%
+    DNS Hits   140.0     DNS Entry    2.0   
+                 CLIENT                                ORIGIN SERVER                
+    Requests   136.5K    Head Bytes 151.6M   Requests   152.0     Head Bytes 156.5K
+    Req/Conn     1.0     Body Bytes   1.4G   Req/Conn     1.1     Body Bytes   1.1M
+    New Conn   137.0K    Avg Size    11.0K   New Conn   144.0     Avg Size     8.0K
+    Curr Conn    0.0     Net (bits)  12.0G   Curr Conn    0.0     Net (bits)   9.8M
+    Active Con   0.0     Resp (ms)    1.2   
+    Dynamic KA   0.0                        
+    cache01                                    (r)esponse (q)uit (h)elp (A)bsolute
+
+ab:
+
+    # ab -c 100 -n 1000 https://blog.torproject.org/
+    [...]
+    Server Software:        ATS/8.0.2
+    Server Hostname:        blog.torproject.org
+    Server Port:            443
+    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,2048,256
+    Server Temp Key:        X25519 253 bits
+    TLS Server Name:        blog.torproject.org
+
+    Document Path:          /
+    Document Length:        52873 bytes
+
+    Concurrency Level:      100
+    Time taken for tests:   1.248 seconds
+    Complete requests:      1000
+    Failed requests:        0
+    Total transferred:      53974000 bytes
+    HTML transferred:       52873000 bytes
+    Requests per second:    801.43 [#/sec] (mean)
+    Time per request:       124.776 [ms] (mean)
+    Time per request:       1.248 [ms] (mean, across all concurrent requests)
+    Transfer rate:          42242.72 [Kbytes/sec] received
+
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:        8   47  20.5     46     121
+    Processing:     6   75  16.2     76     116
+    Waiting:        1   13   6.8     12      49
+    Total:         37  122  21.6    122     196
+
+    Percentage of the requests served within a certain time (ms)
+      50%    122
+      66%    128
+      75%    133
+      80%    137
+      90%    151
+      95%    160
+      98%    169
+      99%    172
+     100%    196 (longest request)
+
+##### Separate host
+
+Those tests were performed from one cache server to the other, to
+avoid the benchmarking tool fighting for resources with the server.
+
+In `.siege/siege.conf`:
+
+    verbose = false
+    fullurl = true
+    concurrent = 100
+    time = 2M
+    url = https://blog.torproject.org/
+    delay = 1
+    internet = false
+    benchmark = true
+
+Siege:
+
+    root@cache-02:~# siege
+    ** SIEGE 4.0.4
+    ** Preparing 100 concurrent users for battle.
+    The server is now under siege...
+    Lifting the server siege...
+    Transactions:		       28895 hits
+    Availability:		      100.00 %
+    Elapsed time:		      119.73 secs
+    Data transferred:	      285.18 MB
+    Response time:		        0.40 secs
+    Transaction rate:	      241.33 trans/sec
+    Throughput:		        2.38 MB/sec
+    Concurrency:		       96.77
+    Successful transactions:       28895
+    Failed transactions:	           0
+    Longest transaction:	        1.26
+    Shortest transaction:	        0.05
+
+Load went to about 2 (`Load average: 1.65 0.80 0.36` after test), with
+one CPU constantly busy and the other at about 50%, memory usage was
+low (~800M).
+
+ab:
+
+    # ab -c 100 -n 1000 https://blog.torproject.org/
+    [...]
+    Server Software:        ATS/8.0.2
+    Server Hostname:        blog.torproject.org
+    Server Port:            443
+    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,4096,256
+    Server Temp Key:        X25519 253 bits
+    TLS Server Name:        blog.torproject.org
+
+    Document Path:          /
+    Document Length:        53320 bytes
+
+    Concurrency Level:      100
+    Time taken for tests:   4.010 seconds
+    Complete requests:      1000
+    Failed requests:        0
+    Total transferred:      54421000 bytes
+    HTML transferred:       53320000 bytes
+    Requests per second:    249.37 [#/sec] (mean)
+    Time per request:       401.013 [ms] (mean)
+    Time per request:       4.010 [ms] (mean, across all concurrent requests)
+    Transfer rate:          13252.82 [Kbytes/sec] received
+
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:       23  254 150.0    303     549
+    Processing:    14  119  89.3    122     361
+    Waiting:        5  105  89.7    105     356
+    Total:         37  373 214.9    464     738
+
+    Percentage of the requests served within a certain time (ms)
+      50%    464
+      66%    515
+      75%    549
+      80%    566
+      90%    600
+      95%    633
+      98%    659
+      99%    675
+     100%    738 (longest request)
+
+Bombardier results are much better and almost max out the gigabit
+connexion:
+
+    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
+    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
+    [=========================================================================] 2m0s
+    Done!
+    Statistics        Avg      Stdev        Max
+      Reqs/sec      2049.82     533.46    7083.03
+      Latency       49.75ms    20.82ms   837.07ms
+      Latency Distribution
+         50%    48.53ms
+         75%    57.98ms
+         90%    69.05ms
+         95%    78.44ms
+         99%   128.34ms
+      HTTP codes:
+        1xx - 0, 2xx - 241187, 3xx - 0, 4xx - 0, 5xx - 0
+        others - 0
+      Throughput:   104.67MB/s
+
+It might be because it supports doing HTTP/2 requests and, indeed, the
+`Throughput` drops down to `14MB/s` when we use the `--http1` flag,
+along with rates closer to ab:
+
+    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/ --http1 -c 100
+    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
+    [=========================================================================] 2m0s
+    Done!
+    Statistics        Avg      Stdev        Max
+      Reqs/sec      1322.21     253.18    1911.21
+      Latency       78.40ms    18.65ms   688.60ms
+      Latency Distribution
+         50%    75.53ms
+         75%    88.52ms
+         90%   101.30ms
+         95%   110.68ms
+         99%   132.89ms
+      HTTP codes:
+        1xx - 0, 2xx - 153114, 3xx - 0, 4xx - 0, 5xx - 0
+        others - 0
+      Throughput:    14.22MB/s
+
+Inter-server communication is good, according to `iperf3`:
+
+    [ ID] Interval           Transfer     Bitrate
+    [  5]   0.00-10.04  sec  1.00 GBytes   859 Mbits/sec                  receiver
+
+So we see the roundtrip does add significant overhead to ab and
+siege. It's possible this is due to the nature of the virtual server,
+much less powerful than the server. This seems to be confirmed by
+`bombardieer`'s success, since it's possibly better designed than the
+other two to maximize resources on the client side.
+
 ### Nginx
 
 #### Summary of online reviews
@@ -952,6 +741,213 @@ Cons:
  * [detailed cache stats][] are only in the "plus" version
 
 [detailed cache stats]: https://docs.nginx.com/nginx/admin-guide/monitoring/live-activity-monitoring/
+
+#### Configuration
+
+picking the "light" debian package. The modules that would be
+interesting in others would be "cache purge" (from extras) and "geoip"
+(from full):
+
+    apt install nginx-light
+
+Then drop this config file in `/etc/nginx/sites-available` and symlink
+into `sites-enabled`:
+
+    server_names_hash_bucket_size 64;
+    proxy_cache_path /var/cache/nginx/ levels=1:2 keys_zone=blog:10m;
+
+    server {
+        listen 80;
+        listen [::]:80;
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        ssl_certificate /etc/ssl/torproject/certs/blog.torproject.org.crt-chained;
+        ssl_certificate_key /etc/ssl/private/blog.torproject.org.key;
+
+        server_name blog.torproject.org;
+        proxy_cache blog;
+
+        location / {
+            proxy_pass https://live-tor-blog-8.pantheonsite.io;
+            proxy_set_header Host       $host;
+
+            # cache 304
+            proxy_cache_revalidate on;
+
+            # add cookie to cache key
+            #proxy_cache_key "$host$request_uri$cookie_user";
+            # not sure what the cookie name is
+            proxy_cache_key $scheme$proxy_host$request_uri;
+
+            # allow serving stale content on error, timeout, or refresh
+            proxy_cache_use_stale error timeout updating;
+            # allow only first request through backend
+            proxy_cache_lock on;
+
+            # add header
+            add_header X-Cache-Status $upstream_cache_status;
+        }
+    }
+
+... and reload nginx.
+
+I tested that logged in users bypass the cache and things generally
+work well.
+
+A key problem with Nginx is getting decent statistics out. The
+[upstream nginx exporter](https://github.com/nginxinc/nginx-prometheus-exporter) supports only (basically) hits per second
+through the [stub status module](http://nginx.org/en/docs/http/ngx_http_stub_status_module.html) a very limited module shipped with
+core Nginx. The commercial version, Nginx Plus, supports a [more
+extensive API](https://nginx.org/en/docs/http/ngx_http_api_module.html#api) which includes the hit rate, but that's not an
+option for us.
+
+There are two solutions to work around this problem:
+
+ * create our own metrics using the [Nginx Lua Prometheus module](https://github.com/knyar/nginx-lua-prometheus):
+   this can have performance impacts and involves a custom
+   configuration
+ * write and parse log files, that's the way the [munin plugin](https://github.com/munin-monitoring/contrib/blob/master/plugins/nginx/nginx-cache-hit-rate)
+   works - this could possibly be fed *directly* into [mtail](https://github.com/google/mtail) to
+   avoid storing logs on disk but still get the date (include
+   [`$upstream_cache_status`](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#var_upstream_cache_status) in the logs)
+ * use a third-party module like [vts](https://github.com/vozlt/nginx-module-vts) or [sts](https://github.com/vozlt/nginx-module-sts) and the
+   [exporter](https://github.com/hnlq715/nginx-vts-exporter) to expose those metrics - the vts module doesn't seem
+   to be very well maintained (no release since 2018) and it's unclear
+   if this will work for our use case
+
+Here's an example of how to do the mtail hack. First tell nginx to
+write to syslog, to act as a buffer, so that parsing doesn't slow
+processing, excerpt from the [nginx.conf snippet](https://git.autistici.org/ai3/float/blob/master/roles/nginx/templates/config/nginx.conf#L34):
+
+    # Log response times so that we can compute latency histograms
+    # (using mtail). Works around the lack of Prometheus
+    # instrumentation in NGINX.
+    log_format extended '$server_name:$server_port '
+                '$remote_addr - $remote_user [$time_local] '
+                '"$request" $status $body_bytes_sent '
+                '"$http_referer" "$http_user_agent" '
+                '$upstream_addr $upstream_response_time $request_time';
+
+    access_log syslog:server=unix:/dev/log,facility=local3,tag=nginx_access extended;
+
+(We would also need to add `$upstream_cache_status` in that format.)
+
+Then count the different stats using mtail, excerpt from the [mtail
+config snippet](https://git.autistici.org/ai3/float/blob/master/roles/base/files/mtail/nginx.mtail):
+
+    # Define the exported metrics.
+    counter nginx_http_request_total
+    counter nginx_http_requests by host, vhost, method, code, backend
+    counter nginx_http_bytes by host, vhost, method, code, backend
+    counter nginx_http_requests_ms by le, host, vhost, method, code, backend 
+
+    /(?P<hostname>[-0-9A-Za-z._:]+) nginx_access: (?P<vhost>[-0-9A-Za-z._:]+) (?P<remote_addr>[0-9a-f\.:]+) - - \[[^\]]+\] "(?P<request_method>[A-Z]+) (?P<request_uri>\S+) (?P<http_version>HTTP\/[0-9\.]+)" (?P<status>\d{3}) ((?P<response_size>\d+)|-) "[^"]*" "[^"]*" (?P<upstream_addr>[-0-9A-Za-z._:]+) ((?P<ups_resp_seconds>\d+\.\d+)|-) (?P<request_seconds>\d+)\.(?P<request_milliseconds>\d+)/ {
+
+    	nginx_http_request_total++
+
+We'd also need to check the cache statuf in that parser.
+
+References:
+
+ * [NGINX Alphabetical index of variables](https://nginx.org/en/docs/varindex.html)
+ * [NGINX Module ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
+ * [NGINX Content Caching](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)
+ * [NGINX Reverse Proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+ * [perusio@github.com: Nginx configuration for running Drupal](https://github.com/perusio/drupal-with-nginx) -
+   interesting [snippet](https://github.com/perusio/drupal-with-nginx/blob/D7/apps/drupal/map_cache.conf) for cookies handling, not required
+ * [NGINX: Maximizing Drupal 8 Performance with NGINX, Part 2: Caching and Load Balancing](https://www.nginx.com/blog/maximizing-drupal-8-performance-nginx-part-ii-caching-load-balancing/)
+
+#### Benchmarks
+
+ab:
+
+    root@cache-02:~# ab -c 100 -n 1000 https://blog.torproject.org/
+    [...]
+    Server Software:        nginx/1.14.2
+    Server Hostname:        blog.torproject.org
+    Server Port:            443
+    SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,4096,256
+    Server Temp Key:        X25519 253 bits
+    TLS Server Name:        blog.torproject.org
+
+    Document Path:          /
+    Document Length:        53313 bytes
+
+    Concurrency Level:      100
+    Time taken for tests:   3.083 seconds
+    Complete requests:      1000
+    Failed requests:        0
+    Total transferred:      54458000 bytes
+    HTML transferred:       53313000 bytes
+    Requests per second:    324.31 [#/sec] (mean)
+    Time per request:       308.349 [ms] (mean)
+    Time per request:       3.083 [ms] (mean, across all concurrent requests)
+    Transfer rate:          17247.25 [Kbytes/sec] received
+
+    Connection Times (ms)
+                  min  mean[+/-sd] median   max
+    Connect:       30  255  78.0    262     458
+    Processing:    18   35  19.2     28     119
+    Waiting:        7   19   7.4     18      58
+    Total:         81  290  88.3    291     569
+
+    Percentage of the requests served within a certain time (ms)
+      50%    291
+      66%    298
+      75%    303
+      80%    306
+      90%    321
+      95%    533
+      98%    561
+      99%    562
+     100%    569 (longest request)
+
+About 50% faster than ATS.
+
+Siege:
+
+    Transactions:		       32246 hits
+    Availability:		      100.00 %
+    Elapsed time:		      119.57 secs
+    Data transferred:	     1639.49 MB
+    Response time:		        0.37 secs
+    Transaction rate:	      269.68 trans/sec
+    Throughput:		       13.71 MB/sec
+    Concurrency:		       99.60
+    Successful transactions:       32246
+    Failed transactions:	           0
+    Longest transaction:	        1.65
+    Shortest transaction:	        0.23
+
+Almost an order of magnitude faster than ATS.
+
+Bombardier:
+
+    anarcat@cache-02:~$ ./go/bin/bombardier --duration=2m --latencies https://blog.torproject.org/  -c 100
+    Bombarding https://blog.torproject.org:443/ for 2m0s using 100 connection(s)
+    [=========================================================================] 2m0s
+    Done!
+    Statistics        Avg      Stdev        Max
+      Reqs/sec      2116.74     506.01    5495.77
+      Latency       48.42ms    34.25ms      2.15s
+      Latency Distribution
+         50%    37.19ms
+         75%    50.44ms
+         90%    89.58ms
+         95%   109.59ms
+         99%   169.69ms
+      HTTP codes:
+        1xx - 0, 2xx - 247827, 3xx - 0, 4xx - 0, 5xx - 0
+        others - 0
+      Throughput:   107.43MB/s
+
+Almost maxes out the gigabit connexion as well, but only marginally
+faster (~3%?) than ATS.
+
+Does not max theoritical gigabit maximal performance, which [is
+apparently](http://rickardnobel.se/actual-throughput-on-gigabit-ethernet/) at around 118MB/s without jumbo frames (and 123MB/s
+with).
+
 ### Varnish
 
 Pros:
