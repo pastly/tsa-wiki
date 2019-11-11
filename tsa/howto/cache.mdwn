@@ -70,9 +70,13 @@ Include `roles::cache` in Puppet.
 TODO: document how to add new sites in the cache.
 
 ## SLA
-<!-- this describes an acceptable level of service for this service -->
 
-TBD.
+Service should generally stay online as much as possible, because it
+fronts critical web sites for the Tor project, but otherwise shouldn't
+especially differ from other SLA.
+
+Hit ratio should be high enough to reduce costs significantly on the
+backend.
 
 ## Design
 
