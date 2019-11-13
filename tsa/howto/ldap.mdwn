@@ -32,3 +32,87 @@ This will list all known hosts in LDAP:
 
     ldapsearch -ZZ -vLxW -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org" -b "ou=hosts,dc=torproject,dc=org" '(objectclass=*)' | grep ^dn:
 
+Modifying the schema
+--------------------
+
+If you need to add, change or remove a field in the *schema* of the
+LDAP database, it is a different, and complex operation. You will only
+need to do this if you launch a new service that (say) requires a new
+password specifically for that service.
+
+The schema is maintained in the [userdir-ldap.git](https://gitweb.torproject.org/admin/userdir-ldap.git/) repository. It
+is stored in the `userdir-ldap.schema` file. Assuming the modified
+object is a `user`, you would need to edit the file in three places:
+
+ 1. as a comment, in the beginning, to allocate a new field, for
+    example:
+
+        @@ -113,6 +113,7 @@
+         #   .45 - rebootPolicy
+         #   .46 - totpSeed
+         #   .47 - sshfpHostname
+        +#   .48 - mailPassword
+         #
+         # .3 - experimental LDAP objectClasses
+         #   .1 - debianDeveloper
+
+   This is purely informative, but it is important as it serves as a
+   central allocation point for that numbering system. Also note that
+   the entire schema lives under a branch of the [Debian.org IANA OID
+   allocation](https://dsa.debian.org/iana/).
+
+ 2. create the actual attribute, somewhere next to a similar attribute
+    or after the previous OID, in this case we created an attributed
+    called `mailPassword` right after `rtcPassword`, since other
+    passwords were also grouped there:
+
+        attributetype ( 1.3.6.1.4.1.9586.100.4.2.48
+               NAME 'mailPassword'
+               DESC 'mail password for SMTP'
+               EQUALITY octetStringMatch
+               SYNTAX 1.3.6.1.4.1.1466.115.121.1.40 )
+
+ 3. finally, the new attribute needs to be added to the
+    objectclass. in our example, the field was added alongside the
+    other password fields in the `debianAccount` objectclass, which
+    looked like this after the change:
+
+        objectclass ( 1.3.6.1.4.1.9586.100.4.1.1
+        	NAME 'debianAccount'
+        	DESC 'Abstraction of an account with POSIX attributes and UTF8 support'
+        	SUP top AUXILIARY
+        	MUST ( cn $ uid $ uidNumber $ gidNumber )
+        	MAY ( userPassword $ loginShell $ gecos $ homeDirectory $ description $ mailDisableMessage $ sudoPassword $ webPassword $ rtcPassword $ mailPassword $ totpSeed ) )
+
+Once that schema file is propagated to the LDAP server, this should
+automatically be loaded by `slapd` when it is restarted (see
+below). But the ACL for that field should also be modified. In our
+case, we had to add the `mailPassword` field to two ACLs:
+
+    --- a/userdir-ldap-slapd.conf.in
+    +++ b/userdir-ldap-slapd.conf.in
+    @@ -54,7 +54,7 @@ access to attrs=privateSub
+            by * break
+     
+     # allow users write access to an explicit subset of their fields
+    -access to attrs=c,l,loginShell,ircNick,labeledURI,icqUIN,jabberJID,onVacation,birthDate,mailDisableMessage,gender,emailforward,mailCallout,mailGreylisting,mailRBL,mailRHSBL,mailWhitelist,mailContentInspectionAction,mailDefaultOptions,facsimileTelephoneNumber,telephoneNumber,postalAddress,postalCode,loginShell,onVacation,latitude,longitude,VoIP,userPassword,sudoPassword,webPassword,rtcPassword,bATVToken
+    +access to attrs=c,l,loginShell,ircNick,labeledURI,icqUIN,jabberJID,onVacation,birthDate,mailDisableMessage,gender,emailforward,mailCallout,mailGreylisting,mailRBL,mailRHSBL,mailWhitelist,mailContentInspectionAction,mailDefaultOptions,facsimileTelephoneNumber,telephoneNumber,postalAddress,postalCode,loginShell,onVacation,latitude,longitude,VoIP,userPassword,sudoPassword,webPassword,rtcPassword,mailPassword,bATVToken
+            by self write
+            by * break
+     
+    @@ -64,7 +64,7 @@ access to attrs=c,l,loginShell,ircNick,labeledURI,icqUIN,jabberJID,onVacation,bi
+     ##
+     
+     # allow authn/z by anyone
+    -access to attrs=userPassword,sudoPassword,webPassword,rtcPassword,bATVToken
+    +access to attrs=userPassword,sudoPassword,webPassword,rtcPassword,mailPassword,bATVToken
+            by * compare
+     
+     # readable only by self
+
+If those are the only required changes, it is acceptable to directly
+make those changes directly on the LDAP server, as long as the *exact*
+same changes are performed in the git repositoy.
+
+It is preferable, however, to [[build and
+upload|build_and_upload_debs]] `userdir-ldap` as a Debian package instead.
