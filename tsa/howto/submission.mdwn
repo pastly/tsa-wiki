@@ -134,11 +134,184 @@ be created as needed. In the short term, LDAP can be used to modify
 that password but in the mid-term, it would be modifiable through the
 web interface like the `webPassword` or `rtcPassword` fields.
 
+### Current inventory
+
+ * active LDAP accounts: 91
+ * non-LDAP forwards (to real people): 24
+ * role forwards (to other @torproject.org emails): 76
+
+Forward targets:
+ * riseup.net: 30
+ * gmail.com: 21
+ * other: 93 (only 4 domains have more than one forward)
+
+Delivery rate: SMTP, on eugeni, is around 0.5qps, with a max of 8qps
+in the last 7 days (2019-06-06). But that includes mailing lists as
+well. During that period, around 27000 emails were delivered to
+@torproject.org aliases.
+
 ## Cost
 
-Labor and `gnt-fsn` VM costs. To be detailed.
+Labor and `gnt-fsn` VM costs.
+
+### External hosting cost evaluation
+
+ * Google: 8$/mth/account? (to be verified?)
+ * riseup.net: anarcat requested price quotation
+ * koumbit.org:  default pricing: 100$/year on shared hosting and 50GB
+   total, possibly no spam filter. 1TB disk: 500$/year. disk
+   encryption would need to be implemented, quoted 2000-4000$ setup
+   fee to implement it in the AlternC opensource control panel.
+ * self-hosting: ~4000-500EUR setup, 5000EUR-7500EUR/year, liberal
+   estimate (will probably be less)
+ * [mailfence](https://mailfence.com/en/secure-business-email.jsp) 1750 setup cost and 2.5 euros per user/year
+
+Note that the self-hosting cost evaluation is for the fully-fledged
+service. Option 2, above, of relaying email, has overall negligible
+costs although that theory has been questioned by members of the
+sysadmin team.
+
+### Internal hosting cost evaluation
+
+This is a back-of-the-napkin calculation of what it would cost to host
+actual email services at TPA infrastructure itself. We consider this
+to be a “liberal” estimate, ie. costs would probably be less and time
+estimates have been padded (doubled) to cover for errors.
+
+Assumptions:
+ * each mailbox is on average, a maximum of 10GB
+ * 100 mailboxes maximum at first (so 1TB of storage required)
+ * LUKS full disk encryption
+ * IMAP and basic webmail (Roundcube or Rainloop)
+ * “Trees” mailbox encryption out of scope for now
+ 
+Hardware:
+
+ * Hetzner px62nvme 2x1TB RAID-1 64GB RAM 75EUR/mth, 900EUR/yr
+ * Hetzner px92 2x1TB SSD RAID-1 128GB RAM 115EUR/mth, 1380EUR/yr
+ * Total hardware: 2280EUR/yr, ~200EUR setup fee
+
+This assumes hosting the server on a dedicated server at Hetzner.  It
+might be possible (and more reliable) to ensure further cost savings
+by hosting it on our shared virtualized infrastructure. Calculations
+for this haven’t been performed by the team, but I would guess we
+might save around 25 to 50% of the above costs, depending on the
+actual demand and occupancy on the mail servers.
+
+Staff:
+ * LDAP password segregation: 4 hours*
+ * Dovecot deployment and LDAP integration: 8 hours
+ * Dovecot storage optimization: 8 hours
+ * Postfix mail delivery integration: 8 hours
+ * Spam filter deployment: 8 hours
+ * 100% cost overrun estimate: 36 hours
+ * Total setup costs: 72 hours @ 50EUR/hr: 3600EUR one time
+ 
+This is the most imprecise evaluation. Most email systems have been
+built incrementally.  The biggest unknown is the extra labor
+associated with running the IMAP server and spam filter. A few
+hypothesis:
+
+ * 1 hour a week: 52 hours @ 50EUR/hr: 2600EUR/yr
+ * 2 hours a week: 5200EUR/yr
+
+I would be surprised if the extra work goes beyond one hour a week,
+and will probably be less. This also does not include 24/7 response
+time, but no service provider evaluated provides that level of service
+anyways.
+
+Total:
+
+ * One-time setup: 3800EUR (200EUR hardware, 3600EUR staff)
+ * Recurrent: roughly between 5000EUR and 7500EUR/year, majority in staff
+
 
 ## Alternatives considered
+
+ 1. Hosting mailboxes or only forwards: this means that instead of
+    just forwarding emails to some other providers, we actually allow
+    users to store emails on the server. Current situation is we only
+    do forwards
+ 2. SMTP authentication: this means allowing users to submit email
+    using a username and password over the standard SMTP (technically
+    “submission”) port. This is currently not allowed also some have
+    figured out they can do this over SSH already.
+ 3. Self-hosted or hosted elsewhere: if we host the email service
+    ourselves right now or not. The current situation is we allow
+    inbound messages but we do not store them. Mailbox storage is
+    delegated to each individual choice of email provider, which also
+    handles SMTP authentication.
+
+Details of the pros and cons:
+
+### TP full hosting: mailboxes, SMTP authentication
+
+Pros: 
+ * Easier for TPA to diagnose email problems than if email is hosted
+   by an undetermined third party
+ * People’s personal email is not mixed up with Tor email.
+ * Easier delegation between staff on rotations
+ * Control over where data is stored and how
+ * Full control of our infrastructure
+ * Less trust issues
+
+Cons:
+ * probably the most expensive option
+ * requires more skilled staff
+ * high availability harder to achieve
+ * high costs
+
+### TP not hosting mailboxes; TP hosting outgoing SMTP authentication server
+
+Pros:
+ * No data retention issues: TP not responsible for legal issues
+   surrounding mailboxes contents
+ * Solves delivery problem and nothing else (minimal solution)
+ * We’re already running an SMTP server
+ * SSH tunnels already let our lunatic-fringe do a version of this
+ * Staff keeps using own mail readers (eg gmail UI) for receiving mail
+ * Federated solution
+ * probably the cheapest option
+ * Work email cannot be accessed by TP staff
+
+Cons:
+ * SMTP-AUTH password management (admin effort and risk)
+ * Possible legal requests to record outgoing mail? (SSH
+   lunatic-fringe already at risk, though)
+ * DKIM/SPF politics vs “slippery slope”
+ * Forces people to figure out some good ISP to host their email
+ * Shifts the support burden to individuals
+ * Harder to diagnose email problems
+ * Staff or “role” email accounts cannot be shared
+
+### TP pays third party (riseup, protonmail, mailfence, gmail??) for full service (mailboxes, delivery)
+
+Pros:
+ * Less admin effort
+ * Less/no risk to TP infrastructure (legal or technical)
+ * Third party does not hold email data hostage; only handles outgoing
+ * We know where data is hosted instead of being spread around
+
+Cons:
+ * Not a federated solution
+ * Implicitly accepts email cartel model of “trusted” ISPs
+ * Varying levels of third party data management trust required
+ * Some third parties require custom software (protonmail)
+ * Single point of failure.
+ * Might force our users to pick a provider they dislike
+ * All eggs in the same basket
+
+### Status quo (no mailboxes, no authentication)
+
+Pros:
+ * Easy. Fast. Cheap. Pick three.
+
+Cons:
+
+ * Shifts burden of email debugging to users, lack of support
+
+
+Details of the chosen alternative (SMTP authentication):
 
  * Postfix + offline LDAP authentication (current proposal)
  * Postfix + direct LDAP authentication: discarded because it might
@@ -147,7 +320,6 @@ Labor and `gnt-fsn` VM costs. To be detailed.
    without affecting the rest of the infrastructure.
  * reusing existing field like `webPassword` or `rtcPassword` in LDAP:
    considered a semantic violation.
- * full email services: was considered too costly.
 
 See also internal Nextcloud document.
 
