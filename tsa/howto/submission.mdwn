@@ -228,8 +228,9 @@ Total:
  * One-time setup: 3800EUR (200EUR hardware, 3600EUR staff)
  * Recurrent: roughly between 5000EUR and 7500EUR/year, majority in staff
 
-
 ## Alternatives considered
+
+There are three dimensions to our “decision tree”:
 
  1. Hosting mailboxes or only forwards: this means that instead of
     just forwarding emails to some other providers, we actually allow
@@ -245,7 +246,12 @@ Total:
     delegated to each individual choice of email provider, which also
     handles SMTP authentication.
 
-Details of the pros and cons:
+Here are is the breakdown of pros and cons of each approach. Note that
+there are multiple combinations of those possible, for example we
+could continue not having mailboxes but allow SMTP authentication, and
+delegate this to a third party. Obviously, some combinations (like no
+SMTP authentication and mailboxes) are a little absurd and should be
+taken with a grain of salt.
 
 ### TP full hosting: mailboxes, SMTP authentication
 
