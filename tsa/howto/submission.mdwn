@@ -1,0 +1,154 @@
+[[!meta title="Email submission services"]]
+
+Email submission services consist of a server that accepts email using
+authenticated SMTP for LDAP users of the `torproject.org` domain.
+
+[[!toc levels=3]]
+
+# Tutorial
+
+<!-- simple, brainless step-by-step instructions requiring little or -->
+<!-- no technical background -->
+
+TODO: should include easy configuration instructions for major
+platforms (Thunderbird, Mail app, Outlook and Google mail, maybe?).
+
+# How-to
+
+<!-- more in-depth procedure that may require interpretation -->
+
+## Glossary
+
+ * **SMTP**: Simple Mail Transfer Protocol. The email protocol spoken
+   between servers to deliver email. Consists of two standards,
+   [RFC821](https://tools.ietf.org/html/rfc821) and [RFC5321](https://tools.ietf.org/html/rfc5321) which defined SMTP extensions, also
+   known as **ESMTP**.
+ * **MTA**: Mail Transport Agent. A generic SMTP server. Eugeni is
+   such a server.
+ * **MUA**: Mail User Agent. An "email client", a program used to
+   receive, manage and send email for users.
+ * **MSA** : Mail Submission Agent. An SMTP server specifically
+   designed to only *receive* email.
+ * **MDA**: Mail Delivery Agent. The email service actually writing
+   the email to the user's mailbox. Out of scope.
+
+This document describes the implementation of a **MSA**, although the
+service will most likely also include a **MTA** functionality in that
+it will actually deliver emails to targets.
+
+## Pager playbook
+## Disaster recovery
+
+N/A. The server should be rebuildable from scratch using the Puppet
+directive and does not have long-term user data. All user data is
+stored in DNS or LDAP.
+
+If email delivery starts failing, users are encouraged to go back to
+the email providers they were using before this service was deployed.
+
+# Reference
+
+## Installation
+<!-- how to setup the service from scratch -->
+
+    _submission._tcp.example.com.     SRV 0 1 587 mail.example.com.
+
+## SLA
+<!-- this describes an acceptable level of service for this service -->
+
+## Design
+<!-- how this is built -->
+<!-- should reuse and expand on the "proposed solution", it's a -->
+<!-- "as-built" documented, whereas the "Proposed solution" is an -->
+<!-- "architectural" document, which the final result might differ -->
+<!-- from, sometimes significantly -->
+
+## Issues
+
+ * [ticket #30608][]
+ * no bugtracker specifically for this service, TODO
+
+# Discussion
+
+## Overview
+
+The idea is to create a new server to deal with delivery problems
+torproject.org email users are currently seeing. While they can
+receive email through their `user@torproject.org` forwards without too
+much problem, their emails often get dropped to the floor when
+*sending* from that email address.
+
+It is suspected that users are having those problems because the
+originating servers are not in the `torproject.org` domain. The hope
+is that setting up a new server inside that domain would help with
+delivery. There's anecdotal evidence (see [this comment](https://trac.torproject.org/projects/tor/ticket/30608#comment:8) for
+example) that delivery emails from existing servers (over SSH to
+`iranicum`, in that example) improves reliability of email delivery
+significantly.
+
+This project came out of [ticket #30608][], which has the launch
+checklist. 
+
+[ticket #30608]: https://trac.torproject.org/projects/tor/ticket/30608
+
+## Goals
+
+### Must have
+
+ * basic compatibility with major clients (Thunderbird, Mail.app,
+   Outlook, Gmail?)
+ * delivery over secure (TLS + password) SMTP
+ * credentials stored in LDAP
+
+### Nice to have
+
+ * automatic client configuration
+ * improved delivery over current federated configuration
+ * delivery reliability monitoring with major providers (e.g. hotmail,
+   gmail, yahoo)
+ * pretty graphs
+ * formalized SSH-key delivery to avoid storing cleartext passwords on
+   clients
+
+### Non-Goals
+
+ * 100%, infaillable, universal delivery to all providers (ie. emails
+   will still be lost)
+ * mailbox management (ie. no incoming email, IMAP, POP, etc)
+ * spam filtering (ie. we won't check outgoing emails)
+ * no DKIM, SPF, DMARC, or ARC for now, although maybe a "null" SPF
+   record if it helps with delivery
+
+## Approvals required
+
+Approved by vegas, requested by network team, agreed with TPA at the
+Stockholm meeting.
+
+## Proposed Solution
+
+The proposed design is to setup a new email server in the [[ganeti]]
+cluster (currently `gnt-fsn`) with the user list synchronized from
+LDAP, using a new password field (named `mailPassword`). The access
+would therefore be granted only to LDAP users, and LDAP accounts would
+be created as needed. In the short term, LDAP can be used to modify
+that password but in the mid-term, it would be modifiable through the
+web interface like the `webPassword` or `rtcPassword` fields.
+
+## Cost
+
+Labor and `gnt-fsn` VM costs. To be detailed.
+
+## Alternatives considered
+
+ * Postfix + offline LDAP authentication (current proposal)
+ * Postfix + direct LDAP authentication: discarded because it might
+   fail when the LDAP server goes down. LDAP server is currently not
+   considered to be critical and can be restarted for maintenance
+   without affecting the rest of the infrastructure.
+ * reusing existing field like `webPassword` or `rtcPassword` in LDAP:
+   considered a semantic violation.
+ * full email services: was considered too costly.
+
+See also internal Nextcloud document.
+
+No benchmark considered necessary.
