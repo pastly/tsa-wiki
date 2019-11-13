@@ -141,6 +141,7 @@ web interface like the `webPassword` or `rtcPassword` fields.
  * role forwards (to other @torproject.org emails): 76
 
 Forward targets:
+
  * riseup.net: 30
  * gmail.com: 21
  * other: 93 (only 4 domains have more than one forward)
@@ -179,6 +180,7 @@ to be a “liberal” estimate, ie. costs would probably be less and time
 estimates have been padded (doubled) to cover for errors.
 
 Assumptions:
+
  * each mailbox is on average, a maximum of 10GB
  * 100 mailboxes maximum at first (so 1TB of storage required)
  * LUKS full disk encryption
@@ -199,6 +201,7 @@ might save around 25 to 50% of the above costs, depending on the
 actual demand and occupancy on the mail servers.
 
 Staff:
+
  * LDAP password segregation: 4 hours*
  * Dovecot deployment and LDAP integration: 8 hours
  * Dovecot storage optimization: 8 hours
@@ -247,6 +250,7 @@ Details of the pros and cons:
 ### TP full hosting: mailboxes, SMTP authentication
 
 Pros: 
+
  * Easier for TPA to diagnose email problems than if email is hosted
    by an undetermined third party
  * People’s personal email is not mixed up with Tor email.
@@ -256,6 +260,7 @@ Pros:
  * Less trust issues
 
 Cons:
+
  * probably the most expensive option
  * requires more skilled staff
  * high availability harder to achieve
@@ -264,6 +269,7 @@ Cons:
 ### TP not hosting mailboxes; TP hosting outgoing SMTP authentication server
 
 Pros:
+
  * No data retention issues: TP not responsible for legal issues
    surrounding mailboxes contents
  * Solves delivery problem and nothing else (minimal solution)
@@ -275,6 +281,7 @@ Pros:
  * Work email cannot be accessed by TP staff
 
 Cons:
+
  * SMTP-AUTH password management (admin effort and risk)
  * Possible legal requests to record outgoing mail? (SSH
    lunatic-fringe already at risk, though)
@@ -287,12 +294,14 @@ Cons:
 ### TP pays third party (riseup, protonmail, mailfence, gmail??) for full service (mailboxes, delivery)
 
 Pros:
+
  * Less admin effort
  * Less/no risk to TP infrastructure (legal or technical)
  * Third party does not hold email data hostage; only handles outgoing
  * We know where data is hosted instead of being spread around
 
 Cons:
+
  * Not a federated solution
  * Implicitly accepts email cartel model of “trusted” ISPs
  * Varying levels of third party data management trust required
@@ -304,6 +313,7 @@ Cons:
 ### Status quo (no mailboxes, no authentication)
 
 Pros:
+
  * Easy. Fast. Cheap. Pick three.
 
 Cons:
