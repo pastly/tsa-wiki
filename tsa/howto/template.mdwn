@@ -54,10 +54,10 @@
 
 ### Nice to have
 
-### Approvals required
-<!-- for example, legal, "vegas", accounting, current maintainer -->
+### Non-Goals
 
-## Non-Goals
+## Approvals required
+<!-- for example, legal, "vegas", accounting, current maintainer -->
 
 ## Proposed Solution
 
