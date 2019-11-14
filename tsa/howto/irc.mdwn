@@ -76,7 +76,15 @@ Maybe checking with TPA before setting up a new service, if any.
 
 ## Proposed Solution
 
-Not decided yet.
+Not decided yet. Possible options:
+
+ * status quo: "everyone for themselves" on the shell server, znc ran
+   by pastly on their own infra
+ * services admin: pastly runs the znc service for tpo people inside
+   tpo infra
+ * TPA runs znc bouncer
+ * alternative clients (weechat, lounge, kiwiirc)
+ * irccloud
 
 ## Cost
 
