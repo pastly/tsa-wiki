@@ -11,7 +11,11 @@ authenticated SMTP for LDAP users of the `torproject.org` domain.
 <!-- no technical background -->
 
 TODO: should include easy configuration instructions for major
-platforms (Thunderbird, Mail app, Outlook and Google mail, maybe?).
+platforms (Thunderbird, Mail app, Outlook and Google mail,
+maybe?). pili volunteered to write/test the Mac OS instructions. ggus
+says that Access Now! has some docs we could start from. vegas agrees
+that this documentation and support will be covered by teams outside
+of TPA.
 
 # How-to
 
