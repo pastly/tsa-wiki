@@ -1,0 +1,126 @@
+IRC is the original [Internet Relay Chat](https://en.wikipedia.org/wiki/Internet_Relay_Chat), one the first (1988)
+protocol created for "chatting" in real-time on the Internet, and the
+oldest one still in use. It is also one of the oldest protocols still
+active on the internet, predating the web by a few years.
+
+This page is mostly a discussion of software that runs *on top* of IRC
+and operated by end users.
+
+# Tutorial
+
+Tor makes extensive use of IRC with multiple active channels on the
+[OFTC network](https://www.oftc.net/). Our user-visible documentation is at [this wiki
+page](https://trac.torproject.org/projects/tor/wiki/org/onboarding/IRC).
+
+# Howto
+
+We do not operate the OFTC network. The public support channel for
+OFTC is `#oftc`.
+
+# Reference
+
+We do operate a virtual machine for people to run their IRC clients,
+called `chives`. The previous host running that service is called
+`iranicum` and is still online at the time of writing.
+
+## Installation
+
+The new IRC server has been setup with the `roles::ircbox` by weasel
+(see [ticket #32281](https://trac.torproject.org/projects/tor/ticket/32281)) in october 2019, to replace the older
+machine. This role simply sets up the machine as a "shell server"
+(`roles::shell`) and installs `irssi`.
+
+## SLA
+
+No specific SLA has been set for this service
+
+## Design
+
+Just a regular Debian server with users from LDAP.
+
+## Issues
+
+No specific project has been created to track issues.
+
+# Discussion
+
+This page was originally created to discuss the implementation of
+"bouncer" services for other staff. While many people run IRC clients
+on the server over an SSH connexion, this is inconvenient for people
+less familiar with the commandline. 
+
+It was therefore suggested we evaluate other systems to allow users to
+have more "persistence" online without having to overcome the
+"commandline" hurdle.
+
+## Goals
+
+### Must have
+
+ * user-friendly way to stay connected to IRC
+
+### Nice to have
+
+ * web interface?
+ * LDAP integration?
+
+### Non-Goals
+
+ * replacing IRC (let's not go there please)
+
+## Approvals required
+
+Maybe checking with TPA before setting up a new service, if any.
+
+## Proposed Solution
+
+Not decided yet.
+
+## Cost
+
+Staff. Existing hardware resources can be reused.
+
+## Alternatives considered
+
+ * [irssi](https://irssi.org/) in some terminal multiplexer like [tmux](https://github.com/tmux/tmux) [screen](https://www.gnu.org/software/screen/)
+   or [dtach](https://irssi.org/)
+ * [weechat](https://weechat.org/) in the same or with another [interface](https://weechat.org/about/interfaces/)
+ * [lounge](https://thelounge.chat/) webchat (nodejs, not packaged in Debian)
+ * [ZNC](https://wiki.znc.in/ZNC), a [bouncer](http://en.wikipedia.org/wiki/BNC_%28software%29#IRC)
+ * a Matrix gateway like [Riot.IM](https://about.riot.im/)
+
+### Discarded alternatives
+
+Most other alternatives have been discarded because they do not work
+with IRC and we do not wish to move away from that platform just
+yet. Other projects (like [qwebirc](https://thelounge.chat/)) were discarded because they do
+not offer persistence.
+
+Free software projects:
+
+ * [Briar](https://briarproject.org/) - tor-based offline-first messenger
+ * [Jabber/XMPP](https://xmpp.org/) - just shutdown the service, never picked up
+ * [Jitsi](https://jitsi.org/) - audio, video, text chat
+ * [Mattermost](https://mattermost.com/) - opensource alternative to slack, not federated
+ * [Retroshare](https://retroshare.cc/) - old, complex, not packaged
+ * [Rocket.chat](https://rocket.chat/) - not federated
+ * [Scuttlebutt](https://www.scuttlebutt.nz/) - not a great messaging experience
+ * [Signal](https://signal.org/) - in use at Tor, but poor group chat capabilities
+ * [Telegram](https://telegram.org/) - [doubts about security reliability](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=767418#42)
+ * [Tox](https://tox.chat/) - DHT-based chat system
+ * [Wire](https://wire.com/) - not packaged in Debian
+ * [Zulip](https://zulipchat.com/) - "team chat", not federated
+
+Yes, that's an incredibly long list, and probably not exhaustive.
+
+Commercial services:
+
+ * [IRCCloud](https://www.irccloud.com/) - bridges with IRC
+ * [Slack](https://slack.com/) - poor privacy
+ * [Discord](https://discordapp.com/) - voice and chat app, mostly for gaming
+ * [Hangouts](https://hangouts.google.com/) - Google service
+ * Whatsapp - tied to Facebook
+ * Skype - Microsoft
+ * [Keybase](https://alternativeto.net/software/keybase/) - OpenPGP-encrypted chat, proprietary server-side
+
+None of the commercial services interoperate with IRC unless otherwise noted.
