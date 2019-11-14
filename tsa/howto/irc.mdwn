@@ -88,8 +88,10 @@ Staff. Existing hardware resources can be reused.
    or [dtach](https://irssi.org/)
  * [weechat](https://weechat.org/) in the same or with another [interface](https://weechat.org/about/interfaces/)
  * [lounge](https://thelounge.chat/) webchat (nodejs, not packaged in Debian)
- * [ZNC](https://wiki.znc.in/ZNC), a [bouncer](http://en.wikipedia.org/wiki/BNC_%28software%29#IRC)
+ * [ZNC](https://wiki.znc.in/ZNC), a [bouncer](http://en.wikipedia.org/wiki/BNC_%28software%29#IRC), currently ran by @pastly on their own
+   infrastructure for some tpo people
  * a Matrix gateway like [Riot.IM](https://about.riot.im/)
+ * [KiwiIRC](https://kiwiirc.com/), both a service and a web app we could run
 
 ### Discarded alternatives
 
