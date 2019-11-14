@@ -6,6 +6,8 @@ active on the internet, predating the web by a few years.
 This page is mostly a discussion of software that runs *on top* of IRC
 and operated by end users.
 
+[[!toc levels=3]]
+
 # Tutorial
 
 Tor makes extensive use of IRC with multiple active channels on the
