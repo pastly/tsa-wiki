@@ -1,6 +1,6 @@
-A caching service is a set of services keeping a smaller cache of
+A caching service is a set of reverse proxies keeping a smaller cache of
 content in memory to speed up access to resources on a slower backend
-server.
+web server.
 
 [[!toc levels=3]]
 
@@ -15,7 +15,8 @@ over or close to 90%.
 ## Traffic inspection
 
 A quick way to see how much traffic is flowing through the cache is to
-fire up [slurm](https://screenshots.debian.net/package/slurm) on the public interface:
+fire up [slurm](https://screenshots.debian.net/package/slurm) on the public interface of the caching server
+(currently `cache01` and `cache-02`):
 
     slurm -i eth0
 
@@ -87,7 +88,7 @@ geographically distinct areas that run a webserver acting as a
 the [proxy module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) for the <https://blog.torproject.org/> website
 (and eventually others, see [ticket #32462](https://trac.torproject.org/projects/tor/ticket/32462)). DNS for the site
 points to `cache.torproject.org`, an alias for the caching servers,
-which are currently two: `cache01.torproject.org` [sic] and
+which are currently two: `cache01.torproject.org` [[sic](https://en.wikipedia.org/wiki/Sic)] and
 `cache-02`. An HTTPS certificate for the site was issued through
 [[letsencrypt]]. Like the Nginx configuration, the certificate is
 deployed by Puppet in the `roles::cache` class.
