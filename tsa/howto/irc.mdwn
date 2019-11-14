@@ -117,12 +117,13 @@ Yes, that's an incredibly long list, and probably not exhaustive.
 
 Commercial services:
 
- * [IRCCloud](https://www.irccloud.com/) - bridges with IRC
- * [Slack](https://slack.com/) - poor privacy
+ * [IRCCloud](https://www.irccloud.com/) - bridges with IRC, [somewhat decent privacy
+   policy](https://www.irccloud.com/privacy)
+ * [Slack](https://slack.com/) - [poor privacy policy](https://www.salon.com/2018/03/22/slack-makes-an-odd-privacy-update-amid-unfolding-facebook-privacy-scandal/)
  * [Discord](https://discordapp.com/) - voice and chat app, mostly for gaming
  * [Hangouts](https://hangouts.google.com/) - Google service
- * Whatsapp - tied to Facebook
- * Skype - Microsoft
+ * [Whatsapp](https://www.whatsapp.com/) - tied to Facebook
+ * [Skype](https://www.skype.com/en/) - Microsoft
  * [Keybase](https://alternativeto.net/software/keybase/) - OpenPGP-encrypted chat, proprietary server-side
 
 None of the commercial services interoperate with IRC unless otherwise noted.
