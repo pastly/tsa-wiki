@@ -21,9 +21,14 @@ OFTC is `#oftc`.
 
 # Reference
 
-We do operate a virtual machine for people to run their IRC clients,
+We operate a virtual machine for people to run their IRC clients,
 called `chives`. The previous host running that service is called
 `iranicum` and is still online at the time of writing.
+
+A volunteer (currently pastly) runs a [ZNC][] bouncer for TPO people
+on their own infrastructure.
+
+Some people connect to IRC intermittently.
 
 ## Installation
 
@@ -96,10 +101,12 @@ Staff. Existing hardware resources can be reused.
    or [dtach](https://irssi.org/)
  * [weechat](https://weechat.org/) in the same or with another [interface](https://weechat.org/about/interfaces/)
  * [lounge](https://thelounge.chat/) webchat (nodejs, not packaged in Debian)
- * [ZNC](https://wiki.znc.in/ZNC), a [bouncer](http://en.wikipedia.org/wiki/BNC_%28software%29#IRC), currently ran by @pastly on their own
+ * [ZNC][], a [bouncer](http://en.wikipedia.org/wiki/BNC_%28software%29#IRC), currently ran by @pastly on their own
    infrastructure for some tpo people
  * a Matrix gateway like [Riot.IM](https://about.riot.im/)
  * [KiwiIRC](https://kiwiirc.com/), both a service and a web app we could run
+
+[ZNC]: https://wiki.znc.in/ZNC
 
 ### Discarded alternatives
 
