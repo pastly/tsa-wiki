@@ -153,7 +153,9 @@ well. During that period, around 27000 emails were delivered to
 
 ## Cost
 
-Labor and `gnt-fsn` VM costs.
+Labor and `gnt-fsn` VM costs. To be detailed.
+
+Below is an evaluation of the various Alternatives that were considered.
 
 ### External hosting cost evaluation
 
