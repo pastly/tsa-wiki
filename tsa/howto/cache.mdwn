@@ -197,7 +197,7 @@ Pantheon. That is about 1 hit per second and 12 terabyte per month,
 
 Hetzner charges 1EUR/TB/month over our 1TB quota, so bandwidth would
 cost 11EUR/month on average. If costs become prohibitive, we could
-switch to a Hetzner VM which includ 20TB of traffic per month at costs
+switch to a Hetzner VM which includes 20TB of traffic per month at costs
 ranging from 3EUR/mth to 30EUR/mth depending on the VPS size (between
 1 vCPU, 2GB ram, 20GB SSD and 8vCPU, 32GB ram and 240GB SSD).
 
