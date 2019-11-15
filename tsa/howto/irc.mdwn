@@ -99,7 +99,8 @@ Staff. Existing hardware resources can be reused.
 
  * [irssi](https://irssi.org/) in some terminal multiplexer like [tmux](https://github.com/tmux/tmux) [screen](https://www.gnu.org/software/screen/)
    or [dtach](https://irssi.org/)
- * [weechat](https://weechat.org/) in the same or with another [interface](https://weechat.org/about/interfaces/)
+ * [weechat](https://weechat.org/) in the same or with another [interface](https://weechat.org/about/interfaces/) like
+   [web (Glowbear)](https://www.glowing-bear.org/), [Android](https://github.com/ubergeek42/weechat-android) or [iOS](https://github.com/mhoran/weechatRN)
  * [lounge](https://thelounge.chat/) webchat (nodejs, not packaged in Debian)
  * [ZNC][], a [bouncer](http://en.wikipedia.org/wiki/BNC_%28software%29#IRC), currently ran by @pastly on their own
    infrastructure for some tpo people
