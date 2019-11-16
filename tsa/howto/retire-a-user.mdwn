@@ -24,3 +24,12 @@ This is done by removing all traces of the account:
     - run `sudo remove_members <list names> <email address>`
  4. make sure they don't have keys and accounts in Puppet
  5. remove the key from `acccount-keyring.git`
+
+There are other manual accounts that are *not* handled by LDAP. Make
+sure you check:
+
+ * Nextcloud
+ * Trac
+
+TODO: list is incomplete, need to audit [the service list](https://trac.torproject.org/projects/tor/wiki/org/operations/services) and see
+which services are in LDAP and which aren't. See [ticket #32519](https://trac.torproject.org/projects/tor/ticket/32519).
