@@ -109,6 +109,161 @@ various counters and exposes those as metrics that are then scraped by
 [[prometheus]]. We use [[grafana]] to display that hit ratio which, at
 the time of writing, is about 88% for the blog.
 
+## Puppet architecture
+
+Because the Puppet code isn't public yet ([ticket #29387](https://trac.torproject.org/projects/tor/ticket/29387), here's a
+quick overview of how we set things up for others to follow.
+
+The entry point in Puppet is the `roles::cache` class, which
+configures an "Nginx server" (like an Apache vhost) to do the caching
+of the backend. It also includes our common Nginx configuration in
+`profile::nginx` which in turns delegates most of the configuration to
+the Voxpupuli Nginx Module.
+
+The role is essentially consists of:
+
+    include profile::nginx
+
+    nginx::resource::server { 'blog.torproject.org':
+      ssl_cert              => '/etc/ssl/torproject/certs/blog.torproject.org.crt-chained',
+      ssl_key               => '/etc/ssl/private/blog.torproject.org.key',
+      proxy                 => 'https://live-tor-blog-8.pantheonsite.io',
+      # no servicable parts below
+      ipv6_enable           => true,
+      ipv6_listen_options   => '',
+      ssl                   => true,
+      # part of HSTS configuration, the other bit is in add_header below
+      ssl_redirect          => true,
+      # proxy configuration
+      #
+      # pass the Host header to the backend (otherwise the proxy URL above is used)
+      proxy_set_header      => ['Host $host'],
+      # should map to a cache zone defined in the nginx profile
+      proxy_cache           => 'default',
+      # start caching redirects and 404s. this code is taken from the
+      # upstream documentation in
+      # https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_valid
+      proxy_cache_valid     => [
+        '200 302 10m',
+        '301      1h',
+        'any 1m',
+      ],
+      # allow serving stale content on error, timeout, or refresh
+      proxy_cache_use_stale => 'error timeout updating',
+      # allow only first request through backend
+      proxy_cache_lock      => 'on',
+      # purge headers from backend we will override. X-Served-By and Via
+      # are merged into the Via header, as per rfc7230 section 5.7.1
+      proxy_hide_header     => ['Strict-Transport-Security', 'Via', 'X-Served-By'],
+      add_header            => {
+        # this is a rough equivalent to Varnish's Age header: it caches
+        # when the page was cached, instead of its age
+        'X-Cache-Date'              => '$upstream_http_date',
+        # if this was served from cache
+        'X-Cache-Status'            => '$upstream_cache_status',
+        # replace the Via header with ours
+        'Via'                       => '$server_protocol $server_name',
+        # cargo-culted from Apache's configuration
+        'Strict-Transport-Security' => 'max-age=15768000; preload',
+      },
+      # cache 304 not modified entries
+      raw_append            => "proxy_cache_revalidate on;\n",
+      # caches shouldn't log, because it is too slow
+      #access_log            => 'off',
+      format_log            => 'cacheprivacy',
+    }
+
+There are also firewall (to open the monitoring, HTTP and HTTPS ports)
+and mtail (to read the log fiels for hit ratios) configurations but
+those are not essential to get Nginx itself working.
+
+The `profile::nginx` class is our common Nginx configuration that also
+covers non-caching setups:
+
+    # common nginx configuration
+    #
+    # @param client_max_body_size max upload size on this server. upstream
+    #                             default is 1m, see:
+    #                             https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size
+    class profile::nginx(
+      Optional[String] $client_max_body_size = '1m',
+    ) {
+      include webserver
+      class { 'nginx':
+        confd_purge           => true,
+        server_purge          => true,
+        manage_repo           => false,
+        http2                 => 'on',
+        server_tokens         => 'off',
+        package_flavor        => 'light',
+        log_format            => {
+          # built-in, according to: http://nginx.org/en/docs/http/ngx_http_log_module.html#log_format
+          # 'combined' => '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
+
+          # "privacy" censors the client IP address from logs, taken from
+          # the Apache config, minus the "day" granularity because of
+          # limitations in nginx. we remove the IP address and user agent
+          # but keep the original request time, in other words.
+          'privacy'      => '0.0.0.0 - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "-"',
+
+          # the "cache" formats adds information about the backend, namely:
+          # upstream_addr - address and port of upstream server (string)
+          # upstream_response_time - total time spent talking to the backend server, in seconds (float)
+          # upstream_cache_status - state fo the cache (MISS, HIT, UPDATING, etc)
+          # request_time - total time spent answering this query, in seconds (float)
+          'cache'        => '$server_name:$server_port $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $upstream_addr $upstream_response_time $upstream_cache_status $request_time',  #lint:ignore:140chars
+          'cacheprivacy' => '$server_name:$server_port 0.0.0.0 - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "-" $upstream_addr $upstream_response_time $upstream_cache_status $request_time',  #lint:ignore:140chars
+        },
+        # XXX: doesn't work because a default is specified in the
+        # class. doesn't matter much because the puppet module reuses
+        # upstream default.
+        worker_rlimit_nofile  => undef,
+        accept_mutex          => 'off',
+        # XXX: doesn't work because a default is specified in the
+        # class. but that doesn't matter because accept_mutex is off so
+        # this has no effect
+        accept_mutex_delay    => undef,
+        http_tcp_nopush       => 'on',
+        gzip                  => 'on',
+        client_max_body_size  => $client_max_body_size,
+        run_dir               => '/run/nginx',
+        client_body_temp_path => '/run/nginx/client_body_temp',
+        proxy_temp_path       => '/run/nginx/proxy_temp',
+        proxy_connect_timeout => '60s',
+        proxy_read_timeout    => '60s',
+        proxy_send_timeout    => '60s',
+        proxy_cache_path      => '/var/cache/nginx/',
+        proxy_cache_levels    => '1:2',
+        proxy_cache_keys_zone => 'default:10m',
+        # XXX: hardcoded, should just let nginx figure it out
+        proxy_cache_max_size  => '15g',
+        proxy_cache_inactive  => '24h',
+        ssl_protocols         => 'TLSv1 TLSv1.1 TLSv1.2 TLSv1.3',
+        # XXX: from the apache module see also https://trac.torproject.org/projects/tor/ticket/32351
+        ssl_ciphers           => 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS', # lint:ignore:140chars
+      }
+      # recreate the default vhost
+      nginx::resource::server { 'default':
+        server_name         => ['_'],
+        www_root            => "/srv/www/${webserver::defaultpage::defaultdomain}/htdocs/",
+        listen_options      => 'default_server',
+        ipv6_enable         => true,
+        ipv6_listen_options => 'default_server',
+        # XXX: until we have an anonymous log format
+        access_log          => 'off',
+        ssl                 => true,
+        ssl_redirect        => true,
+        ssl_cert            => '/etc/ssl/torproject-auto/servercerts/thishost.crt',
+        ssl_key             => '/etc/ssl/torproject-auto/serverkeys/thishost.key';
+      }
+    }
+
+There are *lots* of config settings there, but they are provided to
+reduce the diff between the upstream debian package and the [Nginx
+module from the forge](https://forge.puppet.com/puppet/nginx). This was [filed upstream as a bug][puppet-nginx-1359].
+
+[puppet-nginx-1359]: https://github.com/voxpupuli/puppet-nginx/issues/1359
+
 ## Issues
 
  * logs should not be written to disk, but instead piped directly into
@@ -118,6 +273,8 @@ the time of writing, is about 88% for the blog.
    see [ticket #32462](https://trac.torproject.org/projects/tor/ticket/32462) for the varnish conversion
  * the cipher suite is an old hardcoded copy derived from Apache, see
    [ticket #32351](https://trac.torproject.org/projects/tor/ticket/32351)
+ * the Nginx puppet module diverges needlessly from upstream and
+   Debian package configuration see [puppet-nginx-1359][]
 
 There is no issue tracker specifically for this project, file and
 serch for issues in [internal services](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FTor+Sysadmin+Team).
