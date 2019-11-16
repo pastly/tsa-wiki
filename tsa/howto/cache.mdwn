@@ -361,6 +361,9 @@ Other alternatives were not:
  * [Envoy][] - [not designed for caching](https://github.com/envoyproxy/envoy/issues/868), [external cache support
    planned in 2019](https://blog.getambassador.io/envoy-proxy-in-2019-security-caching-wasm-http-3-and-more-e5ba82da0197?gi=82c1a78157b8)
  * [HAproxy](https://www.haproxy.com/) - [not designed to cache large objects](https://www.haproxy.com/documentation/aloha/9-5/traffic-management/lb-layer7/caching-small-objects/)
+ * [H2O](https://h2o.examp1e.net/) - HTTP/[123], written from scratch for HTTP/2+, presumably
+   faster than Nginx, didn't find out about it until after the project
+   launched
  * [Ledge](https://github.com/ledgetech/ledge) - caching extension to Nginx with ESI, Redis, and cache
    purge support, not packaged in Debian
  * [Nuster](https://github.com/jiangwenyuan/nuster) - new project, not packaged in Debian (based on
