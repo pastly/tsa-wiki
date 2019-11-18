@@ -726,3 +726,15 @@ are currently still some configurations hardcoded in individual
 modules. For example, the Bacula director is hardcoded in the `bacula`
 base class (in `modules/bacula/manifests/init.pp`). That should be
 moved into a class parameter, probably in `common.yaml`.
+
+## Cron and scheduling
+
+The Puppet agent is *not* running as a daemon, it's running through
+good old `cron`.
+
+Puppet runs on each node every four hour, although with a random 2h
+jitter, so the actual frequency is somewhere between 4 and 6
+hours.
+
+This configuration is in `/etc/cron.d/puppet-crontab` and deployed by
+Puppet itself, currently as part of the `torproject_org` module.
