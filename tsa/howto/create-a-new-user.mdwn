@@ -163,13 +163,12 @@ Here's how to create a role account:
 
 8. (sometimes) create the home directory on the server, in Puppet:
 
-        file {
-          '/home/bridgescan':
-            ensure => 'directory',
-            mode   => '0755',
-            owner  => 'bridgescan',
-            group  => 'bridgescan';
-         }
+        file { '/home/bridgescan':
+          ensure => 'directory',
+          mode   => '0755',
+          owner  => 'bridgescan',
+          group  => 'bridgescan';
+        }
 
 Sometimes a role account is made to start services, see the
 [[doc/services]] page for instructions on how to do that.

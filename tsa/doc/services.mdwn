@@ -65,8 +65,7 @@ On the sysadmin side, to enable `systemd --user` session, we need to
 run `loginctl enable-linger $USER`. For example, this will enable the
 session for the user $USER:
 
-    exec {
-      "loginctl enable-linger $USER":
+    exec { "loginctl enable-linger $USER":
         creates => "/var/lib/systemd/linger/$USER";
     }
 
