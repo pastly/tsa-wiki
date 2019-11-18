@@ -179,10 +179,20 @@ A user will often need to more permissions than its regular scope. For
 example, a user might need to be able to access a specific role
 account, as above, or run certain commands as root.
 
-We have a large `sudoers` file that contains per-host configuration
-snippets that enable us to give piecemeal accesses like this. We often
-give accesses to *groups* instead of specific users for easier
-maintenance.
+We have `sudo` configuration that enable us to give piecemeal accesses
+like this. We often give accesses to *groups* instead of specific
+users for easier maintenance.
+
+There's this one large `sudoers` file that contains a lot of per-host
+configuration. But newer `sudoers` entries should be done by adding
+files in `/etc/sudoers.d/` on the right host instead of relying on
+`sudo`'s per-host capabilities. For example, this is a simple sudoers
+configuration:
+
+    file { '/etc/sudoers.d/gettor':
+      mode    => '0440',
+      content => '%gettor			ALL=(gettor)			ALL',
+    }
 
 ## Sudo primer
 
