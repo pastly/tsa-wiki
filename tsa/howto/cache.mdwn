@@ -372,6 +372,26 @@ Finally, there is the possibility of converging all HTTP services
 towards Nginx if desired, which would reduce the number of moving
 parts in the infrastructure.
 
+### Benchmark results overview
+
+Hits per second:
+
+| Server      | AB  | Siege | Bombardier | B. HTTP/1 |
+| ----------- | --- | ----- | ---------- | --------- |
+| Upstream    | N/A |   N/A |       2800 |       N/A |
+| ATS, local  | 800 |   569 |        N/A |       N/A |
+| ATS, remote | 249 |   241 |       2050 |      1322 |
+| Nginx       | 324 |   269 |       2117 |       N/A |
+
+Throughput (megabyte/s):
+
+| Server      | AB  | Siege | Bombardier | B. HTTP/1 |
+| ----------- | --- | ----- | ---------- | --------- |
+| Upstream    | N/A |   N/A |        145 |       N/A |
+| ATS, local  |  42 |     5 |        N/A |       N/A |
+| ATS, remote |  13 |     2 |        105 |        14 |
+| Nginx       |  17 |    14 |        107 |       N/A |
+
 ## Launch checklist
 
 See [#32239](https://trac.torproject.org/projects/tor/ticket/32239) for a followup on the launch procedure.
@@ -1164,7 +1184,9 @@ Siege:
     Longest transaction:	        1.65
     Shortest transaction:	        0.23
 
-Almost an order of magnitude faster than ATS.
+Almost an order of magnitude faster than ATS. Update: that's for the
+throughput. The transaction rate is actually similar, which implies
+the page size might have changed between benchmarks.
 
 Bombardier:
 
