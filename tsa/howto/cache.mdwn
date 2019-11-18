@@ -378,19 +378,19 @@ Hits per second:
 
 | Server      | AB  | Siege | Bombardier | B. HTTP/1 |
 | ----------- | --- | ----- | ---------- | --------- |
-| Upstream    | N/A |   N/A |       2800 |       N/A |
-| ATS, local  | 800 |   569 |        N/A |       N/A |
+| Upstream    | n/a |   n/a |       2800 |       n/a |
+| ATS, local  | 800 |   569 |        n/a |       n/a |
 | ATS, remote | 249 |   241 |       2050 |      1322 |
-| Nginx       | 324 |   269 |       2117 |       N/A |
+| Nginx       | 324 |   269 |       2117 |       n/a |
 
 Throughput (megabyte/s):
 
 | Server      | AB  | Siege | Bombardier | B. HTTP/1 |
 | ----------- | --- | ----- | ---------- | --------- |
-| Upstream    | N/A |   N/A |        145 |       N/A |
-| ATS, local  |  42 |     5 |        N/A |       N/A |
+| Upstream    | n/a |   n/a |        145 |       n/a |
+| ATS, local  |  42 |     5 |        n/a |       n/a |
 | ATS, remote |  13 |     2 |        105 |        14 |
-| Nginx       |  17 |    14 |        107 |       N/A |
+| Nginx       |  17 |    14 |        107 |       n/a |
 
 ## Launch checklist
 
