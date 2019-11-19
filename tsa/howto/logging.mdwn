@@ -1,0 +1,44 @@
+Logging is a pervasive service across all other services. It consist
+of writing information to a (usually text) file and is generally
+handled by a program called `syslog` (currently `syslog-ng`) that
+takes logs through a socket or the network and writes them to
+files. Other software might also write their own logfiles, for example
+webservers do not write log files to syslog for performance reasons.
+
+There's also a logging server that collects all those logfiles in a
+central location.
+
+How-to
+======
+
+Lnav log parsing
+----------------
+
+[lnav](https://lnav.org/) is a powerful log parser that allows you to do interesting
+things on logfiles.
+
+On any logfile, you can see per-second hit ratio by using the
+"histogram" view.  Hit the `i` button to flip to the "histogram" view
+and `z` multiple times to zoom all the way into a per-second hit rate
+view. Hit `q` to go back to the normal view.
+
+The `lnav` Puppet module can be used to install lnav and
+formats. Formats should be stored in the lnav module to make it easier
+to collaborate with the community.
+
+Extending lnav formats
+----------------------
+
+Known formats:
+
+ * [aspiers' formats](https://github.com/aspiers/lnav-formats) - many formats: zsh, bash history, alogcat,
+   chef, oslo
+ * [hagfelsh's formats](https://github.com/hagfelsh/lnav_formats) - many formats
+ * [PaulWay's formats](https://github.com/PaulWay/lnav-formats) - many formats: openldap, exim, strace,
+   squid, etc
+ * [ruby-logger](https://github.com/penntaylor/lnav-ruby-logger-format)
+
+lnav also ships with its own set of [default log formats](https://lnav.readthedocs.io/en/latest/formats.html#log-formats),
+available in the source in [`src/default-log-formats.json`](https://github.com/tstack/lnav/blob/master/src/default-log-formats.json). Those
+can be useful to extend existing log formats.
+

@@ -41,6 +41,17 @@ view. Hit `q` to go back to the normal view, which is useful to
 inspect individual hits and diagnose why they fail to be cached, for
 example.
 
+Immediate hit ratio can be extracted from `lnav` thanks to our custom
+log parser shipped through Puppet. Load the log file in lnav:
+
+    lnav /var/log/nginx/ssl.blog.torproject.org.access.log
+
+then hit `;` to enter the SQL query mode and issue this query:
+
+    SELECT count(*), upstream_cache_status FROM logline WHERE status_code < 300 GROUP BY upstream_cache_status;
+
+See also [[logging]] for more information about lnav.
+
 ## Pager playbook
 
 The only monitoring for this service is to ensure the proper number of
