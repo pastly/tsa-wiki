@@ -144,3 +144,321 @@ Commercial services:
  * [Keybase](https://alternativeto.net/software/keybase/) - OpenPGP-encrypted chat, proprietary server-side
 
 None of the commercial services interoperate with IRC unless otherwise noted.
+
+# Setting up ZNC
+
+This section documents how pastly set up ZNC on TPA infra. It was originally
+written 20 Nov 2019 and the last time someone updated something and remembered
+to update the date is:
+
+Last updated: 20 Nov 2019
+
+Assumptions
+
+- Your username is `pastly`.
+- The ZNC user is `ircbouncer`.
+- The host is `chives`.
+
+## Goals
+
+- ZNC bouncer maintaing persistent connections to irc.oftc.net for "Tor people"
+  (those with @torproject.org addresses is pastly's litmus test) and buffering
+messages for them when they are not online
+- Insecure plaintext connections to ZNC not allowed
+- Secure TLS connections with valid TLS certificate
+- Secure Tor onion service connections
+- ZNC runs as non-root, special-purpose, unprivileged user
+
+At the end of this, we will have ZNC reachable in the following ways for both
+web-based configuration and IRC:
+
+- Securely with a valid TLS certificate on port 2001 at
+  ircbouncer.torproject.org
+- Securely via a Tor onion service on port 80 and 2000 at some onion address
+
+## Necessary software
+
+- Debian 10 (Buster)
+
+- [ZNC][], tested with
+
+      pastly@chives:~$ znc --version
+      ZNC 1.7.2+deb3 - https://znc.in
+      IPv6: yes, SSL: yes, DNS: threads, charset: yes, i18n: no, build: autoconf
+
+- Tor (optional), tested with
+
+      pastly@chives:~$ tor --version
+      Tor version 0.3.5.8.
+
+## Setup steps
+
+### Obtain necessary software
+
+See previous section
+
+### Create a special user
+
+Ask your friendly neighborhood Tor sysadmin to do this for you.  It needs its
+own home directory and you need to be able to `sudo -u` to it. For example:
+
+    pastly@chives:~$ sudo -u ircbouncer whoami
+    [sudo] password for pastly on chives:
+    ircbouncer
+
+But to do this you need ...
+
+### Create a sudo password for yourself
+
+If you don't have one already.
+
+- Log in to <https://db.torproject.org/login.html> with the *Update my info*
+  button. Use your LDAP password.
+
+- Use the interface to create a sudo password. It probably can be for just the
+  necessary host (chives, for me), but I did it for all hosts. It will give you
+a gpg command to run that signs some text indicating you want this change.
+Email the resulting block of armored gpg output to changes@db.torproject.org.
+
+- After you get a response email indicating success, want 10 minutes and you
+  should be able to run commands as the `ircbouncer` user.
+
+      pastly@chives:~$ sudo -u ircbouncer whoami
+      [sudo] password for pastly on chives:
+      ircbouncer
+
+### Choose a FQDN and get a TLS certificate
+
+Ask your friendly neighborhood Tor sysadmin to do this for you. It could be
+chives.torproject.org, but to make it easier for users, my Tor sysadmin chose
+ircbouncer.torproject.org. Have them make you a valid TLS certificate with the
+name of choice. If using something like Let's Encrypt, assume they are going to
+automatically regenerate it every ~90 days :)
+
+They don't need to put the cert/keys anywhere special for you as long as the
+ircbouncer user can access them. See how in
+[this ticket comment](https://trac.torproject.org/projects/tor/ticket/32532#comment:5)
+...
+
+    root@chives:~# ls -al /etc/ssl/private/ircbouncer.torproject.org.* /etc/ssl/torproject/certs/ircbouncer.torproject.org.crt*
+    -r--r----- 1 root ssl-cert 7178 nov 18 20:42 /etc/ssl/private/ircbouncer.torproject.org.combined
+    -r--r----- 1 root ssl-cert 3244 nov 18 20:42 /etc/ssl/private/ircbouncer.torproject.org.key
+    -r--r--r-- 1 root root     2286 nov 18 20:42 /etc/ssl/torproject/certs/ircbouncer.torproject.org.crt
+    -r--r--r-- 1 root root     1649 nov 18 20:42 /etc/ssl/torproject/certs/ircbouncer.torproject.org.crt-chain
+    -r--r--r-- 1 root root     3934 nov 18 20:42 /etc/ssl/torproject/certs/ircbouncer.torproject.org.crt-chained
+
+And the sysadmin made ircbouncer part of the ssl-cert group.
+
+    ircbouncer@chives:~$ id
+    uid=1579(ircbouncer) gid=1579(ircbouncer) groups=1579(ircbouncer),116(ssl-cert)
+
+
+### Couple nice things
+
+- Create a .bashrc for ircbouncer.
+
+    pastly@chives:~$ sudo -u ircbouncer cp /home/pastly/.bashrc /home/ircbouncer/.bashrc
+
+- Add proper `XDG_RUNTIME_DIR` to ircbouncer's .bashrc, **only optional if you
+  can remember to do this every time you interact with systemd in the future**
+
+      pastly@chives:~$ sudo -u ircbouncer bash
+      ircbouncer@chives:/home/pastly$ cd
+      ircbouncer@chives:~$ echo export XDG_RUNTIME_DIR=/run/user/$(id -u) >> .bashrc
+      ircbouncer@chives:~$ tail -n 1 .bashrc
+      export XDG_RUNTIME_DIR=/run/user/1579
+      ircbouncer@chives:~$ id -u
+      1579
+
+### Create initial ZNC config
+
+If you're rerunning this section for some reason, consider deleting everything
+and starting fresh to avoid any confusion. If this is your first time, then
+ignore this code block.
+
+    ircbouncer@chives:~$ pkill znc
+    ircbouncer@chives:~$ rm -r .znc
+
+Now let ZNC guide you through generating an initial config. Important
+decisions:
+
+- What port should znc listen on initially? 2000
+- Should it listen on that port with SSL? no
+- Nick for the admin user? I chose pastly. It doesn't have to match your linux
+  username; I just chose it for convenience.
+- Skip setting up a network at this time
+- Don't start ZNC now
+
+      ircbouncer@chives:~$ znc --makeconf
+      [ .. ] Checking for list of available modules...
+      [ ** ]
+      [ ** ] -- Global settings --
+      [ ** ]
+      [ ?? ] Listen on port (1025 to 65534): 2000
+      [ ?? ] Listen using SSL (yes/no) [no]:
+      [ ?? ] Listen using both IPv4 and IPv6 (yes/no) [yes]:
+      [ .. ] Verifying the listener...
+      [ ** ] Unable to locate pem file: [/home/ircbouncer/.znc/znc.pem], creating it
+      [ .. ] Writing Pem file [/home/ircbouncer/.znc/znc.pem]...
+      [ ** ] Enabled global modules [webadmin]
+      [ ** ]
+      [ ** ] -- Admin user settings --
+      [ ** ]
+      [ ?? ] Username (alphanumeric): pastly
+      [ ?? ] Enter password:
+      [ ?? ] Confirm password:
+      [ ?? ] Nick [pastly]:
+      [ ?? ] Alternate nick [pastly_]:
+      [ ?? ] Ident [pastly]:
+      [ ?? ] Real name (optional):
+      [ ?? ] Bind host (optional):
+      [ ** ] Enabled user modules [chansaver, controlpanel]
+      [ ** ]
+      [ ?? ] Set up a network? (yes/no) [yes]: no
+      [ ** ]
+      [ .. ] Writing config [/home/ircbouncer/.znc/configs/znc.conf]...
+      [ ** ]
+      [ ** ] To connect to this ZNC you need to connect to it as your IRC server
+      [ ** ] using the port that you supplied.  You have to supply your login info
+      [ ** ] as the IRC server password like this: user/network:pass.
+      [ ** ]
+      [ ** ] Try something like this in your IRC client...
+      [ ** ] /server <znc_server_ip> 2000 pastly:<pass>
+      [ ** ]
+      [ ** ] To manage settings, users and networks, point your web browser to
+      [ ** ] http://<znc_server_ip>:2000/
+      [ ** ]
+      [ ?? ] Launch ZNC now? (yes/no) [yes]: no
+
+### Create TLS cert that ZNC can read
+
+There's probably a better way to do this or otherwise configure ZNC to read
+straight from /etc/ssl for the TLS cert/key. But this is what I figured out.
+
+- Create helper script
+
+Don't copy/paste blindly. Some things in this script might need to change for
+you.
+
+    ircbouncer@chives:~$ mkdir bin
+    ircbouncer@chives:~$ cat > bin/znc-ssl-copy.sh
+    #!/usr/bin/env bash
+    out=/home/ircbouncer/.znc/znc.pem
+    rm -f $out
+    cat /etc/ssl/private/ircbouncer.torproject.org.combined /etc/ssl/dhparam.pem > $out
+    chmod 400 $out
+    pkill -HUP znc
+    ircbouncer@chives:~$ chmod u+x bin/znc-ssl-copy.sh
+
+- Run it once to verify it works
+
+It should be many 10s of lines long. It should have more than 1 BEGIN [THING]
+sections.  The first should be a private key, then one or more certificates,
+and finally DH params. If you need help with this, do not share the contents of
+this file publicly: it contains private key material.
+
+    ircbouncer@chives:~$ ./bin/znc-ssl-copy.sh
+    ircbouncer@chives:~$ wc -l .znc/znc.pem
+    129 .znc/znc.pem
+    ircbouncer@chives:~$ grep -c BEGIN .znc/znc.pem
+    4
+
+- Make it run periodically
+
+Open ircbouncer's crontab with `crontab -e` and add the following line
+
+    @weekly /home/ircbouncer/bin/znc-ssl-copy.sh
+
+### Create ZNC system service
+
+This is our first systemd user service thing, so we have to create the
+appropriate directory structure. Then we create a very simple `znc.service`.
+We `enable` the service (start it automatically on boot) and use `--now` to
+also start it now. Finally we verify it is loaded and actively running.
+
+    ircbouncer@chives:~$ mkdir -pv .config/systemd/user
+    mkdir: created directory '.config/systemd'
+    mkdir: created directory '.config/systemd/user'
+    ircbouncer@chives:~$ cat > .config/systemd/user/znc.service
+    [Unit]
+    Description=ZNC IRC bouncer service
+    
+    [Service]
+    Type=simple
+    ExecStart=/usr/bin/znc --foreground
+    
+    [Install]
+    WantedBy=multi-user.target
+    ircbouncer@chives:~$ systemctl --user enable --now znc
+    Created symlink /home/ircbouncer/.config/systemd/user/multi-user.target.wants/znc.service → /home/ircbouncer/.config/systemd/user/znc.service.
+    ircbouncer@chives:~$ systemctl --user status znc
+    ● znc.service - ZNC IRC bouncer service
+       Loaded: loaded (/home/ircbouncer/.config/systemd/user/znc.service; enabled; vendor preset: enabled)
+       Active: active (running) since Wed 2019-11-20 15:14:27 UTC; 5s ago
+     Main PID: 23814 (znc)
+       CGroup: /user.slice/user-1579.slice/user@1579.service/znc.service
+               └─23814 /usr/bin/znc --foreground
+
+### Access web interface
+
+The sysadmin hasn't opened any ports for us yet and we haven't configured ZNC
+to use TLS yet. Luckily we can still access the web interface securely with a
+little SSH magic.
+
+Running this command on my laptop (named cranium) creates an SSH connection
+from my laptop to chives over which it will forward all traffic to
+`127.0.0.1:2000` on my laptop to `127.0.0.1:2000` on chives.
+
+    cranium:~ mtraudt$ ssh -L 2000:127.0.0.1:2000 chives.tpo
+    [... snip the message of the day ...]
+    pastly@chives:~$
+
+So now I can visit in a browser on my laptop `http://127.0.0.1:2000` and gain
+access to ZNC's web interface securely.
+
+### Add TLS listener for ZNC
+
+Log in to the web interface using the username and password you created during
+the initial ZNC config creation.
+
+Visit *Global Settings* from the menu on the right side of the window.
+
+For listen ports, add: 
+
+- Port 2001 
+- BindHost *
+- All boxes (SSL, IPv4, ... HTTP) are *checked*
+- URIPrefix /
+
+Click *Add* and ZNC will open a TLS listener on 2001.
+
+### Make ZNC reachable without tricks
+
+- Ask your friendly neighborhood Tor sysadmin to allow inbound 2001 in the
+  firewall.
+
+  I recommend you **do not** have 2000 open in the firewall because it would
+  allow insecure web and IRC connections. All IRC clients worth using support
+  TLS. If you're super tech savvy and you absolute must use your favorite IRC
+  client that doesn't support TLS, then I think you're smart enough to make an
+  SSH tunnel for your IRC client or use the onion service.
+
+- Ask your friendly neighborhood Tor sysadmin to configure an onion service.
+
+  I'm trying to convince mine to set the following options in the torrc
+
+      Log notice syslog
+      # to use 3 hops instead of 6. not anonymous
+      # can't do this if you want a SocksPort
+      SocksPort 0
+      HiddenServiceSingleHopMode 1
+      HiddenServiceNonAnonymousMode 1
+      # actual interesting config
+      HiddenServiceDir /var/lib/tor/onion/ircbouncer.torproject.org
+      HiddenServiceVersion 3
+      HiddenServicePort 80 2000
+      HiddenServicePort 2000
+
+  This config allows someone to access the web interface simply with
+http://somelongonionaddress.onion. It also allows them to use
+somelongonionaddress.onion:2000 in their IRC client like they might expect.
