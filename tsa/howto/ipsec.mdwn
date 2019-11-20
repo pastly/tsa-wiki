@@ -51,6 +51,10 @@ kernel modules.
 Special case: Mikrotik server
 -----------------------------
 
+Update: we don't have a microtik server anymore. This documentation is
+kept for historical reference, in case such a manual configuration is
+required elsewhere.
+
 The Mikrotik server is a special case that is not configured in
 Puppet, because Puppet can't run on its custom OS. To configure such a
 pairing, you first need to configure it on the normal server end,
