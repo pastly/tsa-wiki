@@ -12,6 +12,10 @@ be:
 
     ssh alberti.torproject.org ud-lock account
 
+Note that it's unclear if we should add an email alias in the
+`virtual` file when the account expires, see [ticket #32558](https://bugs.torproject.org/32558) for
+details.
+
 # How to disable a user
 
 This is done by removing all traces of the account:
