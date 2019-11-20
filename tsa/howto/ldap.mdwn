@@ -1,6 +1,8 @@
 [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol) is a directory service we use to inventory the users,
 groups, passwords, (some) email forwards and machines.
 
+[[!toc levels=3]]
+
 # Tutorial
 
 The LDAP interface documentation is on [db.torproject.org](https://db.torproject.org/). See
