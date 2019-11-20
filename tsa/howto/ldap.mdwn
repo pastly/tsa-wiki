@@ -1,3 +1,15 @@
+[LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol) is a directory service we use to inventory the users,
+groups, passwords, (some) email forwards and machines.
+
+# Tutorial
+
+The LDAP interface documentation is on [db.torproject.org](https://db.torproject.org/). See
+specifically the instructions on how to:
+
+ * [reset a lost password](https://db.torproject.org/password.html)
+ * [change your forwarding address](https://db.torproject.org/forward.html)
+ * [change your SSH key](https://db.torproject.org/doc-mail.html)
+
 # How-to
 
 ## Listing members of a group
