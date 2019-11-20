@@ -1,5 +1,20 @@
 # How-to
 
+## Listing members of a group
+
+To tell which users are part of a given group (LDAP or otherwise), you
+can use the [getent(1)](https://manpages.debian.org/getent.1) command. For example, to see which users
+are part of the `tordnsel` group, you would call this command:
+
+    $ getent group tordnsel
+    tordnsel:x:1532:arlo,arma
+
+In the above, `arlo` and `arma` are members of the `tordnsel` group.
+The fields in the output are in the format of the [group(5)](https://manpages.debian.org/buster/manpages/group.5.en.html) file.
+
+Note that the group membership will vary according to the machie on
+which the command is run, as not all users are present everywhere.
+
 Searching LDAP
 --------------
 
