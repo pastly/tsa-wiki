@@ -77,26 +77,23 @@ Removing a component
 
  1. remove the component to Puppet, in `modules/roles/misc/static-components.yaml`
 
- 2. create the home directory specified on the server (often
-    `staticiforme`, but can be elsewhere)
-
- 3. remove the host to DNS, if not already present, see [[dns]]. this
+ 2. remove the host to DNS, if not already present, see [[dns]]. this
     can be either in `dns/domains.git` or `dns/auto-dns.git`
 
- 4. remove the Apache virtual host, by removing a line like this in
+ 3. remove the Apache virtual host, by removing a line like this in
     [[puppet]] to
     `modules/roles/templates/static-mirroring/vhost/static-vhosts.erb`:
 
         vhost(lines, 'onionperf.torproject.org')
 
- 5. remove an SSL service, by removing a line in [[puppet]] to
+ 4. remove an SSL service, by removing a line in [[puppet]] to
     `modules/roles/manifests/static_mirror_web.pp`:
 
         ssl::service { onionperf.torproject.org': ensure => 'ifstatic', notify  => Exec['service apache2 reload'], key => true, }
 
- 6. remove the Let's encrypt certificate, see [[letsencrypt]] for details
+ 5. remove the Let's encrypt certificate, see [[letsencrypt]] for details
 
- 7. remove onion service, by removing another `onion::service` line in
+ 6. remove onion service, by removing another `onion::service` line in
     [[puppet]] to `modules/roles/manifests/static_mirror_onion.pp`:
 
         onion::service {
@@ -105,7 +102,14 @@ Removing a component
             [...]
         }
 
- 8. remove the sudo rules for the role user
+ 7. remove the sudo rules for the role user
+
+ 8. remove the home directory specified on the server (often
+    `staticiforme`, but can be elsewhere) and mirrors, for example:
  
+        ssh staticiforme "mv /home/ooni /home/ooni-OLD ; echo rm -rf /home/ooni-OLD | at now + 7 days"
+        cumin -o txt 'C:roles::static_mirror_web' 'mv /srv/static.torproject.org/mirrors/ooni.torproject.org /srv/static.torproject.org/mirrors/ooni.torproject.org-OLD'
+        cumin -o txt 'C:roles::static_mirror_web' 'echo rm -rf /srv/static.torproject.org/mirrors/ooni.torproject.org-OLD | at now + 7 days'
+
  9. consider removing the role user and group in LDAP, if there are no
     files left owned by that user
