@@ -73,6 +73,36 @@ See also the [upstream documentation][].
 
 [upstream documentation]: http://www.tldp.org/HOWTO/LVM-HOWTO/extendlv.html
 
+## ext3 procedure
+
+Online resize has been possible ever since ext3 came out and it
+considered reliable enough for use. If you are unsure that you can
+trust that procedure, or if you have an ext2 filesystem, do *not* use
+this procedure and see the ext2 procdure below instead.
+
+To resize the partition to take up all available free space, you
+should do the following:
+
+ 1. extend the partition, in case of a logical volume:
+
+        lvextend vg_vineale/srv -L +5G
+
+    This might miss some extents, however. You can use the extent
+    notation to take up all free space instead:
+
+        lvextend vg_vineale/srv -l +1279
+
+    If the partition sits directly on disk, use `parted`'s
+    `resizepart` command or `fdisk` to resize that first.
+
+ 2. resize the filesystem (`-p` is for "show progress"):
+
+        resize2fs -p /dev/mapper/vg_vineale-srv
+
+That's it! The `resize2fs` program automatically determines the size
+of the underlying "partition" (the logical volume, in most cases) and
+fixes the filesystem to fill the space.
+
 ## ext2 procedure
 
 To resize the partition to take up all available free space, you
