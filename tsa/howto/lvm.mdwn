@@ -73,7 +73,7 @@ See also the [upstream documentation][].
 
 [upstream documentation]: http://www.tldp.org/HOWTO/LVM-HOWTO/extendlv.html
 
-## ext3 procedure
+## online procedure (ext3 and later)
 
 Online resize has been possible ever since ext3 came out and it
 considered reliable enough for use. If you are unsure that you can
@@ -95,15 +95,19 @@ should do the following:
     If the partition sits directly on disk, use `parted`'s
     `resizepart` command or `fdisk` to resize that first.
 
- 2. resize the filesystem (`-p` is for "show progress"):
+ 2. resize the filesystem:
 
-        resize2fs -p /dev/mapper/vg_vineale-srv
+        resize2fs /dev/mapper/vg_vineale-srv
 
 That's it! The `resize2fs` program automatically determines the size
 of the underlying "partition" (the logical volume, in most cases) and
 fixes the filesystem to fill the space.
 
-## ext2 procedure
+Note that the resize process can take a while. Growing an active 20TB
+partition to 30TB took about 5 minutes, for example. The `-p` flag
+that could show progress only works in the "offline" procedure (below).
+
+## offline procedure (ext2)
 
 To resize the partition to take up all available free space, you
 should do the following:
@@ -125,7 +129,7 @@ should do the following:
     
         lvextend vg_vineale/srv -l +1279
 
- 5. grow the filesystem:
+ 5. grow the filesystem (`-p` is for "show progress"):
  
         resize2fs -p /dev/mapper/vg_vineale-srv
 
