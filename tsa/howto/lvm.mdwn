@@ -52,6 +52,27 @@ in the PV:
       Allocated PE          8960
       PV UUID               CXKO15-Wze1-xY6y-rOO6-Tfzj-cDSs-V41mwe
 
+## extend the volume group
+
+The procedures below assume there is free space on the volume group
+for the operation. If there isn't you will need to add disks to the
+volume group, and grow the physical volume. For example:
+
+    pvcreate /dev/md123
+    vgextend vg_vineale /dev/md123
+
+If the underlying disk was grown magically without your intervention,
+which happens in virtual hosting environments, you can also just
+extend the physical volume:
+
+    pvextend /dev/sdb
+
+See also the [upstream documentation][].
+
+[upstream documentation]: http://www.tldp.org/HOWTO/LVM-HOWTO/extendlv.html
+
+## ext2 procedure
+
 To resize the partition to take up all available free space, you
 should do the following:
 
@@ -84,19 +105,3 @@ should do the following:
  
         mount /srv
         service apache2 start
-
-Note: this assumes there is free space on the physical volume. If
-there isn't you will need to add disks to the volume group, and grow
-the physical volume. For example:
-
-    pvcreate /dev/md123
-    vgextend vg_vineale /dev/md123
-
-If the underlying disk was grown, which happens in virtual hosting
-environments, you can also just extend the physical volume:
-
-    pvextend /dev/sdb
-
-See also the [upstream documentation][].
-
-[upstream documentation]: http://www.tldp.org/HOWTO/LVM-HOWTO/extendlv.html
