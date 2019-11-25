@@ -16,6 +16,13 @@ Note that it's unclear if we should add an email alias in the
 `virtual` file when the account expires, see [ticket #32558](https://bugs.torproject.org/32558) for
 details.
 
+# How to un-retire a user
+
+To reverse the above, you need to restore those LDAP fields the way
+they were before. You can only do this by restoring from the [[LDAP]]
+database. No, that is not fun at all. Be careful to avoid duplicate
+fields when you re-add them in ldapvi.
+
 # How to disable a user
 
 This is done by removing all traces of the account:
