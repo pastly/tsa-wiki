@@ -14,6 +14,113 @@ specifically the instructions on how to:
 
 # How-to
 
+## Restoring from backups
+
+There's no special backup procedures for the LDAP server: it's backed
+up like everything else in the [[backup]] system.
+
+To restore the OpenLDAP database, you need to head over the Bacula
+director, and enter the console:
+
+    ssh -tt bacula-director-01 bconsole
+
+Then call the `restore` command and select `6: Select backup for a
+client before a specified time.` Then pick the server (currently
+`alberti.torproject.org`) and a date. Then you need to "mark" the
+right files:
+
+    cd /var/lib/ldap
+    mark *
+    done
+
+Then confirm the restore. The files will end up in
+`/var/tmp/bacula-restores` on the LDAP server.
+
+The next step depends on whether this is a partial or total
+restore. 
+
+### Partial restore
+
+If you only need to access a specific field or user or part of the
+database, you can use `slapcat` to dump the database from the restored
+files even if the server is not running. You first need to "configure"
+a "fake" server in the restore directory. You will need to create two
+files under `/var/tmp/bacula-restores`:
+
+ * `/var/tmp/bacula-restores/etc/ldap/slapd.conf`
+ * `/var/tmp/bacula-restores/etc/ldap/userdir-ldap-slapd.conf`
+
+They can be copied from `/etc`, with the following modificatiosn:
+
+    diff -ru /etc/ldap/slapd.conf etc/ldap/slapd.conf
+    --- /etc/ldap/slapd.conf	2011-10-30 15:43:43.000000000 +0000
+    +++ etc/ldap/slapd.conf	2019-11-25 19:48:57.106055596 +0000
+    @@ -17,10 +17,10 @@
+     
+     # Where the pid file is put. The init.d script
+     # will not stop the server if you change this.
+    -pidfile         /var/run/slapd/slapd.pid
+    +pidfile         /var/tmp/bacula-restores/var/run/slapd/slapd.pid
+     
+     # List of arguments that were passed to the server
+    -argsfile        /var/run/slapd/slapd.args
+    +argsfile        /var/tmp/bacula-restores/var/run/slapd/slapd.args
+     
+     # Read slapd.conf(5) for possible values
+     loglevel        none
+    @@ -57,4 +57,4 @@
+     #backend		<other>
+     
+     # userdir-ldap
+    -include /etc/ldap/userdir-ldap-slapd.conf
+    +include /var/tmp/bacula-restores/etc/ldap/userdir-ldap-slapd.conf
+    diff -ru /etc/ldap/userdir-ldap-slapd.conf etc/ldap/userdir-ldap-slapd.conf
+    --- /etc/ldap/userdir-ldap-slapd.conf	2019-11-13 20:55:58.789411014 +0000
+    +++ etc/ldap/userdir-ldap-slapd.conf	2019-11-25 19:49:45.154197081 +0000
+    @@ -5,7 +5,7 @@
+     suffix          "dc=torproject,dc=org"
+     
+     # Where the database file are physically stored
+    -directory       "/var/lib/ldap"
+    +directory       "/var/tmp/bacula-restores/var/lib/ldap"
+     
+     moduleload      accesslog
+     overlay accesslog
+    @@ -123,7 +123,7 @@
+     
+     
+     database hdb
+    -directory       "/var/lib/ldap-log"
+    +directory       "/var/tmp/bacula-restores/var/lib/ldap-log"
+     suffix cn=log
+     #
+     sizelimit 10000
+
+Then `slapcat` is able to read those files directly:
+
+    slapcat -f /var/tmp/bacula-restores/etc/ldap/slapd.conf -F /var/tmp/bacula-restores/etc/ldap
+
+Copy-paste the stuff you need into `ldapvi`.
+
+### Full rollback
+
+Untested procedure.
+
+If you need to roll back the *entire* server to this version, you
+first need to stop the LDAP server:
+
+    service slapd stop
+
+Then move the files into place (in `/var/lib/ldap`):
+
+    mv /var/lib/ldap{,.orig}
+    cp -R /var/tmp/bacula-restores/var/lib/ldap /var/lib/ldap
+    chown -R openldap:openldap /var/lib/ldap
+
+And start the server again:
+
+    service slapd start
+
 ## Listing members of a group
 
 To tell which users are part of a given group (LDAP or otherwise), you

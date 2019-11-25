@@ -698,6 +698,11 @@ Load each database dump:
         mysql < /var/backups/local/mysql/$dump
     done
 
+Restore LDAP databases
+----------------------
+
+See [[ldap]] for LDAP-specific procedures.
+
 Design
 ======
 
