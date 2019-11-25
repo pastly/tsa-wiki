@@ -280,20 +280,20 @@ module from the forge](https://forge.puppet.com/puppet/nginx). This was [filed u
 
 ## Issues
 
+Only serious issues, or issues that are not in the cache component but
+still relevant to the service, are listed here:
+
  * caching servers fail to reboot properly, see [ticket #32603](https://trac.torproject.org/projects/tor/ticket/32603)
- * logs should not be written to disk, but instead piped directly into
-   mtail (or through syslog as a buffer), see [ticket #32461](https://trac.torproject.org/projects/tor/ticket/32461)
- * we use other caches and load balancers elsewhere (haproxy and
-   varnish), we should converge over nginx everywhere for consistency,
-   see [ticket #32462](https://trac.torproject.org/projects/tor/ticket/32462) for the varnish conversion
  * the cipher suite is an old hardcoded copy derived from Apache, see
    [ticket #32351](https://trac.torproject.org/projects/tor/ticket/32351)
  * the Nginx puppet module diverges needlessly from upstream and
    Debian package configuration see [puppet-nginx-1359][]
- * service was launched as part of [ticket #32239](https://trac.torproject.org/projects/tor/ticket/32239)
 
-There is no issue tracker specifically for this project, file and
-serch for issues in [internal services](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FTor+Sysadmin+Team).
+The service was launched as part of improvements to the blog
+infrastructure, in [ticket #32090](https://trac.torproject.org/projects/tor/ticket/32090). The launch checklist and
+progress was tricket in [ticket #32239](https://trac.torproject.org/projects/tor/ticket/32239).
+
+[File](https://trac.torproject.org/projects/tor/newticket?component=Internal+Services%2FService+-+cache) and [serch for issues](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FService+-+cache) in [services - cache](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2Fservice+-+cache).
 
 ## Sources
 
