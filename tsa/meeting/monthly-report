@@ -204,11 +204,12 @@ def main():
           (sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_transmit_bytes_total[30d]))')),  # noqa: E501
            sizeof_fmt_decimal(prom_query(args, 'sum(rate(node_network_receive_bytes_total[30d]))'))))  # noqa: E501
 
-    print()
-    print("Now also available as the main Grafana dashboard. Head to <https://grafana.torproject.org/>, change the time period to 30 days, and wait a while for results to render.")  # noqa: E501
+    print(" * planned buster upgrades completion date: ???")
 
     print()
-    print("Consider pointing users at predict-os as well: <https://gitlab.com/anarcat/predict-os>")  # noqa: E501
+    print("Upgrade prediction graph still lives at https://help.torproject.org/tsa/howto/upgrades/")
+    print()
+    print("Now also available as the main Grafana dashboard. Head to <https://grafana.torproject.org/>, change the time period to 30 days, and wait a while for results to render.")  # noqa: E501
 
 
 if __name__ == '__main__':
