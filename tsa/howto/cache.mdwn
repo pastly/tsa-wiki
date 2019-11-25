@@ -97,12 +97,15 @@ The cache service generally constitutes of two or more servers in
 geographically distinct areas that run a webserver acting as a
 [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy). In our case, we run the [Nginx webserver](https://nginx.org/) with
 the [proxy module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) for the <https://blog.torproject.org/> website
-(and eventually others, see [ticket #32462](https://trac.torproject.org/projects/tor/ticket/32462)). DNS for the site
-points to `cache.torproject.org`, an alias for the caching servers,
-which are currently two: `cache01.torproject.org` [[sic](https://en.wikipedia.org/wiki/Sic)] and
-`cache-02`. An HTTPS certificate for the site was issued through
-[[letsencrypt]]. Like the Nginx configuration, the certificate is
-deployed by Puppet in the `roles::cache` class.
+(and eventually others, see [ticket #32462](https://trac.torproject.org/projects/tor/ticket/32462)). One server is in the
+[[ganeti]] cluster, and another is a VM in the Hetzner Cloud
+(2.50EUR/mth).
+
+DNS for the site points to `cache.torproject.org`, an alias for the
+caching servers, which are currently two: `cache01.torproject.org`
+[[sic](https://en.wikipedia.org/wiki/Sic)] and `cache-02`. An HTTPS certificate for the site was
+issued through [[letsencrypt]]. Like the Nginx configuration, the
+certificate is deployed by Puppet in the `roles::cache` class.
 
 When a user hits the cache server, content is served from the cache
 stored in `/var/cache/nginx`, with a filename derived from the
@@ -373,6 +376,9 @@ ranging from 3EUR/mth to 30EUR/mth depending on the VPS size (between
 
 Dedicated servers start at 34EUR/mth (`EX42`, 64GB ram 2x4TB HDD) for
 unlimited gigabit.
+
+We first go with a virtual machine in the [[ganeti]] cluster and also
+a VM in Hetzner Cloud (2.50EUR/mth).
 
 ## Proposed Solution
 
