@@ -180,6 +180,12 @@ def main():
            # XXX: wtf vs http_requests_total
            prom_query(args, 'sum(rate(apache_accesses_total[30d]))')))
 
+    print(" * number of nginx servers: %d, hits per second: %d, hit ratio: %0.2f" %  # noqa: E501
+          (prom_query(args, 'count(count(nginx_http_request_details_total) by (alias))'),  # noqa: E501
+           prom_query(args, 'sum(rate(nginx_http_request_details_total[30d]))'),  # noqa: E501
+           prom_query(args, 'sum(nginx_http_request_details_total{upstream_cache_status="HIT"})/sum(nginx_http_request_details_total)'),  # noqa: E501
+          ))
+
     print(" * number of self-hosted nameservers: %d, mail servers: %d" %
           (prom_query(args, 'sum(bind_up)'),
            prom_query(args, 'sum(postfix_up)')))
