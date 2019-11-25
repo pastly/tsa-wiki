@@ -138,6 +138,19 @@ complains about `libvirt-qemu` processes, use the
 This is documented in the [[ganeti]] section, but it's basically
 running the `ganeti-reboot-cluster` and `hbal` commands.
 
+#### Generic upgrade routines
+
+LDAP hosts have information about how they can be rebooted, in the
+`rebootPolicy` field. Here are what the various fields mean:
+
+ * `justdoit` - can be rebooted any time
+ * `rotation` - part of a cluster where each machine needs to be
+   rebooted one at a time
+ * `manual` - needs to be done by hand
+
+The scripts (in `tsa-misc`?) `torproject-reboot-rotation` and
+`torproject-reboot-simple` take care of the latter two.
+
 ### Example runs
 
 Here's an example run of the upgrade tool:

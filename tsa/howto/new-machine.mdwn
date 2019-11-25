@@ -47,6 +47,9 @@ All commands to be run as root unless otherwise noted.
   `tor-install-generate-ldap` script in `tsa-misc`. Make sure you
   review all fields, in particular `location` (`l`), `physicalHost`,
   `description` and `purpose` which do not have good defaults.
+  
+  See the [[upgrades]] section for information about the
+  `rebootPolicy` field.
 
   See also the [ldapvi manual](http://www.lichteblau.com/ldapvi/manual/) for more
   information.
