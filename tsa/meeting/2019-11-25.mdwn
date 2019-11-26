@@ -1,0 +1,168 @@
+[[!toc levels=2]]
+
+# Roll call: who's there and emergencies
+
+anarcat, gaba, hiro present, weasel and linus couldn't make it, no
+news from qbi.
+
+# What has everyone been up to
+
+## anarcat
+
+ * followup with cymru ([#29397][])
+ * OONI.tpo now moved out of TPO infrastructure (hosted at netlify)
+   and closed some related accounts ([#31718][]) - implied documenting
+   how to retire a static component
+ * identified that we need to work on onboarding/offboarding
+   procedures ([#32519][]) and especially "what happens to email when
+   people leave" ([#32558][])
+ * new caching service tweaks, now 88% hit ratio, will hopefully go
+   down to 300$/mth costs in november! see the [shiny graphs][]
+ * worked more on Nginx status dashboards to ensure we have good
+   response latency and rates in the caching system
+ * reconfirmed mailing list problems as related to DMARC, can we fix
+   this now? ([#29770][])
+ * wrote a Postfix mail log parser (in lnav) to diagnose email issues
+   in the mail server
+ * helped with the deployment of a ZNC bouncer for IRC users
+   ([#32532][]) along with fixes to the "mosh" configuration
+ * getting started on the [new email service project][], reconfirmed
+   the "Goals" section with vegas
+ * lots of work on puppet cleanup and refactoring
+ * NMU'd upstream ganeti installer fix, proposed stable update
+ * build-arm-* box retirement and ipsec config cleanup
+ * fixed prometheus/ipsec reliability issues ([#31916][], it was
+   ipsec!)
+
+[#29397]: https://bugs.torproject.org/29397
+[#31718]: https://bugs.torproject.org/31718
+[#32519]: https://bugs.torproject.org/32519
+[#32558]: https://bugs.torproject.org/32558
+[shiny graphs]: https://grafana.torproject.org/d/p21-cvJWk/cache-health
+[#29770]: https://bugs.torproject.org/29770
+[#32532]: https://bugs.torproject.org/32532
+[new email service project]: https://help.torproject.org/tsa/howto/submission/
+[#31916]: https://bugs.torproject.org/31916
+
+# Hiro 
+
+ * Some work on donate.tpo with giant rabbit
+ * Updates and debug on dip.tp.o
+ * Security updates and reboots
+ * Work on the websites
+ * Git maintenance
+ * Decommissioning Getulum
+ * Started running the website meeting and coordinating dev portal for
+   december
+
+## linus
+
+Some coordination work around Nextcloud.
+
+## weasel
+
+Nothing to report.
+
+# What we're up to next
+
+## anarcat
+
+New:
+
+ * varnish -> nginx conversion? ([#32462][])
+ * review cipher suites? ([#32351][])
+ * release our custom installer for public review? ([#31239][])
+ * publish our puppet source code ([#29387][])
+
+[#32462]: https://bugs.torproject.org/32462
+[#32351]: https://bugs.torproject.org/32351
+[#31239]: https://bugs.torproject.org/31239
+[#29387]: https://bugs.torproject.org/29387
+
+Continued/stalled:
+
+ * followup on SVN shutdown, only corp missing ([#17202][])
+ * audit of the other installers for ping/ACL issue ([#31781][])
+ * followup with email services improvements ([#30608][])
+ * send root@ emails to RT ([#31242][])
+ * continue prometheus module merges
+
+[#17202]: https://bugs.torproject.org/17202
+[#31781]: https://bugs.torproject.org/31781
+[#30608]: https://bugs.torproject.org/30608
+[#31242]: https://bugs.torproject.org/31242
+
+## Hiro
+
+ * Clean up websites bugs
+ * needrestart automation ([#31957][])
+ * CRM upgrades coordination for january? ([#32198][])
+ * translation move ([#31784][])
+
+[#31957]: https://bugs.torproject.org/31957
+[#32198]: https://bugs.torproject.org/32198
+[#31784]: https://bugs.torproject.org/31784
+
+## linus
+
+Will try to followup with Nextcloud again.
+
+## weasel
+
+Nothing to report.
+
+# Winter holidays
+
+Who's online when in December? Can we look at continuity during that
+merry time?
+
+hiro will be online during the holidays. anarcat will be moderately
+online until january, but will take a week offline some time early
+january. to be clarified.
+
+Need to clarify how much support we provide, see [#31243][] for the
+discussion.
+
+[#31243]: https://bugs.torproject.org/31243
+
+# prometheus server resize
+
+Can i double the size of the prometheus server to cover for extra disk
+space? See [#31244][] for the larger project.
+
+[#31244]: https://bugs.torproject.org/31244
+
+Will rise the cost from 4.90EUR to 8.90EUR. Everyone is go on this,
+anarcat updated the budget to reflect the new expense.
+
+# Other discussions
+
+Blog status? Anarcat got a quote back and will bring it up at the next
+vegas meeting.
+
+# Next meeting
+
+Unclear. jan 6th is a holiday in europe ("the day of the kings"), so
+we might postpone until january 13th. we are considering having
+shorter, weekly meetings.
+
+# Metrics of the month
+
+ * hosts in Puppet: 76, LDAP: 79, Prometheus exporters: 123
+ * number of apache servers monitored: 32, hits per second: 195
+ * number of nginx servers: 109, hits per second: 1, hit ratio: 0.88
+ * number of self-hosted nameservers: 5, mail servers: 10
+ * pending upgrades: 0, reboots: 0
+ * average load: 0.62, memory available: 334.59 GiB/957.91 GiB, running processes: 414
+ * bytes sent: 176.80 MB/s, received: 118.35 MB/s
+ * planned buster upgrades completion date: 2020-05-01
+
+Now also available as the main Grafana dashboard. Head to
+<https://grafana.torproject.org/>, change the time period to 30 days,
+and wait a while for results to render.
+
+The Nginx cache ratio stats are not (yet?) in the main
+dashboard. Upgrade prediction graph still lives at
+https://help.torproject.org/tsa/howto/upgrades/ but the script has
+been rewritten and is available at
+https://gitlab.com/anarcat/predict-os
