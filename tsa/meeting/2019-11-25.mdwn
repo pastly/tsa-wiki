@@ -163,6 +163,7 @@ and wait a while for results to render.
 
 The Nginx cache ratio stats are not (yet?) in the main
 dashboard. Upgrade prediction graph still lives at
-https://help.torproject.org/tsa/howto/upgrades/ but the script has
-been rewritten and is available at
-https://gitlab.com/anarcat/predict-os
+<https://help.torproject.org/tsa/howto/upgrades/> but the [prediction
+script][] has been rewritten and moved to GitLab.
+
+[prediction script]: https://gitlab.com/anarcat/predict-os
