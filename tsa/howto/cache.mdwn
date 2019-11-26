@@ -292,7 +292,11 @@ The service was launched as part of improvements to the blog
 infrastructure, in [ticket #32090](https://trac.torproject.org/projects/tor/ticket/32090). The launch checklist and
 progress was tricket in [ticket #32239](https://trac.torproject.org/projects/tor/ticket/32239).
 
-[File](https://trac.torproject.org/projects/tor/newticket?component=Internal+Services%2FService+-+cache) and [serch for issues](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FService+-+cache) in [services - cache](https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2Fservice+-+cache).
+[File][] or [search][] for issues in the [services - cache][search]
+component.
+
+[File]: https://trac.torproject.org/projects/tor/newticket?component=Internal+Services%2FService+-+cache
+[search]: https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FService+-+cache
 
 ## Sources
 
