@@ -46,7 +46,10 @@ resized otherwise you will have data loss.
 Note that this only resizes the disk as seen from the VM. The VM
 itself might have some partitionning on top of that, and you might
 need to do filesystem resizes underneath there, including LVM if
-that's setup there as well. See [[lvm]] for details.
+that's setup there as well. See [[lvm]] for details. An example of
+such a "worst case scenario" occured in [ticket #32644](https://bugs.torproject.org/32644) which has
+the explicit commands ran on the guest and host for an "LVM in LVM"
+scenario.
 
 Design
 ======
