@@ -69,6 +69,15 @@ extend the physical volume:
 
     pvextend /dev/sdb
 
+Note that if there's an underlying crypto layer, it needs to be
+resized as well:
+
+    cryptsetup resize $DEVICE_LABEL
+
+In this case, the `$DEVICE_LABEL` is the device's name in
+`/etc/crypttab`, *not* the device name. For example, it would be
+`/dev/mapper/crypt_sdb`, not `/dev/sdb`.
+
 See also the [upstream documentation][].
 
 [upstream documentation]: http://www.tldp.org/HOWTO/LVM-HOWTO/extendlv.html

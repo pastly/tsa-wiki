@@ -43,6 +43,11 @@ To *shrink* an image, you need to use the `--shrink` option but, be
 careful: the underlying partitions and filesystems need to first be
 resized otherwise you will have data loss.
 
+Note that this only resizes the disk as seen from the VM. The VM
+itself might have some partitionning on top of that, and you might
+need to do filesystem resizes underneath there, including LVM if
+that's setup there as well. See [[lvm]] for details.
+
 Design
 ======
 
