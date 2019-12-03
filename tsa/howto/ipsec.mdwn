@@ -196,3 +196,11 @@ recipe fixed that:
 
 The first run "failed" (as in, Puppet returned a non-zero status
 because it performed changes) but another run "succeeded").
+
+Traffic inspection
+------------------
+
+You may need to legitimately inspect the cleartext of an IPsec
+connexion, for example to diagnose what's taking up all that bandwidth
+between two nodes. It seems the state of the art on this is doing this
+by [decrypting the ESP packets with Wireshark](https://wiki.wireshark.org/ESP_Preferences).
