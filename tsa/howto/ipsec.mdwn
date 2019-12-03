@@ -13,6 +13,9 @@ some machines.
 Hooking up a new node to the IPsec network
 ------------------------------------------
 
+TODO: This is the old way of configuring Puppet nodes. There's now an
+`ipsec` module which does that more easily.
+
 This is managed through Puppet, so it's basically a matter of adding
 the hostname to the `ipsec` role in
 `modules/torproject_org/misc/local.yaml` and adding the network
