@@ -1,0 +1,85 @@
+Dealing with OpenStack
+======================
+
+We were granted access to Linaro's OpenStack cluster.
+
+Preparation
+-----------
+
+You first need a `adminrc.sh` file with the right configuration and
+credentials. That is stored in [ticket 453](https://servicedesk.linaro.org/servicedesk/customer/portal/11/DC-453) at Linaro.
+
+Then you need to install some OpenStack clients:
+
+    apt install openstack-clients
+
+Yes, that installs 74 packages, no kidding.
+
+Add your SSH key to the server:
+
+    openstack keypair create --public-key=~/.ssh/id_rsa.pub anarcat
+
+During this entire process, it's useful to take a look at the effect
+of the various steps through the web interface:
+
+<https://uk.linaro.cloud/>
+
+The commandline instructions are provided below because they are
+easier to document. But an equivalent can be followed through the web
+interface as well.
+
+Launching an instance
+---------------------
+
+ 1. list the known flavors and images:
+ 
+        openstack flavor list
+        openstack image list
+
+    let's say we deploy a `uk.nano` flavor with
+    `debian-10-openstack-arm64` image. 
+
+ 2. create a floating IP is the server is to be public:
+
+        openstack floating ip create ext-net
+
+    The network name (`ext-net` above) can be found in the network
+    list:
+    
+        openstack network list
+
+    The IP address will be shown in the output:
+    
+        | floating_ip_address | 213.146.141.28                       |
+
+ 2. create the server (known as an "instance" in the GUI):
+ 
+        openstack server create --image=debian-10-openstack-arm64 --flavor=uk.nano build-arm-10.torproject.org --key-name=anarcat
+
+    The `anarcat` keypair and `ext-net` network come from the earlier
+    steps from this procedure.
+
+ 3. you can see the status of the process with:
+ 
+        openstack server list
+
+ 4. then map the floating IP address to the server:
+
+        openstack router add subnet router-tor 7452852a-8b5c-43f6-97f1-72b1248b2638
+        openstack server add floating ip build-arm-10.torproject.org 213.146.141.28
+
+    The subnet UUID comes from the `Subnet` column in the output of
+    `openstack network list` for the "internal network" (the one that
+    is not `ext-net`. The floating IP is the one created at step two
+    and the other argument is the server name.
+
+ 6. and open up the firewall: (here i don't understand what i did)
+
+ 7. SSH in:
+ 
+        ssh debian@213.146.141.28
+
+References
+==========
+
+ * [How to launch an instance](https://docs.openstack.org/install-guide/launch-instance.html)
