@@ -89,7 +89,11 @@ previous step.
     The floating IP is the one created at step two and the other
     argument is the server name.
 
- 5. the VM should be up by now, and you should be able to SSH in:
+ 5. inspect the server console log to fetch the SSH public keys:
+
+        openstack console log show build-arm-10.torproject.org | sed '0,/-----BEGIN SSH HOST KEY KEYS-----/d;/-----END SSH HOST KEY KEYS-----/,$d;s/^/213.146.141.28 /' >> ~/.ssh/known_hosts
+
+ 6. the VM should be up by now, and you should be able to SSH in:
  
         openstack server ssh -l debian build-arm-10.torproject.org
 
