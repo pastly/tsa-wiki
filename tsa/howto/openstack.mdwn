@@ -19,6 +19,27 @@ Add your SSH key to the server:
 
     openstack keypair create --public-key=~/.ssh/id_rsa.pub anarcat
 
+You will need to create a floating IP if the server is to be public:
+
+    openstack floating ip create ext-net
+
+The network name (`ext-net` above) can be found in the network list:
+    
+    openstack network list
+
+The IP address will be shown in the output:
+    
+    | floating_ip_address | 213.146.141.28 |
+
+You'll also need to link the router in the private network if not
+already done:
+    
+    openstack router add subnet router-tor 7452852a-8b5c-43f6-97f1-72b1248b2638
+
+The subnet UUID comes from the `Subnet` column in the output of
+`openstack network list` for the "internal network" (the one that is
+not `ext-net`.
+
 During this entire process, it's useful to take a look at the effect
 of the various steps through the web interface:
 
@@ -39,25 +60,17 @@ Launching an instance
     let's say we deploy a `uk.nano` flavor with
     `debian-10-openstack-arm64` image. 
 
- 2. create a floating IP is the server is to be public:
-
-        openstack floating ip create ext-net
-
-    The network name (`ext-net` above) can be found in the network
-    list:
-    
-        openstack network list
-
-    The IP address will be shown in the output:
-    
-        | floating_ip_address | 213.146.141.28                       |
-
  2. create the server (known as an "instance" in the GUI):
  
-        openstack server create --image=debian-10-openstack-arm64 --flavor=uk.nano build-arm-10.torproject.org --key-name=anarcat
+        openstack server create --key-name=anarcat --security-group=torproject-admin@torproject.org-security-group --image=debian-10-openstack-arm64 --flavor=uk.nano build-arm-10.torproject.org
 
-    The `anarcat` keypair and `ext-net` network come from the earlier
-    steps from this procedure.
+    In the above:
+    
+     * `--keypair=anarcat` refers to the keypair created in the
+       preparation
+     * `--security-group` is taken from the first non-`default` line
+       in the `openstack security group list` output
+     * `--image` and `--flavor` were picked from the previous step
 
  3. you can see the status of the process with:
  
@@ -65,19 +78,18 @@ Launching an instance
 
  4. then map the floating IP address to the server:
 
-        openstack router add subnet router-tor 7452852a-8b5c-43f6-97f1-72b1248b2638
         openstack server add floating ip build-arm-10.torproject.org 213.146.141.28
 
-    The subnet UUID comes from the `Subnet` column in the output of
-    `openstack network list` for the "internal network" (the one that
-    is not `ext-net`. The floating IP is the one created at step two
-    and the other argument is the server name.
+    The floating IP is the one created at step two and the other
+    argument is the server name.
 
- 6. and open up the firewall: (here i don't understand what i did)
-
- 7. SSH in:
+ 5. the VM should be up by now, and you should be able to SSH in:
  
-        ssh debian@213.146.141.28
+        openstack server ssh -l debian build-arm-10.torproject.org
+
+    You unfortunately have to blindly TOFU (Trust On First Use) the
+    SSH server's public key because it's not visible in the API or web
+    interface. The `debian` user has `sudo` access.
 
 References
 ==========
