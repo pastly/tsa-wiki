@@ -7,7 +7,9 @@ Preparation
 -----------
 
 You first need a `adminrc.sh` file with the right configuration and
-credentials. That is stored in [ticket 453](https://servicedesk.linaro.org/servicedesk/customer/portal/11/DC-453) at Linaro.
+credentials. That is stored in [ticket 453](https://servicedesk.linaro.org/servicedesk/customer/portal/11/DC-453) at Linaro and the
+password prompted is the `login.linaro.org` SSO password stored in
+`tor-passwords.git`.
 
 Then you need to install some OpenStack clients:
 
@@ -51,6 +53,10 @@ interface as well.
 
 Launching an instance
 ---------------------
+
+This procedure will create a new VM in the OpenStack cluster. Make
+sure you first source the `adminrc.sh` script you found in the
+previous step.
 
  1. list the known flavors and images:
  
