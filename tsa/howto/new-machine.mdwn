@@ -123,7 +123,7 @@ All commands to be run as root unless otherwise noted.
         puppet agent -t
         puppet agent -t
 
-* do an upgrade in case there has been one recently
+* follow security upgrades:
 
         apt update && apt dist-upgrade && apt clean
 
@@ -138,10 +138,8 @@ All commands to be run as root unless otherwise noted.
         ( ! grep '^root:' /etc/aliases && echo 'root: torproject-admin@torproject.org' >> /etc/aliases ) &&
         sed -i -e 's/^root:.*/root: torproject-admin@torproject.org/' /etc/aliases && newaliases
 
-* if necessary, reboot
+* reboot to make sure *that* still works:
 
-        /usr/lib/nagios/plugins/dsa-check-running-kernel
-        /usr/lib/nagios/plugins/dsa-check-libs
         reboot
 
 * add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
