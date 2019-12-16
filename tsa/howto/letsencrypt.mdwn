@@ -52,23 +52,15 @@ Push the new key to the backup-keys repo:
 
 The last command will produce output from the `dehydrated` command
 which talks with the DNS primary (currently `nevii`) to fetch new keys
-and update old ones. That is triggered by a per-repository gitolite
-hook stored in:
+and update old ones.
 
-    /srv/git.torproject.org/git-helpers/post-receive-per-repo.d/admin\%letsencrypt-domains/trigger-letsencrypt-server
+The new keys and certs are being copied to the LDAP host
+(currently `pauli`) under
+`/srv/puppet.torproject.org/from-letsencrypt/`. Then [[Puppet]] pick
+those up in the `ssl` module. Use the `ssl::service` resource to
+deploy them.
 
-... on the `git-rw` server (currently `cupani`) which kicks the
-command defined in the `authorized_keys` file (in `/etc`) that is
-`/srv/letsencrypt.torproject.org/bin/from-githost` on the DNS primary.
-
-The new keys and certs are being copied to the LDAP host (currently
-`pauli`) under `/srv/puppet.torproject.org/from-letsencrypt/`. That
-part is unclear, but it seems some `rsync` command runs somewhere with
-`puppet@pauli` as an endpoint, because there's a `rsync` predefined
-command in that user's `authorized_keys`.
-
-Then [[Puppet]] pick those up in the `ssl` module. Use the
-`ssl::service` resource to deploy them.
+See the "Design" section below for more information on how that works.
 
 See also [[static-component]] for an example of how to deploy an
 encrypted virtual host and onion service.
