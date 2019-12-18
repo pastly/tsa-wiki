@@ -110,6 +110,37 @@ you updated the DS for one of those, update the corresponding file in
 we do slow, RFC5011-style rolling of KSKs), but new instances will be sad if we
 ship them obsolete trust anchors.
 
+### Special case: RFC1918 zones
+
+The above is for public zones, for which we have Nagios checks that
+warn us about impeding doom. But we also sign zones about reverse IP
+looks, specifically `30.172.in-addr.arpa.` Normally, recursive
+nameservers pick new signatures in that zone automatically, thanks to
+[rfc 5011](https://tools.ietf.org/html/rfc5011).
+
+But if a new host gets provisionned, it needs to get bootstrapped
+somehow. This is done by Puppet, but those records are maintained by
+hand and will get out of date. This implies that after a while, you
+will start seeing messages like this for hosts that were installed
+after the expiration date:
+
+    16:52:39 <nsa> tor-nagios: [submit-01] unbound trust anchors is WARNING: Warning: no valid trust anchors found for 30.172.in-addr.arpa.
+
+The solution is to go on the primary nameserver (currently `nevii`)
+and pick the non-revoked DSSET line from this file:
+
+    /srv/dns.torproject.org/var/keys/30.172.in-addr.arpa/dsset
+
+... and inject it in Puppet, in:
+
+    tor-puppet/modules/unbound/files/30.172.in-addr.arpa.key
+
+Then new hosts will get the right key and bootstrap properly. Old
+hosts can get the new key by removing the file by hand on the server
+and re-running Puppet:
+
+    rm /var/lib/unbound/30.172.in-addr.arpa.key ; puppet agent -t
+
 Design
 ======
 
