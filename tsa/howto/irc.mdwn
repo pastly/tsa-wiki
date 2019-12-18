@@ -22,8 +22,7 @@ OFTC is `#oftc`.
 # Reference
 
 We operate a virtual machine for people to run their IRC clients,
-called `chives`. The previous host running that service is called
-`iranicum` and is still online at the time of writing.
+called `chives`.
 
 A volunteer (currently pastly) runs a [ZNC][] bouncer for TPO people
 on their own infrastructure.
