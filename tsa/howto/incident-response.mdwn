@@ -6,6 +6,8 @@ been trained for such situation, you might be better off just trying
 to wake up someone that can deal with them. See the
 [[doc/how-to-get-help]] documentation instead.
 
+[[!toc]]
+
 Specific situations
 ===================
 
@@ -59,7 +61,7 @@ What follows are per-provider instructions:
 If all else fails, Select the "Support" tab and open a support
 request.
 
-## Hetzner Cloud (virtual servers)
+### Hetzner Cloud (virtual servers)
 
  1. Visit the [Hetzner Cloud console](https://console.hetzner.cloud/) (password in
     `tor-passwords/hosts-extra-info`)
@@ -76,11 +78,11 @@ request.
 If all else fails, create a support request. The support menu is in
 the "Person" menu on the top right of the page.
 
-## Cymru
+### Cymru
 
 Open a ticket by writing <support@cymru.com>.
 
-## Sunet
+### Sunet
 
 TBD
 
