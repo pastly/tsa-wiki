@@ -53,6 +53,9 @@ conditions:
    data can still be recovered from collector, but that's another,
    different manual process that still has to be implemented
 
+Note that data is recovered from collector, which has similar
+self-healing systems that cover 72 hours.
+
 The Disaster Recovery section details how to recover from those situations.
 
 ## Onionoo Service Architecture
