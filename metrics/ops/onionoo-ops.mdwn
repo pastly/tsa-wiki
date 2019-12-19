@@ -29,19 +29,37 @@ in
 # OVERVIEW
 
 The underlying infrastructure for the Onionoo service is provided by the
-Tor Sysadmin Team (TSA). There are a number of varnish caches
-(*onionoo-frontend-\*.torproject.org*)
+Tor Sysadmin Team (TSA). There are a number of HTTP caches
+(*onionoo-frontend-\*.torproject.org*, currently running varnish)
 that sit in front of a number of backends
-(*onionoo-backend-\*.torproject.org*).
-The frontends are entirely managed by TSA.
-The frontends communicate with the backends via IPsec tunnels managed by TSA.
+(*onionoo-backend-\*.torproject.org*, running various Java compnents
+described below).
+
+The frontends are entirely managed by TSA. The frontends communicate
+with the backends via IPsec tunnels managed by TSA.
+
 The backend hosts are managed by TSA with the Onionoo services being managed
-by Metrics Team.
+by Metrics Team. The Onionoo services get their data from the
+"collector" service.
+
+The backend are redundant and can survive outages, in those
+conditions:
+ 
+ * shorter than 72 hours: backends can self-heal
+ * longer partial outage: as long as a backend remains, the other
+   backends can be restored from the remaining backend, although that
+   is a manual process.
+ * longer total outage: if all backends go down for more than 72h,
+   data can still be recovered from collector, but that's another,
+   different manual process that still has to be implemented
+
+The Disaster Recovery section details how to recover from those situations.
 
 ## Onionoo Service Architecture
 
 The Onionoo service consists of two parts: the hourly updater and the web
 server.
+
 Both parts run on each backend host and the parts run with privilege seperation.
 
 ## Hourly Updater
