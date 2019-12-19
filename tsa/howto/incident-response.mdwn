@@ -43,7 +43,7 @@ What follows are per-provider instructions:
 
 ### Hetzner robot (physical servers)
 
- 1. Go on [the Robot server page](https://robot.your-server.de/server) (password in
+ 1. Visit the [Heztner Robot server page](https://robot.your-server.de/server) (password in
     `tor-passwords/hosts-extra-info`)
  2. Select the right server (hostname is the second column)
  3. Select the "reset" tab
@@ -61,11 +61,24 @@ request.
 
 ## Hetzner Cloud (virtual servers)
 
-TBD
+ 1. Visit the [Hetzner Cloud console](https://console.hetzner.cloud/) (password in
+    `tor-passwords/hosts-extra-info`)
+ 2. Select the project (usually "default")
+ 3. Select the affected server
+ 4. Open the console (the `>_` sign on the top right), and see if
+    there are any error messages and/or if you can login there (using
+    the root password in `tor-passwords/hosts`)
+ 5. If that fails, attempt a "Power cycle" in the "Power" tab (on the
+    left)
+ 6. If that fails, you can also try to boot a rescue system by
+    selecting "Enable Rescue & Power Cycle" in the "Rescue" tab
+
+If all else fails, create a support request. The support menu is in
+the "Person" menu on the top right of the page.
 
 ## Cymru
 
-TBD
+Open a ticket by writing <support@cymru.com>.
 
 ## Sunet
 
