@@ -6,7 +6,7 @@ been trained for such situation, you might be better off just trying
 to wake up someone that can deal with them. See the
 [[doc/how-to-get-help]] documentation instead.
 
-[[!toc]]
+[[!toc levels=3]]
 
 Specific situations
 ===================
