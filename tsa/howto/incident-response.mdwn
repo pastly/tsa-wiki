@@ -39,6 +39,38 @@ provider. This information is available in [Nagios][]:
     a hosting provider (e.g. `hetzner-hel1-01` is Hetzner, `gw-cymru`
     is Cymru, `gw-scw-*` are at Scaleway, `gw-sunet` is Sunet)
 
+What follows are per-provider instructions:
+
+### Hetzner robot (physical servers)
+
+ 1. Go on [the Robot server page](https://robot.your-server.de/server) (password in
+    `tor-passwords/hosts-extra-info`)
+ 2. Select the right server (hostname is the second column)
+ 3. Select the "reset" tab
+ 4. Select the "Execute an automatic hardware reset" radio button and
+    hit "Send". This is equivalent to hitting the "reset" button on a
+    computer.
+ 5. Wait for the server to return for a "few" (2? 5? 10? 20?) minutes,
+    depending on how hopeful you are this simple procedure will work.
+ 6. If that fails, Select the "Order a manual hardware reset" option
+    and hit "Send". This will send an actual human to attend the
+    server and see if they can bring it back online.
+
+If all else fails, Select the "Support" tab and open a support
+request.
+
+## Hetzner Cloud (virtual servers)
+
+TBD
+
+## Cymru
+
+TBD
+
+## Sunet
+
+TBD
+
 Emergency policies
 ==================
 
