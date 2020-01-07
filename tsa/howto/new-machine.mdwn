@@ -221,8 +221,21 @@ TBD.
 
 ## Alternatives considered
 
+ * [Ansible](https://www.ansible.com/) - configuration management that duplicates [[puppet]]
+   but which we may want to use to bootstrap machines instead of yet
+   another custom thing that operators would need to learn.
+ * [cloud-init](https://cloud-init.io/) - builtin to many cloud images (e.g. Amazon), can
+   do [rudimentary filesystem setup](https://cloudinit.readthedocs.io/en/latest/topics/modules.html#disk-setup) (no RAID/LUKS/etc but ext4
+   and disk partitionning is okay), [config can be fetched over
+   HTTPS](https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html), assumes it runs on first boot, but could be coerced to
+   run manually (e.g. `fgrep -r cloud-init /lib/systemd/ | grep Exec`)
  * [cobbler](https://cobbler.github.io/) - takes care of PXE and boot, delegates to kickstart
    the autoinstall, more relevant to RPM-based distros
+ * [curtin](https://launchpad.net/curtin) - "a "fast path" installer designed to install Ubuntu
+   quickly.  It is blunt, brief, snappish, snippety and
+   unceremonious." ubuntu-specific, not in Debian, but has strong
+   [partitionning support](https://curtin.readthedocs.io/en/latest/topics/storage.html) with ZFS, LVM, LUKS, etc support. part
+   of the larger [MAAS](https://maas.io/) project
  * [FAI](https://fai-project.org/) - built by a debian developer, used to build live images
    since buster, might require complex setup (e.g. an NFS server),
    [setup-storage(8)](https://manpages.debian.org/buster/fai-setup-storage/setup-storage.8.en.html) might be reusable on its own
@@ -231,7 +244,11 @@ TBD.
  * [list of debian setup tools](https://wiki.debian.org/SystemBuildTools), see also
    [AutomatedInstallation](https://wiki.debian.org/AutomatedInstallation)
  * [livewrapper](https://salsa.debian.org/enrico/live-wrapper) is also one of those installers, in a way
+ * [MAAS](https://maas.io/) - PXE-based, assumes network control which we don't have
+   and has all sorts of features we don't want
  * [terraform](https://www.terraform.io/) - config management for the cloud kind of thing,
    supports Hetzner Cloud, but not Hetzner Robot or Ganeti
 
-Unfortuantely, I ruled out the official debian-installer because of the complexity of the preseeding system and partman.
+Unfortuantely, I ruled out the official debian-installer because of
+the complexity of the preseeding system and partman. It also wouldn't
+work for installs on Hetzner Cloud or Ganeti.
