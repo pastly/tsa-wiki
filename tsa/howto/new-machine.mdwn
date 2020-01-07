@@ -238,7 +238,9 @@ TBD.
    of the larger [MAAS](https://maas.io/) project
  * [FAI](https://fai-project.org/) - built by a debian developer, used to build live images
    since buster, might require complex setup (e.g. an NFS server),
-   [setup-storage(8)](https://manpages.debian.org/buster/fai-setup-storage/setup-storage.8.en.html) might be reusable on its own
+   [setup-storage(8)](https://manpages.debian.org/buster/fai-setup-storage/setup-storage.8.en.html) might be reusable on its own. uses Tar-based
+   images created by FAI itself, requires network control or custom
+   ISO boot, requires a "server" (the [fai-server](https://packages.debian.org/unstable/fai-server) package)
  * [himblick](https://github.com/himblick/himblick) has some interesting post-install configure bits in
    Python, along with pyparted bridges
  * [list of debian setup tools](https://wiki.debian.org/SystemBuildTools), see also
