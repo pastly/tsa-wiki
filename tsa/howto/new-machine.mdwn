@@ -190,9 +190,22 @@ of, with no manual configuration.
 
 ### Must have
 
+ * unattended installation
+ * reproducible results
+ * post-installer configuration (ie. not full installer, see below)
+ * support for running in our different environments (Hetzner Cloud,
+   Robot, bare metal, Ganeti...)
+
 ### Nice to have
 
+ * packaged in Debian
+ * full installer support:
+   * RAID, LUKS, etc filesystem configuration
+   * debootstrap, users, etc
+
 ### Non-Goals
+
+ * full configuration management stack - that's done by [[puppet]]
 
 ## Approvals required
 
