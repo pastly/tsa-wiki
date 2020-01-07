@@ -210,15 +210,15 @@ TBD.
 
  * [cobbler](https://cobbler.github.io/) - takes care of PXE and boot, delegates to kickstart
    the autoinstall, more relevant to RPM-based distros
- * [terraform](https://www.terraform.io/) - config management for the cloud kind of thing,
-   supports Hetzner Cloud, but not Hetzner Robot or Ganeti
  * [FAI](https://fai-project.org/) - built by a debian developer, used to build live images
    since buster, might require complex setup (e.g. an NFS server),
    [setup-storage(8)](https://manpages.debian.org/buster/fai-setup-storage/setup-storage.8.en.html) might be reusable on its own
+ * [himblick](https://github.com/himblick/himblick) has some interesting post-install configure bits in
+   Python, along with pyparted bridges
  * [list of debian setup tools](https://wiki.debian.org/SystemBuildTools), see also
    [AutomatedInstallation](https://wiki.debian.org/AutomatedInstallation)
- * [himblock](https://github.com/himblick/himblick) has some interesting post-install configure bits in
-   Python, along with pyparted bridges
  * [livewrapper](https://salsa.debian.org/enrico/live-wrapper) is also one of those installers, in a way
+ * [terraform](https://www.terraform.io/) - config management for the cloud kind of thing,
+   supports Hetzner Cloud, but not Hetzner Robot or Ganeti
 
 Unfortuantely, I ruled out the official debian-installer because of the complexity of the preseeding system and partman.
