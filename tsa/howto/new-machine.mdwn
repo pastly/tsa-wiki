@@ -1,3 +1,5 @@
+[[!toc levels=3]]
+
 Installation
 ============
 
@@ -146,3 +148,77 @@ All commands to be run as root unless otherwise noted.
 
 * if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/) (password
   in tor-passwords, `hosts-extra-info`)
+
+# Discussion
+
+This section discusses background and implementation details of
+installation of machines in the project. It shouldn't be necessary for
+day to day operation.
+
+## Overview
+
+The current install procedures work, but have only recently been
+formalized, mostly because we rarely setup machines. We do expect,
+however, to setup a significant number of machines in 2019, or at
+least significant enough to warrant automating the install process
+better.
+
+Automating installs is also critical according to Tom Limoncelli, the
+author of the [Practice of System and Network Administration](https://the-sysadmin-book.com/). In
+their [Ops report card](http://opsreportcard.com/), [question 20](http://opsreportcard.com/section/20) explains:
+
+> If OS installation is automated then all machines start out the
+> same. Fighting entropy is difficult enough. If each machine is
+> hand-crafted, it is impossible.
+> 
+> If you install the OS manually, you are wasting your time twice:
+> Once when doing the installation and again every time you debug an
+> issue that would have been prevented by having consistently
+> configured machines.
+> 
+> If two people install OSs manually, half are wrong but you don't
+> know which half. Both may claim they use the same procedure but I
+> assure you they are not. Put each in a different room and have them
+> write down their procedure. Now show each sysadmin the other
+> person's list. There will be a fistfight.
+
+In that context, it's critical to automate a reproducible install
+process. This gives us a consistent platform that Puppet runs on top
+of, with no manual configuration.
+
+## Goals
+
+### Must have
+
+### Nice to have
+
+### Non-Goals
+
+## Approvals required
+
+TBD.
+
+## Proposed Solution
+
+TBD.
+
+## Cost
+
+TBD.
+
+## Alternatives considered
+
+ * [cobbler](https://cobbler.github.io/) - takes care of PXE and boot, delegates to kickstart
+   the autoinstall, more relevant to RPM-based distros
+ * [terraform](https://www.terraform.io/) - config management for the cloud kind of thing,
+   supports Hetzner Cloud, but not Hetzner Robot or Ganeti
+ * [FAI](https://fai-project.org/) - built by a debian developer, used to build live images
+   since buster, might require complex setup (e.g. an NFS server),
+   [setup-storage(8)](https://manpages.debian.org/buster/fai-setup-storage/setup-storage.8.en.html) might be reusable on its own
+ * [list of debian setup tools](https://wiki.debian.org/SystemBuildTools), see also
+   [AutomatedInstallation](https://wiki.debian.org/AutomatedInstallation)
+ * [himblock](https://github.com/himblick/himblick) has some interesting post-install configure bits in
+   Python, along with pyparted bridges
+ * [livewrapper](https://salsa.debian.org/enrico/live-wrapper) is also one of those installers, in a way
+
+Unfortuantely, I ruled out the official debian-installer because of the complexity of the preseeding system and partman.
