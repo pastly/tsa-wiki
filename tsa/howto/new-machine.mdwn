@@ -248,6 +248,8 @@ TBD.
  * [livewrapper](https://salsa.debian.org/enrico/live-wrapper) is also one of those installers, in a way
  * [MAAS](https://maas.io/) - PXE-based, assumes network control which we don't have
    and has all sorts of features we don't want
+ * [[puppet]] - Puppet could bootstrap itself, with `puppet apply` ran
+   from a clone of the git repo. could be extended as deep as we want.
  * [terraform](https://www.terraform.io/) - config management for the cloud kind of thing,
    supports Hetzner Cloud, but not Hetzner Robot or Ganeti
 
