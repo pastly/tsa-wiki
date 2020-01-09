@@ -12,6 +12,15 @@ release, testing. Here are site-specific installs:
 * for a new machine in the [[ganeti]] cluster, see the [[ganeti]]
   configuration, "Adding a new instance" section
 
+If you want to understand better the different installation procedures there is a
+install flowchart:
+
+* [PNG](./install.png)
+* [PDF](./install.pdf)
+* [drawio](./install.drawio)
+* [SVG](./install.svg)
+
+
 Configuration procedure
 =======================
 
@@ -49,7 +58,7 @@ All commands to be run as root unless otherwise noted.
   `tor-install-generate-ldap` script in `tsa-misc`. Make sure you
   review all fields, in particular `location` (`l`), `physicalHost`,
   `description` and `purpose` which do not have good defaults.
-  
+
   See the [[upgrades]] section for information about the
   `rebootPolicy` field.
 
@@ -58,7 +67,7 @@ All commands to be run as root unless otherwise noted.
 
 * then:
   * on alberti:
-  
+
         sudo -u sshdist ud-generate && sudo -H ud-replicate && sudo puppet agent -t
 
   * on nevii:
@@ -170,12 +179,12 @@ their [Ops report card](http://opsreportcard.com/), [question 20](http://opsrepo
 > If OS installation is automated then all machines start out the
 > same. Fighting entropy is difficult enough. If each machine is
 > hand-crafted, it is impossible.
-> 
+>
 > If you install the OS manually, you are wasting your time twice:
 > Once when doing the installation and again every time you debug an
 > issue that would have been prevented by having consistently
 > configured machines.
-> 
+>
 > If two people install OSs manually, half are wrong but you don't
 > know which half. Both may claim they use the same procedure but I
 > assure you they are not. Put each in a different room and have them
