@@ -20,6 +20,11 @@ install flowchart:
 * [drawio](./install.drawio)
 * [SVG](./install.svg)
 
+There are also per-site install graphs:
+
+ * [[install-hetzner-cloud.png]]
+ * [[install-hetzner-robot.png]]
+ * [[install-hetzner-ganeti.png]]
 
 Configuration procedure
 =======================
