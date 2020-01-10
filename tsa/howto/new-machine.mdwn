@@ -20,18 +20,6 @@ The following sites are not documented yet:
  * scaleway
  * sunet
 
-If you want to understand better the different installation procedures there is a
-install flowchart:
-
-* [PNG](./install.png)
-* [drawio](./install.drawio)
-
-There are also per-site install graphs:
-
- * [install-hetzner-cloud.png](install-hetzner-cloud.png)
- * [install-hetzner-robot.png](install-hetzner-robot.png)
- * [install-ganeti.png](install-ganeti.png)
-
 Configuration procedure
 =======================
 
@@ -169,6 +157,42 @@ All commands to be run as root unless otherwise noted.
 * if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/) (password
   in tor-passwords, `hosts-extra-info`)
 
+# Reference
+
+## Design
+
+If you want to understand better the different installation procedures there is a
+install flowchart:
+
+* [PNG](./install.png)
+* [drawio](./install.drawio)
+
+There are also per-site install graphs:
+
+ * [install-hetzner-cloud.png](install-hetzner-cloud.png)
+ * [install-hetzner-robot.png](install-hetzner-robot.png)
+ * [install-ganeti.png](install-ganeti.png)
+
+Those diagrams were created as part of the redesign of the install
+process, to better understand the various steps of the process and see
+how they could be refactored. They should not be considered an
+authoritative version of how the process should be followed. 
+
+The text representation in this wiki remains the reference copy.
+
+## Issues
+
+Issues regarding installation on new machines are far ranging and do
+not have a specific component. 
+
+The install system is manual and not completely documented for all
+sites. It needs to be automated, which is discussed below and in
+[ticket 31239: automate installs](https://trac.torproject.org/projects/tor/ticket/31239).
+
+A good example of the problems that can come up with variations in
+the install process is [ticket 31781: ping fails as a regular user on
+new VMs](https://trac.torproject.org/projects/tor/ticket/31781).
+
 # Discussion
 
 This section discusses background and implementation details of
@@ -207,6 +231,9 @@ process. This gives us a consistent platform that Puppet runs on top
 of, with no manual configuration.
 
 ## Goals
+
+The project of automating the install is documented in [ticket
+31239](https://trac.torproject.org/projects/tor/ticket/31239).
 
 ### Must have
 
