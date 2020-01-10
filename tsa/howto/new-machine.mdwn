@@ -162,16 +162,19 @@ All commands to be run as root unless otherwise noted.
 ## Design
 
 If you want to understand better the different installation procedures there is a
-install flowchart:
+install flowchart that was made on [Draw.io](https://draw.io). 
 
-* [PNG](./install.png)
-* [drawio](./install.drawio)
+[[install.png]]
 
 There are also per-site install graphs:
 
  * [install-hetzner-cloud.png](install-hetzner-cloud.png)
  * [install-hetzner-robot.png](install-hetzner-robot.png)
  * [install-ganeti.png](install-ganeti.png)
+
+To edit those graphics, head to the <https://draw.io> website (or
+install their Electron desktop app) and load the [install.drawio](./install.drawio)
+file.
 
 Those diagrams were created as part of the redesign of the install
 process, to better understand the various steps of the process and see
