@@ -16,9 +16,7 @@ If you want to understand better the different installation procedures there is 
 install flowchart:
 
 * [PNG](./install.png)
-* [PDF](./install.pdf)
 * [drawio](./install.drawio)
-* [SVG](./install.svg)
 
 There are also per-site install graphs:
 
