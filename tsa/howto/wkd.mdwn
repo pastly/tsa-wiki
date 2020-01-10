@@ -3,9 +3,9 @@
 WKD is a protocol to ship PGP keys to users.  GnuPG implements it as of at
 least 2019.
 
-See https://wiki.gnupg.org/WKD for details from upstream.
+See [WKD][wkd] for details from upstream.
 
-Torproject only implements key retrieval, which works using https GET
+Torproject only implements key retrieval, which works using HTTPS GET
 requests, and not any of the update mechanisms.
 
 The directory is populated from the tor [account-keyring][keyring].  When
@@ -23,6 +23,7 @@ Key retrivals can be tested using gpg's wks client:
     weasel@orinoco:~$ /usr/lib/gnupg/gpg-wks-client --check al@torproject.org && echo yay || echo boo
     yay
 
+[wkd]: https://wiki.gnupg.org/WKD
 [keyring]: ssh://git@git-rw.torproject.org/admin/account-keyring
 [debian-keyring]: https://salsa.debian.org/debian-keyring/keyring
 [debian-keyring-update-keyrings]: https://salsa.debian.org/debian-keyring/keyring/blob/publish-dane/scripts/update-keyrings
