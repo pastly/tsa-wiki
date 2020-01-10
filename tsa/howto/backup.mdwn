@@ -679,7 +679,6 @@ put their names into a file such as `include` and call bextract with `-i`:
 
     bextract -i ~/include /srv/backups/bacula/dictyotum.torproject.org/torproject-inc-dictyotum.torproject.org.2019-09-25_11:53 /var/tmp/restore
 
-
 Restore PostgreSQL databases
 ----------------------------
 
@@ -702,6 +701,69 @@ Restore LDAP databases
 ----------------------
 
 See [[ldap]] for LDAP-specific procedures.
+
+Debug jobs
+----------
+
+If a job is behaving strangely, you can inspect its job log to see
+what's going on. For example, today Nagios warned about the backups
+being too old on colchicifolium:
+
+    10:02:58 <nsa> tor-nagios: [colchicifolium] backup - bacula - last full backup is WARNING: WARN: Last backup of colchicifolium.torproject.org/F is 45.16 days old.
+
+Looking at the bacula director status, it says this:
+
+    Console connected using TLS at 10-Jan-20 18:19
+     JobId  Type Level     Files     Bytes  Name              Status
+    ======================================================================
+    120225  Back Full    833,079    123.5 G colchicifolium.torproject.org is running
+    120230  Back Full  4,864,515    218.5 G colchicifolium.torproject.org is waiting on max Client jobs
+    120468  Back Diff     30,694    3.353 G gitlab-01.torproject.org is running
+    ====
+
+Which is strange because those JobId numbers are very low compared to
+(say) the gitlab backup job. To inspect the job log, you use the
+`list` command:
+
+    *list joblog jobid=120225
+    +----------------------------------------------------------------------------------------------------+
+    | logtext                                                                                              |
+    +----------------------------------------------------------------------------------------------------+
+    | bacula-director-01.torproject.org-dir JobId 120225: Start Backup JobId 120225, Job=colchicifolium.torproject.org.2020-01-07_17.00.36_03 |
+    | bacula-director-01.torproject.org-dir JobId 120225: Created new Volume="torproject-colchicifolium.torproject.org-full.2020-01-07_17:00", Pool="poolfull-torproject-colchicifolium.torproject.org", MediaType="File-colchicifolium.torproject.org" in catalog. |
+    [...]
+    | bacula-director-01.torproject.org-dir JobId 120225: Fatal error: Network error with FD during Backup: ERR=No data available |
+    | bungei.torproject.org-sd JobId 120225: Fatal error: append.c:170 Error reading data header from FD. n=-2 msglen=0 ERR=No data available |
+    | bungei.torproject.org-sd JobId 120225: Elapsed time=00:03:47, Transfer rate=7.902 M Bytes/second     |
+    | bungei.torproject.org-sd JobId 120225: Sending spooled attrs to the Director. Despooling 14,523,001 bytes ... |
+    | bungei.torproject.org-sd JobId 120225: Fatal error: fd_cmds.c:225 Command error with FD msg="", SD hanging up. ERR=Error getting Volume info: 1998 Volume "torproject-colchicifolium.torproject.org-full.2020-01-07_17:00" catalog status is Used, but should be Append, Purged or Recycle. |
+    | bacula-director-01.torproject.org-dir JobId 120225: Fatal error: No Job status returned from FD.     |
+    [...]
+    | bacula-director-01.torproject.org-dir JobId 120225: Rescheduled Job colchicifolium.torproject.org.2020-01-07_17.00.36_03 at 07-Jan-2020 17:09 to re-run in 14400 seconds (07-Jan-2020 21:09). |
+    | bacula-director-01.torproject.org-dir JobId 120225: Error: openssl.c:68 TLS shutdown failure.: ERR=error:14094123:SSL routines:ssl3_read_bytes:application data after close notify |
+    | bacula-director-01.torproject.org-dir JobId 120225: Job colchicifolium.torproject.org.2020-01-07_17.00.36_03 waiting 14400 seconds for scheduled start time. |
+    | bacula-director-01.torproject.org-dir JobId 120225: Restart Incomplete Backup JobId 120225, Job=colchicifolium.torproject.org.2020-01-07_17.00.36_03 |
+    | bacula-director-01.torproject.org-dir JobId 120225: Found 78113 files from prior incomplete Job.     |
+    | bacula-director-01.torproject.org-dir JobId 120225: Created new Volume="torproject-colchicifolium.torproject.org-full.2020-01-10_12:11", Pool="poolfull-torproject-colchicifolium.torproject.org", MediaType="File-colchicifolium.torproject.org" in catalog. |
+    | bacula-director-01.torproject.org-dir JobId 120225: Using Device "FileStorage-colchicifolium.torproject.org" to write. |
+    | bacula-director-01.torproject.org-dir JobId 120225: Sending Accurate information to the FD.          |
+    | bungei.torproject.org-sd JobId 120225: Labeled new Volume "torproject-colchicifolium.torproject.org-full.2020-01-10_12:11" on File device "FileStorage-colchicifolium.torproject.org" (/srv/backups/bacula/colchicifolium.torproject.org). |
+    | bungei.torproject.org-sd JobId 120225: Wrote label to prelabeled Volume "torproject-colchicifolium.torproject.org-full.2020-01-10_12:11" on File device "FileStorage-colchicifolium.torproject.org" (/srv/backups/bacula/colchicifolium.torproject.org) |
+    | bacula-director-01.torproject.org-dir JobId 120225: Max Volume jobs=1 exceeded. Marking Volume "torproject-colchicifolium.torproject.org-full.2020-01-10_12:11" as Used. |
+    | colchicifolium.torproject.org-fd JobId 120225:      /run is a different filesystem. Will not descend from / into it. |
+    | colchicifolium.torproject.org-fd JobId 120225:      /home is a different filesystem. Will not descend from / into it. |
+    +----------------------------------------------------------------------------------------------------+
+    +---------+-------------------------------+---------------------+------+-------+----------+---------------+-----------+
+    | jobid   | name                          | starttime           | type | level | jobfiles | jobbytes      | jobstatus |
+    +---------+-------------------------------+---------------------+------+-------+----------+---------------+-----------+
+    | 120,225 | colchicifolium.torproject.org | 2020-01-10 12:11:51 | B    | F     |   77,851 | 1,759,625,288 | R         |
+    +---------+-------------------------------+---------------------+------+-------+----------+---------------+-----------+
+
+So that job failed three days ago, but now it's actually running. In
+this case, it might be safe to just ignore the Nagios warning and hope
+that the rescheduled backup will eventually go through. The duplicate
+job is also fine: worst case there is it will just run after the first
+one does, resulting in a bit more I/O than we'd like.
 
 Design
 ======
