@@ -20,9 +20,9 @@ install flowchart:
 
 There are also per-site install graphs:
 
- * [[install-hetzner-cloud.png]]
- * [[install-hetzner-robot.png]]
- * [[install-hetzner-ganeti.png]]
+ * [install-hetzner-cloud.png](install-hetzner-cloud.png)
+ * [install-hetzner-robot.png](install-hetzner-robot.png)
+ * [install-ganeti.png](install-ganeti.png)
 
 Configuration procedure
 =======================
