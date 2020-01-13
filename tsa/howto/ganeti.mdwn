@@ -2,6 +2,13 @@
 
 ## Cluster Setup Preliminaries
 
+- To create a new box, follow [[new-machine-hetzner-robot]] but change
+  the following settings:
+
+  * Location: `FSN1`
+  * Operating system: Rescue
+  * Additional drives: 2x10TB
+
 - Make sure all nodes have the same LVM setup and the same network setup.  They want openvswitch.  Cf. host `fsn-node-01`'s /etc/network/interfaces.
 
 - Prepare all the nodes by configuring them in puppet.  They should be in the class `roles::ganeti::fsn` if they
