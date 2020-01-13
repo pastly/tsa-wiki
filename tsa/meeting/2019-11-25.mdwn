@@ -146,6 +146,8 @@ Unclear. jan 6th is a holiday in europe ("the day of the kings"), so
 we might postpone until january 13th. we are considering having
 shorter, weekly meetings.
 
+Update: was held on [[2020-01-13]].
+
 # Metrics of the month
 
  * hosts in Puppet: 76, LDAP: 79, Prometheus exporters: 123
