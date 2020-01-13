@@ -1,3 +1,5 @@
+[[!toc levels=2]]
+
 # Roll call: who's there and emergencies
 
 anarcat, hiro, gaba, qbi present
@@ -161,3 +163,15 @@ N/A.
 # Next meeting
 
 Feb 3rd.
+
+# Metrics of the month
+
+ * hosts in Puppet: 77, LDAP: 80, Prometheus exporters: 123
+ * number of apache servers monitored: 32, hits per second: 175
+ * number of nginx servers: 2, hits per second: 2, hit ratio: 0.87
+ * number of self-hosted nameservers: 5, mail servers: 10
+ * pending upgrades: 0, reboots: 0
+ * average load: 0.61, memory available: 351.90 GiB/958.80 GiB, running processes: 421
+ * bytes sent: 148.75 MB/s, received: 94.70 MB/s
+ * planned buster upgrades completion date: 2020-05-22 (20 days later
+   than last estimate, 49 days ago)
