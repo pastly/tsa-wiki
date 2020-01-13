@@ -2,48 +2,64 @@
 
 # Roll call: who's there and emergencies
 
-anarcat, hiro, gaba, qbi present
+anarcat, hiro, gaba, qbi present, arma joined in later
 
 # What has everyone been up to
 
 ## anarcat
 
-* unblocked hardware donations ([#29397](https://bugs.torproject.org/29397))
+* unblocked hardware donations ([#29397][])
 * finished investigation of the onionoo performance, great team work
   with the metrics led to significant optimization
-* summarized the blog situation with hiro ([#32090](https://bugs.torproject.org/32090))
-* ooni load investigation ([#32660](https://bugs.torproject.org/32660))
-* disk space issues for metrics team ([#32644](https://bugs.torproject.org/32644))
+* summarized the blog situation with hiro ([#32090][])
+* ooni load investigation ([#32660][])
+* disk space issues for metrics team ([#32644][])
 * more puppet code sync with upstream, almost there
 * built test server for mail service, R&D postponed to january
-  ([#30608](https://bugs.torproject.org/30608))
-* postponed DMARC mailing list fixes to january ([#29770](https://bugs.torproject.org/29770))
+  ([#30608][])
+* postponed DMARC mailing list fixes to january ([#29770][])
 * dealt with major downtime at moly, which mostly affected the
   translation server (majus), good contacts with cymru staff
-* dealt with kvm4 crash ([#32801](https://bugs.torproject.org/32801)) scheduled decom ([#32802](https://bugs.torproject.org/32802))
+* dealt with kvm4 crash ([#32801][]) scheduled decom ([#32802][])
 * deployed ARM VMs on Linaro openstack
 * gitlab meeting
-* untangled monitoring requirements for anti-censorship team ([#32679](https://bugs.torproject.org/32679))
-* finalized iranicum decom ([#32281](https://bugs.torproject.org/32281))
+* untangled monitoring requirements for anti-censorship team ([#32679][])
+* finalized iranicum decom ([#32281][])
 * went on two week vacations
-* automated install solutions evaluation and analysis ([#31239](https://bugs.torproject.org/31239))
+* automated install solutions evaluation and analysis
+  ([#31239][])
 * got approval for using emergency ganeti budget
 * usual churn: sponsor Lektor debian package, puppet merge work, email
   aliases, PGP key refreshes, metrics.tpo server mystery crash
-  ([#32692](https://bugs.torproject.org/32692)), DNSSEC rotation, documentation, OONI DNS, NC DNS, etc
+  ([#32692][]), DNSSEC rotation, documentation, OONI DNS, NC DNS, etc
+
+[#32692]: https://bugs.torproject.org/32692
+[#32281]: https://bugs.torproject.org/32281
+[#32679]: https://bugs.torproject.org/32679
+[#32802]: https://bugs.torproject.org/32802
+[#32801]: https://bugs.torproject.org/32801
+[#29770]: https://bugs.torproject.org/29770
+[#32644]: https://bugs.torproject.org/32644
+[#32660]: https://bugs.torproject.org/32660
+[#32090]: https://bugs.torproject.org/32090
+[#29397]: https://bugs.torproject.org/29397
 
 ## hiro
 * Tried to debug what's happening on gitlab
   (a.k.a. dip.torproject.org)
 * Usual maintenance and upgrades to services (dip, git, ...)
 * Run security updates
-* summarized the blog situation ([#32090](https://bugs.torproject.org/32090)) with anarcat. Fixed the blog
-  template
-* [www updates](https://dip.torproject.org/torproject/web/www-monthly/blob/master/2019-12.md)
-* Issue with KVM4 not coming back after reboot ([#32801](https://bugs.torproject.org/32801))
-* Following up for the anticensorhip team monitoring issues ([#31159](https://bugs.torproject.org/31159))
-* Working on [nagios checks for bridgedb](https://dip.torproject.org/torproject/anti-censorship/roadmap/issues/6)
+* summarized the blog situation ([#32090][]) with anarcat. Fixed the
+  blog template
+* [www updates][]
+* Issue with KVM4 not coming back after reboot ([#32801][])
+* Following up for the anticensorhip team monitoring issues ([#31159][])
+* Working on [nagios checks for bridgedb][]
 * Oncall during xmas
+
+[nagios checks for bridgedb]: https://dip.torproject.org/torproject/anti-censorship/roadmap/issues/6
+[#31159]: https://bugs.torproject.org/31159
+[www updates]: https://dip.torproject.org/torproject/web/www-monthly/blob/master/2019-12.md
 
 ## qbi
 
@@ -64,10 +80,11 @@ New:
  * review cipher suites? ([#32351][])
  * publish our puppet source code ([#29387][])
  * setup extra ganeti node to test changes to install procedures and especially setup-storage
- * kvm4 decom ([#32802](https://bugs.torproject.org/32802))
- * install automation tests and refactoring ([#31239](https://bugs.torproject.org/31239))
- * SLA discussion (see below, [#31243](https://bugs.torproject.org/31243))
+ * kvm4 decom ([#32802][])
+ * install automation tests and refactoring ([#31239][])
+ * SLA discussion (see below, [#31243][])
 
+[#31243]: https://bugs.torproject.org/31243
 [#32462]: https://bugs.torproject.org/32462
 [#32351]: https://bugs.torproject.org/32351
 [#31239]: https://bugs.torproject.org/31239
@@ -93,21 +110,26 @@ Continued/stalled:
 * Prepare for blog migration
 * Review build process for the websites
 * Status of monitoring needs for the anti-censorship team
-* Status of needrestart and automatic updates ([#31957](https://bugs.torproject.org/31957))
+* Status of needrestart and automatic updates ([#31957][])
 * Moving on with dip or find out why is having these issues with MRs
+
+[#31957]: https://bugs.torproject.org/31957
 
 ## qbi
 
- * DMARC mailing list fixes ([#29770](https://bugs.torproject.org/29770))
+ * DMARC mailing list fixes ([#29770][])
 
 # Server replacements
 
-The recent crashes of kvm4 ([#32801](https://bugs.torproject.org/32801)) and moly ([#32762](https://bugs.torproject.org/32762)) have
+The recent crashes of kvm4 ([#32801][]) and moly ([#32762][]) have
 been scary (e.g. mail, lists, jenkins, puppet and LDAP all went away,
 translation server went down for a good while). Maybe we should focus
 our energies on more urgent server replacements, that is specifically
-kvm4 ([#32802](https://bugs.torproject.org/32802)) and moly ([#29974](https://bugs.torproject.org/29974)) for now, but eventually all
+kvm4 ([#32802][]) and moly ([#29974][]) for now, but eventually all
 old KVM hosts should be decommissisoned.
+
+[#29974]: https://bugs.torproject.org/29974
+[#32762]: https://bugs.torproject.org/32762
 
 We have some budget to expand the Ganeti setup, let's push this ahead
 and assign tasks and timelines.
@@ -140,7 +162,7 @@ We need to answer the following questions:
  2. What is an emergency?
  3. What is supported?
 
-(This is part of [#31243](https://bugs.torproject.org/31243).)
+(This is part of [#31243][].)
 
 From there, we should establish how we provide support for those
 machines without having to be oncall all the time. We could equally
