@@ -1,0 +1,163 @@
+# Roll call: who's there and emergencies
+
+anarcat, hiro, gaba, qbi present
+
+# What has everyone been up to
+
+## anarcat
+
+* unblocked hardware donations ([#29397](https://bugs.torproject.org/29397))
+* finished investigation of the onionoo performance, great team work
+  with the metrics led to significant optimization
+* summarized the blog situation with hiro ([#32090](https://bugs.torproject.org/32090))
+* ooni load investigation ([#32660](https://bugs.torproject.org/32660))
+* disk space issues for metrics team ([#32644](https://bugs.torproject.org/32644))
+* more puppet code sync with upstream, almost there
+* built test server for mail service, R&D postponed to january
+  ([#30608](https://bugs.torproject.org/30608))
+* postponed DMARC mailing list fixes to january ([#29770](https://bugs.torproject.org/29770))
+* dealt with major downtime at moly, which mostly affected the
+  translation server (majus), good contacts with cymru staff
+* dealt with kvm4 crash ([#32801](https://bugs.torproject.org/32801)) scheduled decom ([#32802](https://bugs.torproject.org/32802))
+* deployed ARM VMs on Linaro openstack
+* gitlab meeting
+* untangled monitoring requirements for anti-censorship team ([#32679](https://bugs.torproject.org/32679))
+* finalized iranicum decom ([#32281](https://bugs.torproject.org/32281))
+* went on two week vacations
+* automated install solutions evaluation and analysis ([#31239](https://bugs.torproject.org/31239))
+* got approval for using emergency ganeti budget
+* usual churn: sponsor Lektor debian package, puppet merge work, email
+  aliases, PGP key refreshes, metrics.tpo server mystery crash
+  ([#32692](https://bugs.torproject.org/32692)), DNSSEC rotation, documentation, OONI DNS, NC DNS, etc
+
+## hiro
+* Tried to debug what's happening on gitlab
+  (a.k.a. dip.torproject.org)
+* Usual maintenance and upgrades to services (dip, git, ...)
+* Run security updates
+* summarized the blog situation ([#32090](https://bugs.torproject.org/32090)) with anarcat. Fixed the blog
+  template
+* [www updates](https://dip.torproject.org/torproject/web/www-monthly/blob/master/2019-12.md)
+* Issue with KVM4 not coming back after reboot ([#32801](https://bugs.torproject.org/32801))
+* Following up for the anticensorhip team monitoring issues ([#31159](https://bugs.torproject.org/31159))
+* Working on [nagios checks for bridgedb](https://dip.torproject.org/torproject/anti-censorship/roadmap/issues/6)
+* Oncall during xmas
+
+## qbi
+
+* disabled some trac components
+* deleted a mailing list
+* created a new mailing list
+* tried to familiarize with puppet API queries
+
+# What we're up to next
+
+## anarcat
+
+Probably too ambitious...
+
+New:
+
+ * varnish -> nginx conversion? ([#32462][])
+ * review cipher suites? ([#32351][])
+ * publish our puppet source code ([#29387][])
+ * setup extra ganeti node to test changes to install procedures and especially setup-storage
+ * kvm4 decom ([#32802](https://bugs.torproject.org/32802))
+ * install automation tests and refactoring ([#31239](https://bugs.torproject.org/31239))
+ * SLA discussion (see below, [#31243](https://bugs.torproject.org/31243))
+
+[#32462]: https://bugs.torproject.org/32462
+[#32351]: https://bugs.torproject.org/32351
+[#31239]: https://bugs.torproject.org/31239
+[#29387]: https://bugs.torproject.org/29387
+
+Continued/stalled:
+
+ * followup on SVN shutdown, only corp missing ([#17202][])
+ * audit of the other installers for ping/ACL issue ([#31781][])
+ * email services R&D ([#30608][])
+ * send root@ emails to RT ([#31242][])
+ * continue prometheus module merges
+
+[#17202]: https://bugs.torproject.org/17202
+[#31781]: https://bugs.torproject.org/31781
+[#30608]: https://bugs.torproject.org/30608
+[#31242]: https://bugs.torproject.org/31242
+
+## Hiro
+
+* Updates || migration for the CRM and planning future of donate.tp.o
+* Lektor + styleguide documentation for GR
+* Prepare for blog migration
+* Review build process for the websites
+* Status of monitoring needs for the anti-censorship team
+* Status of needrestart and automatic updates ([#31957](https://bugs.torproject.org/31957))
+* Moving on with dip or find out why is having these issues with MRs
+
+## qbi
+
+ * DMARC mailing list fixes ([#29770](https://bugs.torproject.org/29770))
+
+# Server replacements
+
+The recent crashes of kvm4 ([#32801](https://bugs.torproject.org/32801)) and moly ([#32762](https://bugs.torproject.org/32762)) have
+been scary (e.g. mail, lists, jenkins, puppet and LDAP all went away,
+translation server went down for a good while). Maybe we should focus
+our energies on more urgent server replacements, that is specifically
+kvm4 ([#32802](https://bugs.torproject.org/32802)) and moly ([#29974](https://bugs.torproject.org/29974)) for now, but eventually all
+old KVM hosts should be decommissisoned.
+
+We have some budget to expand the Ganeti setup, let's push this ahead
+and assign tasks and timelines.
+
+Consider we need a new VM for GitLab and CRM machines, among other
+projects.
+
+Timeline:
+
+ 1. end of week: setup fsn-node-03 (anarcat)
+ 2. end of january: setup duplicate CRM nodes and test FS snapshots
+    (hiro)
+ 2. end of january: kvm1/textile migration to the cluster and shutdown
+ 3. end of january: rabbits test new CRM setup and upgrade tests?
+ 4. mid february: CRM upgraded and boxes removed from kvm3?
+ 5. end of Q1 2020: kvm3 migration and shutdown, another gnt-fsn node?
+
+We want to streamline the KVM -> Ganeti migration process.
+
+We might need extra budget to manage the parallel hosting of gitlab
+and git.tpo and trac. It's a key blocker in the kvm3 migration, in
+terms of costs.
+
+# Oncall policy
+
+We need to answer the following questions:
+
+ 1. How do users get help? (partly answered by
+    <https://help.torproject.org/tsa/doc/how-to-get-help/>)
+ 2. What is an emergency?
+ 3. What is supported?
+
+(This is part of [#31243](https://bugs.torproject.org/31243).)
+
+From there, we should establish how we provide support for those
+machines without having to be oncall all the time. We could equally
+establish whether we should setup rotation schedules for holidays, as
+a general principle.
+
+Things generally went well during the vacations for hiro and arma, but
+we would like to see how to better handle this during the next
+vacations. We need to think about how much support we want to offer
+and how.
+
+Anarcat will bring the conversation with vegas to see how we define
+the priorities, and we'll make sure to better balance the next
+vacation.
+
+# Other discussions
+
+N/A.
+
+# Next meeting
+
+Feb 3rd.
