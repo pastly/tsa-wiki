@@ -5,8 +5,8 @@
 - To create a new box, follow [[new-machine-hetzner-robot]] but change
   the following settings:
 
-  * Server: PX62-NVMe (but we are considering the new AX line for next
-    time, for example a AX51-NVMe would be nice)
+  * Server: [PX62-NVMe](https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER) (but we are considering the new AX line for
+    next time, for example a [AX51-NVMe](https://www.hetzner.com/dedicated-rootserver/ax51-nvme?country=OTHER) would be nice)
   * Location: `FSN1`
   * Operating system: Rescue
   * Additional drives: 2x10TB
