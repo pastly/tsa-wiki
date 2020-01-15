@@ -5,11 +5,19 @@
 - To create a new box, follow [[new-machine-hetzner-robot]] but change
   the following settings:
 
-  * Server: [PX62-NVMe](https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER) (but we are considering the new AX line for
-    next time, for example a [AX51-NVMe](https://www.hetzner.com/dedicated-rootserver/ax51-nvme?country=OTHER) would be nice)
+  * Server: [PX62-NVMe](https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER)
+  
+    Note: we are also experimenting with the new AX line
+    ([AX51-NVMe](https://www.hetzner.com/dedicated-rootserver/ax51-nvme?country=OTHER)) but in the past DSA had problems live-migrating
+    (it wouldn't immediately fail but there were "issues" after). So
+    we might need to [failover](http://docs.ganeti.org/ganeti/2.15/man/gnt-instance.html#failover) instead of migrate between those
+    parts of the cluster.
+
   * Location: `FSN1`
   * Operating system: Rescue
   * Additional drives: 2x10TB
+  * Add in the comment form that the server needs to be in the same
+    datacenter as the other machines
 
 - Make sure all nodes have the same LVM setup and the same network setup.  They want openvswitch.  Cf. host `fsn-node-01`'s /etc/network/interfaces.
 
