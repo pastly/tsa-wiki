@@ -71,6 +71,57 @@ These could probably be merged into the cluster init, but just to document what 
     gnt-cluster modify -H kvm:migration_bandwidth=950
     gnt-cluster modify -H kvm:migration_downtime=500
 
+Note that we might want to tweak the `cpu_type` parameter. By default,
+it emulates a lot of processing that can be delegated to the host CPU
+instead. If we use `kvm:cpu_type=host`, then each node will tailor the
+emulation system to the CPU on the node. But that might make the live
+migration more brittle: VMs or processes can crash after a live
+migrate because of a slightly different configuration (microcode, CPU,
+kernel and QEMU versions all play a role). So we need to find the
+lowest common demoninator in CPU families. The list of available
+families supported by QEMU varies between releases, but is visible
+with:
+
+    # qemu-system-x86_64 -cpu help
+    Available CPUs:
+    x86 486
+    x86 Broadwell             Intel Core Processor (Broadwell)
+    [...]
+    x86 Skylake-Client        Intel Core Processor (Skylake)
+    x86 Skylake-Client-IBRS   Intel Core Processor (Skylake, IBRS)
+    x86 Skylake-Server        Intel Xeon Processor (Skylake)
+    x86 Skylake-Server-IBRS   Intel Xeon Processor (Skylake, IBRS)
+    [...]
+
+The current PX62 line is based on the [Coffee Lake](https://en.wikipedia.org/wiki/Coffee_Lake) Intel
+micro-architecture. The closest matching family would be
+`Skylake-Server` or `Skylake-Server-IBRS`, [according to wikichip](https://en.wikichip.org/wiki/intel/microarchitectures/coffee_lake#Compiler_support).
+Note that newer QEMU releases (4.2, currently in unstable) have more
+supported features.
+
+In that context, of course, supporting different CPU manufacturers
+(say AMD vs Intel) is impractical: they will have totally different
+families that are not compatible with each other. This will break live
+migration, which can trigger crashes and problems in the migrated
+virtual machines.
+
+If there are problems live-migrating between machines, it is still
+possible to "failover" (`gnt-instance failover` instead of `migrate`)
+which shuts off the machine, fails over disks, and starts it on the
+other side. That's not such of a big problem: we often need to reboot
+the guests when we reboot the hosts anyways. But it does complicate
+our work. Of course, it's also possible that live migrates work fine
+if *no* `cpu_type` at all is specified in the cluster, but that needs
+to be verified.
+
+Nodes could also [grouped](http://docs.ganeti.org/ganeti/2.15/man/gnt-group.html) to limit (automated) live migration to a
+subset of nodes.
+
+References:
+
+ * <https://dsa.debian.org/howto/install-ganeti/>
+ * <https://qemu.weilnetz.de/doc/qemu-doc.html#recommendations_005fcpu_005fmodels_005fx86>
+
 ### Network configuration
 
 IP allocation is managed by Ganeti through the `gnt-network(8)`
