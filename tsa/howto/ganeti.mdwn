@@ -6,13 +6,6 @@
   the following settings:
 
   * Server: [PX62-NVMe](https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER)
-  
-    Note: we are also experimenting with the new AX line
-    ([AX51-NVMe](https://www.hetzner.com/dedicated-rootserver/ax51-nvme?country=OTHER)) but in the past DSA had problems live-migrating
-    (it wouldn't immediately fail but there were "issues" after). So
-    we might need to [failover](http://docs.ganeti.org/ganeti/2.15/man/gnt-instance.html#failover) instead of migrate between those
-    parts of the cluster.
-
   * Location: `FSN1`
   * Operating system: Rescue
   * Additional drives: 2x10TB
@@ -24,7 +17,18 @@
 - Prepare all the nodes by configuring them in puppet.  They should be in the class `roles::ganeti::fsn` if they
   are part of the fsn cluster.  If you make a new cluster, make a new role and add nodes.
 
-## New Master
+Note: we considered experimenting with the new AX line
+([AX51-NVMe](https://www.hetzner.com/dedicated-rootserver/ax51-nvme?country=OTHER)) but in the past DSA had problems live-migrating (it
+wouldn't immediately fail but there were "issues" after). So we might
+need to [failover](http://docs.ganeti.org/ganeti/2.15/man/gnt-instance.html#failover) instead of migrate between those parts of the
+cluster. There are also doubts that the Linux kernel supports those
+shiny new processors at all: similar processors had [trouble booting
+before Linux 5.5](https://www.phoronix.com/scan.php?page=news_item&px=Threadripper-3000-MCE-5.5-Fix) for example, so it might be worth waiting a
+little before switching to that new platform, even if it's
+cheaper. See the cluster configuration section below for a larger
+discussion of CPU emulation.
+
+## New cluster
 
 To create the fsn master, we added fsngnt to DNS, then ran
 
