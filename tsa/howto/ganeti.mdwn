@@ -1,3 +1,5 @@
+[[!toc levels=3]]
+
 # Ganeti Cluster Operations
 
 ## Cluster Setup Preliminaries
