@@ -17,7 +17,7 @@
   * Operating system: Rescue
   * Additional drives: 2x10TB
   * Add in the comment form that the server needs to be in the same
-    datacenter as the other machines
+    datacenter as the other machines (FSN1-DC13, but double-check)
 
 - Make sure all nodes have the same LVM setup and the same network setup.  They want openvswitch.  Cf. host `fsn-node-01`'s /etc/network/interfaces.
 
