@@ -373,6 +373,8 @@ Batch jobs can also be ran on all Puppet hosts with Cumin:
 
 See [[cumin]] for more examples.
 
+ [parallel-ssh]: https://parallel-ssh.org/
+
 ## Progressive deployment
 
 If you are making a major change to the infrastructure, you may want
