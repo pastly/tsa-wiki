@@ -1,4 +1,4 @@
-<!-- include a simple ovrview of the service here -->
+<!-- include a simple overview of the service here -->
 
 [[!toc levels=3]]
 
