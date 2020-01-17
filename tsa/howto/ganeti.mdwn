@@ -18,9 +18,13 @@ machine actually runs and th *secondary* acts as a hot failover.
 
 ## Listing instances
 
+This will show the running instances and their primary node:
 
     gnt-instance list
-    gnt-node list
+
+This will list instances repeatedly, but also show their assigned
+memory, and compare it with the node's capacity:
+
     watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
 
 # How-to
