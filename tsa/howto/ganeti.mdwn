@@ -94,12 +94,10 @@ Then follow [[new-machine]].
 
 ## Adding and removing addresses on instances
 
-Say you created an instance but forgot to assign a private IP. You can
-still do so with:
+Say you created an instance but forgot to need to assign an extra
+IP. You can still do so with:
 
-    gnt-instance modify --net -1:add,ip=172.30.135.3,network=internal test01.torproject.org
-
-TODO: the internal network hasn't been created yet.
+    gnt-instance modify --net -1:add,ip=116.202.120.174,network=gnt-fsn test01.torproject.org
 
 ## Destroying an instance
 
