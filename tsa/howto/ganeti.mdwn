@@ -92,13 +92,6 @@ Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.y
 
 Then follow [[new-machine]].
 
-## Adding and removing addresses on instances
-
-Say you created an instance but forgot to need to assign an extra
-IP. You can still do so with:
-
-    gnt-instance modify --net -1:add,ip=116.202.120.174,network=gnt-fsn test01.torproject.org
-
 ## Destroying an instance
 
 This totally deletes the instance, including all mirrors and
@@ -179,6 +172,13 @@ cluster. Here's an example run on a small cluster:
     static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
     web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
     web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+
+## Adding and removing addresses on instances
+
+Say you created an instance but forgot to need to assign an extra
+IP. You can still do so with:
+
+    gnt-instance modify --net -1:add,ip=116.202.120.174,network=gnt-fsn test01.torproject.org
 
 ## Pager playbook
 
