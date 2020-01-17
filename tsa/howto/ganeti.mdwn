@@ -8,6 +8,24 @@ another, etc.
 
 # Tutorial
 
+## Listing virtual machines (instances)
+
+This will show the running guests, known as "instances":
+
+    gnt-instance list
+
+## Accessing serial console
+
+Our instances do serial console, starting in grub.  To access it, run
+
+    gnt-instance console test01.torproject.org
+
+To exit, use `^]` -- that is, Control-&lt;Closing Bracket&gt;.
+
+# How-to
+
+## Glossary
+
 In Ganeti, a physical machine is called a *node* and a virtual machine
 is an *instance*. A node is elected to be the *master* where all
 commands should be ran from. Nodes are interconnected through a
@@ -15,19 +33,6 @@ private network that is used to communicate commands and synchronise
 disks (with [[drbd]]). Instances are normally assigned two nodes: a
 *primary* and a *secondary*: the *primary* is where the virtual
 machine actually runs and th *secondary* acts as a hot failover.
-
-## Listing instances
-
-This will show the running instances and their primary node:
-
-    gnt-instance list
-
-This will list instances repeatedly, but also show their assigned
-memory, and compare it with the node's capacity:
-
-    watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
-
-# How-to
 
 ## Adding a new instance
 
@@ -97,20 +102,19 @@ everything, be very careful with it:
 
     gnt-instance remove test01.torproject.org
 
-## Accessing serial console
-
-Our instances do serial console, starting in grub.  To access it, run
-
-    gnt-instance console test01.torproject.org
-
-To exit, use `^]` -- that is, Control-&lt;Closing Bracket&gt;.
-
 ## Disk operations (DRBD)
 
 Instances should be setup using the DRBD backend, in which case you
 should probably take a look at [[drbd]] if you have problems with
 that. Ganeti handles most of the logic there so that should generally
 not be necessary.
+
+## Evaluating cluster capacity
+
+This will list instances repeatedly, but also show their assigned
+memory, and compare it with the node's capacity:
+
+    watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
 
 ## Rebooting
 
