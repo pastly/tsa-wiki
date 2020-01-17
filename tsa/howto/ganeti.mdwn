@@ -6,9 +6,16 @@ another, etc.
 
 [[!toc levels=3]]
 
-# Ganeti Cluster Operations
+# Tutorial
 
-## Cluster Setup Preliminaries
+<!-- simple, brainless step-by-step instructions requiring little or -->
+<!-- no technical background -->
+
+# How-to
+
+## Ganeti Cluster Operations
+
+### Cluster Setup Preliminaries
 
 - To create a new box, follow [[new-machine-hetzner-robot]] but change
   the following settings:
@@ -36,7 +43,7 @@ little before switching to that new platform, even if it's
 cheaper. See the cluster configuration section below for a larger
 discussion of CPU emulation.
 
-## New cluster
+### New cluster
 
 To create the fsn master, we added fsngnt to DNS, then ran
 
@@ -51,7 +58,7 @@ To create the fsn master, we added fsngnt to DNS, then ran
       --no-etc-hosts \
       fsngnt.torproject.org
 
-## Add a new node
+### Add a new node
 
 We did run the following on fsn-node-01:
 
@@ -61,7 +68,7 @@ We did run the following on fsn-node-01:
       --no-node-setup \
       fsn-node-02.torproject.org
 
-## cluster config
+### cluster config
 
 These could probably be merged into the cluster init, but just to document what has been done:
 
@@ -149,15 +156,15 @@ info`.
 
 TODO: create a private network.
 
-## Listing instances and nodes
+### Listing instances and nodes
 
     gnt-instance list
     gnt-node list
     watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
 
-# Instance Operations
+## Instance Operations
 
-## Adding a new instance
+### Adding a new instance
 
 This command creates a new guest, or "instance" in Ganeti's
 vocabulary:
@@ -220,7 +227,7 @@ Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.y
 
 Then follow [[new-machine]].
 
-## Adding and removing addresses on instances
+### Adding and removing addresses on instances
 
 Say you created an instance but forgot to assign a private IP. You can
 still do so with:
@@ -229,14 +236,14 @@ still do so with:
 
 TODO: the internal network hasn't been created yet.
 
-## Destroying an instance
+### Destroying an instance
 
 This totally deletes the instance, including all mirrors and
 everything, be very careful with it:
 
     gnt-instance remove test01.torproject.org
 
-## Accessing serial console
+### Accessing serial console
 
 Our instances do serial console, starting in grub.  To access it, run
 
@@ -244,14 +251,14 @@ Our instances do serial console, starting in grub.  To access it, run
 
 To exit, use `^]` -- that is, Control-&lt;Closing Bracket&gt;.
 
-## Disk operations (DRBD)
+### Disk operations (DRBD)
 
 Instances should be setup using the DRBD backend, in which case you
 should probably take a look at [[drbd]] if you have problems with
 that. Ganeti handles most of the logic there so that should generally
 not be necessary.
 
-## Rebooting
+### Rebooting
 
 Those hosts need special care, as we can accomplish zero-downtime
 reboots on those machines. There's a script (`ganeti-reboot-cluster`)
@@ -267,7 +274,7 @@ machine, and the cluster might need to be rebalanced. This is
 automatically scheduled by the `ganeti-reboot-cluster` script and will
 be done within 30 minutes of the reboot.
 
-## Rebalancing a cluster
+### Rebalancing a cluster
 
 After a reboot or a downtime, all nodes might end up on the same
 machine. This is normally handled by the reboot script, but it might
@@ -309,3 +316,54 @@ cluster. Here's an example run on a small cluster:
     static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
     web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
     web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+
+## Pager playbook
+
+## Disaster recovery
+
+# Reference
+
+## Installation
+<!-- how to setup the service from scratch -->
+
+## SLA
+<!-- this describes an acceptable level of service for this service -->
+
+## Design
+<!-- how this is built -->
+<!-- should reuse and expand on the "proposed solution", it's a -->
+<!-- "as-built" documented, whereas the "Proposed solution" is an -->
+<!-- "architectural" document, which the final result might differ -->
+<!-- from, sometimes significantly -->
+
+## Issues
+
+<!-- such projects are never over. add a pointer to well-known issues -->
+<!-- and show how to report problems. usually a link to the bugtracker -->
+
+# Discussion
+
+## Overview
+
+<!-- describe the overall project. should include a link to a ticket -->
+<!-- that has a launch checklist -->
+
+## Goals
+<!-- include bugs to be fixed -->
+
+### Must have
+
+### Nice to have
+
+### Non-Goals
+
+## Approvals required
+<!-- for example, legal, "vegas", accounting, current maintainer -->
+
+## Proposed Solution
+
+## Cost
+
+## Alternatives considered
+
+<!-- include benchmarks and procedure if relevant -->
