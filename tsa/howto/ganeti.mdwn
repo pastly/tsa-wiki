@@ -1,3 +1,9 @@
+[Ganeti](http://ganeti.org/) is software designed to facilitate the management of
+virtual machines (KVM or Xen). It helps you move virtual machine
+instances from one node to another, create an instance with DRBD
+replication on another node and do the live migration from one to
+another, etc.
+
 [[!toc levels=3]]
 
 # Ganeti Cluster Operations
