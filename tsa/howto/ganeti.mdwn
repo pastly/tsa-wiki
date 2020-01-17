@@ -47,8 +47,6 @@ vocabulary:
       --no-ip-check \
       static-master-fsn.torproject.org
 
-TODO: the above doesn't include the private network configuration.
-
 WARNING: there is a bug in `ganeti-instance-debootstrap` which
 misconfigures `ping` (among other things), see [bug #31781](https://bugs.torproject.org/31781). It's
 currently patched on the two known Ganeti nodes, but that patch might
@@ -326,8 +324,6 @@ Then we associate the new network to the default node group:
 The arguments to `--nic-parameters` come from the values configured in
 the cluster, above. The current values can be found with `gnt-cluster
 info`.
-
-TODO: create a private network.
 
 ## SLA
 <!-- this describes an acceptable level of service for this service -->
