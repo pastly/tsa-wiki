@@ -34,6 +34,8 @@ disks (with [[drbd]]). Instances are normally assigned two nodes: a
 *primary* and a *secondary*: the *primary* is where the virtual
 machine actually runs and th *secondary* acts as a hot failover.
 
+See also the more extensive [glossary in the Ganeti documentation](http://docs.ganeti.org/ganeti/2.15/html/glossary.html).
+
 ## Adding a new instance
 
 This command creates a new guest, or "instance" in Ganeti's
@@ -95,6 +97,34 @@ Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.y
 
 Then follow [[new-machine]].
 
+## Modifying an instance
+
+It's possible to change the IP, CPU, or memory allocation of an instance
+using the [gnt-instance modify](http://docs.ganeti.org/ganeti/2.15/man/gnt-instance.html#modify) command:
+
+    gnt-instance modify -B vcpus=2 test1.torproject.org
+    gnt-instance modify -B memory=4g test1.torproject.org
+    gnt-instance reboot test1.torproject.org
+
+IP address changes require a full stop and will require manual changes
+to the `/etc/network/interfaces*` files:
+
+    gnt-instance modify --net 0:modify,ip=116.202.120.175 test1.torproject.org
+    gnt-instance stop test1.torproject.org
+    gnt-instance start test1.torproject.org
+    gnt-instance console test1.torproject.org
+
+The [gnt-instance grow-disk](http://docs.ganeti.org/ganeti/2.15/man/gnt-instance.html#grow-disk) command can be used to change the size
+of the underlying device:
+
+    gnt-instance grow-disk test1.torproject.org 0 16g
+    gnt-instance reboot test1.torproject.org
+
+The number `0` in this context, indicates the first disk of the
+instance. Then the filesystem needs to be resized inside the VM:
+
+    ssh root@test1.torproject.org resize2fs /dev/sda1
+
 ## Destroying an instance
 
 This totally deletes the instance, including all mirrors and
@@ -115,6 +145,75 @@ This will list instances repeatedly, but also show their assigned
 memory, and compare it with the node's capacity:
 
     watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
+
+The [gnt-cluster verify](http://docs.ganeti.org/ganeti/2.15/man/gnt-cluster.html#verify) command will also check to see if there's
+enough space on secondaries to account for the failure of a
+node. Healthy output looks like this:
+
+    root@fsn-node-01:~# gnt-cluster verify
+    Submitted jobs 48030, 48031
+    Waiting for job 48030 ...
+    Fri Jan 17 20:05:42 2020 * Verifying cluster config
+    Fri Jan 17 20:05:42 2020 * Verifying cluster certificate files
+    Fri Jan 17 20:05:42 2020 * Verifying hypervisor parameters
+    Fri Jan 17 20:05:42 2020 * Verifying all nodes belong to an existing group
+    Waiting for job 48031 ...
+    Fri Jan 17 20:05:42 2020 * Verifying group 'default'
+    Fri Jan 17 20:05:42 2020 * Gathering data (2 nodes)
+    Fri Jan 17 20:05:42 2020 * Gathering information about nodes (2 nodes)
+    Fri Jan 17 20:05:45 2020 * Gathering disk information (2 nodes)
+    Fri Jan 17 20:05:45 2020 * Verifying configuration file consistency
+    Fri Jan 17 20:05:45 2020 * Verifying node status
+    Fri Jan 17 20:05:45 2020 * Verifying instance status
+    Fri Jan 17 20:05:45 2020 * Verifying orphan volumes
+    Fri Jan 17 20:05:45 2020 * Verifying N+1 Memory redundancy
+    Fri Jan 17 20:05:45 2020 * Other Notes
+    Fri Jan 17 20:05:45 2020 * Hooks Results
+
+A sick node would have said something like this instead:
+
+    Mon Oct 26 18:59:37 2009 * Verifying N+1 Memory redundancy
+    Mon Oct 26 18:59:37 2009   - ERROR: node node2: not enough memory to accommodate instance failovers should node node1 fail
+
+See the [ganeti manual](http://docs.ganeti.org/ganeti/2.15/html/walkthrough.html#n-1-errors) for a more extensive example
+
+## Moving instances and failove
+
+Ganeti is smart about assigning instances to nodes. There's also a
+command (`hbal`) to automatically rebalance the cluster (see
+below). If for some reason hbal doesn’t do what you want or you need
+to move things around for other reasons, here are a few commands that
+might be handy.
+
+Make an instance switch to using it's secondary:
+
+    gnt-instance migrate test1.torproject.org
+
+Make all instances on a node switch to their secondaries:
+
+    gnt-node migrate test1.torproject.org
+
+The `migrate` commands does a "live" migrate which should avoid any
+downtime during the migration. It might be preferable to actually
+shutdown the machine for some reason (for example if we actually want
+to reboot because of a security upgrade). Or we might not be able to
+live-migrate because the node is down. In this case, we do a
+[failover](http://docs.ganeti.org/ganeti/2.15/html/admin.html#failing-over-an-instance)
+
+    gnt-instance failover test1.torproject.org
+
+The [gnt-node evacuate](http://docs.ganeti.org/ganeti/2.15/man/gnt-node.html#evacuate) command can also be used to "empty" a given
+node altogether, in case of an emergency:
+
+    gnt-node evacuate -I . fsn-node-02.torproject.org
+
+Similarly, the [gnt-node failover](http://docs.ganeti.org/ganeti/2.15/man/gnt-node.html#failover) command can be used to
+hard-recover from a completely crashed node:
+
+    gnt-node failover fsn-node-02.torproject.org
+
+Note that you might need the `--ignore-consistency` flag if the
+node is unresponsive.
 
 ## Rebooting
 
@@ -175,6 +274,44 @@ cluster. Here's an example run on a small cluster:
     web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
     web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
 
+In the above example, you should notice that the `web-fsn` instances both
+ended up on the same node. That's because the balancer did not know
+that they should be distributed. A special configuration was done,
+below, to avoid that problem in the future. But as a workaround,
+instances can also be moved by hand and the cluster re-balanced.
+
+## Redundant instances distribution
+
+Some instances are redundant across the cluster and should *not* end up
+on the same node. A good example are the `web-fsn-01` and `web-fsn-02`
+instances which, in theory, would serve similar traffic. If they end
+up on the same node, it might flood the network on that machine or at
+least defeats the purpose of having redundant machines.
+
+The way to ensure they get distributed properly by the balancing
+algorithm is to "tag" them. For the web nodes, for example, this was
+performed on the master:
+
+    gnt-instance add-tags web-fsn-01.torproject.org web-fsn
+    gnt-instance add-tags web-fsn-02.torproject.org web-fsn
+    gnt-cluster add-tags htools:iextags:web-fsn
+
+This tells Ganeti that `web-fsn` is an "exclusion tag" and the
+optimizer will not try to schedule instances with those tags on the
+same node.
+
+To see which tags are present, use:
+
+    # gnt-cluster list-tags
+    htools:iextags:web-fsn
+
+You can also find which nodes are assigned to a tag with:
+
+    # gnt-cluster search-tags web-fsn
+    /cluster htools:iextags:web-fsn
+    /instances/web-fsn-01.torproject.org web-fsn
+    /instances/web-fsn-02.torproject.org web-fsn
+
 ## Adding and removing addresses on instances
 
 Say you created an instance but forgot to need to assign an extra
@@ -182,9 +319,65 @@ IP. You can still do so with:
 
     gnt-instance modify --net -1:add,ip=116.202.120.174,network=gnt-fsn test01.torproject.org
 
+## Importing foreign VMs
+
+We do not have documentation on how to do those imports yet, but
+Riseup has [a section in their documentation](https://we.riseup.net/riseup+tech/ganeti#move-an-instance-from-one-cluster-to-another-from-) about this that we
+might want to take a look at. The Ganeti manual also has a (very
+short) section on [importing foreign instances](http://docs.ganeti.org/ganeti/2.15/html/admin.html#import-of-foreign-instances)
+
 ## Pager playbook
 
+### I/O overload
+
+In case of excessive I/O, it might be worth looking into which machine
+is in cause. The [[drbd]] page explains how to map a DRBD device to a
+VM. You can also find which logical volume is backing an instance (and
+vice versa) with this command:
+
+    lvs -o+tags
+
+This will list all logical volumes and their associated tags. If you
+already know which logical volume you're looking for, you can address
+it directly:
+
+    root@fsn-node-01:~# lvs -o tags /dev/vg_ganeti_hdd/4091b668-1177-41ac-9310-1eac45b46620.disk2_data
+      LV Tags
+      originstname+bacula-director-01.torproject.org
+
+### Node failures
+
+Ganeti clusters are designed to be [self-healing](http://docs.ganeti.org/ganeti/2.15/html/admin.html#autorepair). As long as only
+one machine disappears, the cluster should be able to recover by
+failing over other nodes. This is currently done manually, see the
+migrate section above.
+
+This could eventually be automated if such situations occur more
+often, by scheduling a [harep](http://docs.ganeti.org/ganeti/2.15/man/harep.html) cron job, which isn't enabled in
+Debian by default. See also the [autorepair](http://docs.ganeti.org/ganeti/2.15/html/admin.html#autorepair) section of the admin
+manual.
+
+### Other troubleshooting
+
+Riseup has [documentation on various failure scenarios](https://we.riseup.net/riseup+tech/ganeti#failure-scenarios) including
+master failover, which we haven't tested. There's also upstream
+documentation on [changing node roles](http://docs.ganeti.org/ganeti/2.15/html/admin.html#changing-the-node-role) which might be useful for a
+master failover scenario.
+
+The [walkthrough](http://docs.ganeti.org/ganeti/2.15/html/walkthrough.html) also has a few recipes to resolve common
+problems.
+
 ## Disaster recovery
+
+If things get completely out of hand and the cluster becomes too
+unreliable for service, the only solution is to rebuild another one
+elsewhere. Since Ganeti 2.2, there is a [move-instance](http://docs.ganeti.org/ganeti/2.15/html/move-instance.html) command to
+move instances between cluster that can be used for that purpose.
+
+If Ganeti is completely destroyed and its APIs don't work anymore, the
+last resort is to restore all virtual machines from
+[[backup]]. Hopefully, this should not happen except in the case of a
+catastrophic data loss bug in Ganeti or [[drbd]].
 
 # Reference
 
@@ -195,12 +388,14 @@ IP. You can still do so with:
 - To create a new box, follow [[new-machine-hetzner-robot]] but change
   the following settings:
 
-  * Server: [PX62-NVMe](https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER)
+  * Server: [PX62-NVMe][]
   * Location: `FSN1`
   * Operating system: Rescue
   * Additional drives: 2x10TB
   * Add in the comment form that the server needs to be in the same
     datacenter as the other machines (FSN1-DC13, but double-check)
+
+[PX62-NVMe]: https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER
 
 - Make sure all nodes have the same LVM setup and the same network setup.  They want openvswitch.  Cf. host `fsn-node-01`'s /etc/network/interfaces.
 
@@ -279,17 +474,12 @@ New nodes can be provisioned within a week or two, depending on budget
 and hardware availability.
 
 ## Design
-<!-- how this is built -->
-<!-- should reuse and expand on the "proposed solution", it's a -->
-<!-- "as-built" documented, whereas the "Proposed solution" is an -->
-<!-- "architectural" document, which the final result might differ -->
-<!-- from, sometimes significantly -->
 
 Our first Ganeti cluster (`gnt-fsn`) is made of multiple machines
 hosted with [Hetzner Robot](https://robot.your-server.de/), Hetzner's dedicated server hosting
 service. All machines use the same hardware to avoid problems with
 live migration. That is currently a customized build of the
-[PX62-NVMe](https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER) line.
+[PX62-NVMe][] line.
 
 ### Network layout
 
@@ -352,7 +542,7 @@ with:
     x86 Skylake-Server-IBRS   Intel Xeon Processor (Skylake, IBRS)
     [...]
 
-The current PX62 line is based on the [Coffee Lake](https://en.wikipedia.org/wiki/Coffee_Lake) Intel
+The current [PX62 line][PX62-NVMe] is based on the [Coffee Lake](https://en.wikipedia.org/wiki/Coffee_Lake) Intel
 micro-architecture. The closest matching family would be
 `Skylake-Server` or `Skylake-Server-IBRS`, [according to wikichip](https://en.wikichip.org/wiki/intel/microarchitectures/coffee_lake#Compiler_support).
 Note that newer QEMU releases (4.2, currently in unstable) have more
@@ -419,24 +609,57 @@ There is no issue tracker specifically for this project, [File][] or
 
 ## Overview
 
-<!-- describe the overall project. should include a link to a ticket -->
-<!-- that has a launch checklist -->
+The project of creating a Ganeti cluster for Tor has appeared in the
+summer of 2019. The machines were delivered by Hetzner in July 2019
+and setup by weasel by the end of the month.
 
 ## Goals
-<!-- include bugs to be fixed -->
+
+The goal was to replace the aging group of KVM servers (kvm[1-5], AKA
+textile, unifolium, macrum, kvm4 and kvm5).
 
 ### Must have
 
+ * arbitrary virtual machine provisionning
+ * redundant setup
+ * automated VM installation
+ * replacement of existing infrastructure
+
 ### Nice to have
+
+ * fully configured in Puppet
+ * full high availability with automatic failover
+ * extra capacity for new projects
 
 ### Non-Goals
 
+ * Docker or "container" provisionning - we consider this out of scope
+   for now
+ * self-provisionning by end-users: TPA remains in control of
+   provisionning
+
 ## Approvals required
-<!-- for example, legal, "vegas", accounting, current maintainer -->
+
+A budget was proposed by weasel in may 2019 and approved by Vegas in
+June. An extension to the budget was approved in january 2020 by
+Vegas.
 
 ## Proposed Solution
 
+Setup a Ganeti cluster of two machines with a Hetzner vSwitch backend.
+
 ## Cost
+
+The design based on the [PX62 line][PX62-NVMe] has the following monthly cost
+structure:
+
+ * per server: 118EUR (79EUR + 39EUR for 2x10TB HDDs)
+ * IPv4 space: 35.29EUR (/27)
+ * IPv6 space: 8.40EUR (/64)
+ * bandwidth cost: 1EUR/TB (currently 38EUR)
+
+At three servers, that adds up to around 435EUR/mth. Up to date costs
+are available in the [Tor VM hosts.xlsx](https://nc.torproject.net/apps/onlyoffice/5395) spreadsheet.
 
 ## Alternatives considered
 
