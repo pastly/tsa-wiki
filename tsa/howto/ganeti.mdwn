@@ -207,17 +207,6 @@ IP. You can still do so with:
 - Prepare all the nodes by configuring them in puppet.  They should be in the class `roles::ganeti::fsn` if they
   are part of the fsn cluster.  If you make a new cluster, make a new role and add nodes.
 
-Note: we considered experimenting with the new AX line
-([AX51-NVMe](https://www.hetzner.com/dedicated-rootserver/ax51-nvme?country=OTHER)) but in the past DSA had problems live-migrating (it
-wouldn't immediately fail but there were "issues" after). So we might
-need to [failover](http://docs.ganeti.org/ganeti/2.15/man/gnt-instance.html#failover) instead of migrate between those parts of the
-cluster. There are also doubts that the Linux kernel supports those
-shiny new processors at all: similar processors had [trouble booting
-before Linux 5.5](https://www.phoronix.com/scan.php?page=news_item&px=Threadripper-3000-MCE-5.5-Fix) for example, so it might be worth waiting a
-little before switching to that new platform, even if it's
-cheaper. See the cluster configuration section below for a larger
-discussion of CPU emulation.
-
 ### New cluster
 
 To create the fsn master, we added fsngnt to DNS, then ran
@@ -260,6 +249,86 @@ These could probably be merged into the cluster init, but just to document what 
     gnt-cluster modify -D drbd:c-plan-ahead=0,disk-custom='--c-plan-ahead 0'
     gnt-cluster modify -H kvm:migration_bandwidth=950
     gnt-cluster modify -H kvm:migration_downtime=500
+
+### Network configuration
+
+IP allocation is managed by Ganeti through the `gnt-network(8)`
+system. Say we have `192.0.2.0/24` reserved for the cluster, with
+the host IP `192.0.2.100`` and the gateway on `192.0.2.1`. You will
+create this network with:
+
+    gnt-network add --network 192.0.2.0/24 --gateway 192.0.2.1 --network6 2001:db8::/32 --gateway6 fe80::1 example-network
+
+Then we associate the new network to the default node group:
+
+    gnt-network connect --nic-parameters=link=br0,vlan=4000,mode=openvswitch example-network default
+
+The arguments to `--nic-parameters` come from the values configured in
+the cluster, above. The current values can be found with `gnt-cluster
+info`.
+
+## SLA
+
+As long as the cluster is not over capacity, it should be able to
+survive the loss of a node in the cluster unattended.
+
+Justified machines can be provisionned within a few business days
+without problems.
+
+New nodes can be provisioned within a week or two, depending on budget
+and hardware availability.
+
+## Design
+<!-- how this is built -->
+<!-- should reuse and expand on the "proposed solution", it's a -->
+<!-- "as-built" documented, whereas the "Proposed solution" is an -->
+<!-- "architectural" document, which the final result might differ -->
+<!-- from, sometimes significantly -->
+
+Our first Ganeti cluster (`gnt-fsn`) is made of multiple machines
+hosted with [Hetzner Robot](https://robot.your-server.de/), Hetzner's dedicated server hosting
+service. All machines use the same hardware to avoid problems with
+live migration. That is currently a customized build of the
+[PX62-NVMe](https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER) line.
+
+### Network layout
+
+Machines are interconnected over a [vSwitch](https://wiki.hetzner.de/index.php/Vswitch/en), a "virtual layer 2
+network" probably implemented using [Software-defined Networking](https://en.wikipedia.org/wiki/Software-defined_networking)
+(SDN) on top of Hetzner's network. The details of that implementation
+do not matter much to us, since we do not trust the network and run an
+IPsec layer on top of the vswitch. We communicate with the `vSwitch`
+through [Open vSwitch](https://en.wikipedia.org/wiki/Open_vSwitch) (OVS), which is (currently manually)
+configured on each node of the cluster.
+
+There are two distinct IPsec networks:
+
+ * `gnt-fsn-public`: the public network, which maps to the
+   `fsn-gnt-inet-vlan` vSwitch at Hetzner, the `vlan-gntinet` OVS
+   network, and the `gnt-fsn` network pool in Ganeti. it provides
+   public IP addresses and routing across the network. instances get
+   IP allocated in this network.
+
+ * `gnt-fsn-be`: the private ganeti network which maps to the
+   `fsn-gnt-backend-vlan` vSwitch at Hetzner and the `vlan-gntbe` OVS
+   network. it has no matching `gnt-network` component and IP
+   addresses are allocated manually in the 172.30.135.0/24 network
+   through DNS. it provides internal routing for Ganeti commands and
+   [[drbd]] storage mirroring.
+
+### Hardware variations
+
+We considered experimenting with the new AX line ([AX51-NVMe](https://www.hetzner.com/dedicated-rootserver/ax51-nvme?country=OTHER)) but
+in the past DSA had problems live-migrating (it wouldn't immediately
+fail but there were "issues" after). So we might need to [failover](http://docs.ganeti.org/ganeti/2.15/man/gnt-instance.html#failover)
+instead of migrate between those parts of the cluster. There are also
+doubts that the Linux kernel supports those shiny new processors at
+all: similar processors had [trouble booting before Linux 5.5](https://www.phoronix.com/scan.php?page=news_item&px=Threadripper-3000-MCE-5.5-Fix) for
+example, so it might be worth waiting a little before switching to
+that new platform, even if it's cheaper. See the cluster configuration
+section below for a larger discussion of CPU emulation.
+
+### CPU emulation
 
 Note that we might want to tweak the `cpu_type` parameter. By default,
 it emulates a lot of processing that can be delegated to the host CPU
@@ -312,37 +381,39 @@ References:
  * <https://dsa.debian.org/howto/install-ganeti/>
  * <https://qemu.weilnetz.de/doc/qemu-doc.html#recommendations_005fcpu_005fmodels_005fx86>
 
-### Network configuration
+### Installer
 
-IP allocation is managed by Ganeti through the `gnt-network(8)`
-system. Say we have `192.0.2.0/24` reserved for the cluster, with
-the host IP `192.0.2.100`` and the gateway on `192.0.2.1`. You will
-create this network with:
+The [ganeti-instance-debootstrap](https://tracker.debian.org/pkg/ganeti-instance-debootstrap) package is used to install
+instances. It is configured through Puppet with the [shared ganeti
+module](https://forge.puppet.com/smash/ganeti), which deploys a few hooks to automate the install as much
+as possible. The installer will:
 
-    gnt-network add --network 192.0.2.0/24 --gateway 192.0.2.1 --network6 2001:db8::/32 --gateway6 fe80::1 example-network
+ 1. setup grub to respond on the serial console
+ 2. setup and log a random root password
+ 3. make sure SSH is installed and log the public keys and
+    fingerprints
+ 4. setup swap if a labeled partition is present, or a 512MB swapfile
+    otherwise
+ 5. setup basic static networking through `/etc/network/interfaces.d`
 
-Then we associate the new network to the default node group:
+We have custom configurations on top of that to:
 
-    gnt-network connect --nic-parameters=link=br0,vlan=4000,mode=openvswitch example-network default
+ 1. add a few base packages
+ 2. do our own custom SSH configuration
+ 3. fix the hostname to be a FQDN
+ 4. add a line to `/etc/hosts`
+ 5. add a tmpfs
 
-The arguments to `--nic-parameters` come from the values configured in
-the cluster, above. The current values can be found with `gnt-cluster
-info`.
-
-## SLA
-<!-- this describes an acceptable level of service for this service -->
-
-## Design
-<!-- how this is built -->
-<!-- should reuse and expand on the "proposed solution", it's a -->
-<!-- "as-built" documented, whereas the "Proposed solution" is an -->
-<!-- "architectural" document, which the final result might differ -->
-<!-- from, sometimes significantly -->
+There is work underway to refactor and automate the install better,
+see [ticket 31239](https://trac.torproject.org/projects/tor/ticket/31239) for details.
 
 ## Issues
 
-<!-- such projects are never over. add a pointer to well-known issues -->
-<!-- and show how to report problems. usually a link to the bugtracker -->
+There is no issue tracker specifically for this project, [File][] or
+[search][] for issues in the [generic internal services][search] component.
+
+ [File]: https://trac.torproject.org/projects/tor/newticket?component=Internal+Services%2FTor+Sysadmin+Team
+ [search]: https://trac.torproject.org/projects/tor/query?status=!closed&component=Internal+Services%2FTor+Sysadmin+Team
 
 # Discussion
 
