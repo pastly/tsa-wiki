@@ -11,9 +11,175 @@ another, etc.
 <!-- simple, brainless step-by-step instructions requiring little or -->
 <!-- no technical background -->
 
+## Listing instances
+
+
+    gnt-instance list
+    gnt-node list
+    watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
+
 # How-to
 
-## Ganeti Cluster Operations
+## Adding a new instance
+
+This command creates a new guest, or "instance" in Ganeti's
+vocabulary:
+
+    gnt-instance add \
+      -o debootstrap+buster \
+      -t drbd --no-wait-for-sync \
+      --disk 0:size=10G \
+      --disk 1:size=2G,name=swap \
+      --disk 2:size=20G \
+      --disk 3:size=800G,vg=vg_ganeti_hdd \
+      --backend-parameters memory=8g,vcpus=2 \
+      --net 0:ip=pool,network=gnt-fsn \
+      --no-name-check \
+      --no-ip-check \
+      static-master-fsn.torproject.org
+
+TODO: the above doesn't include the private network configuration.
+
+WARNING: there is a bug in `ganeti-instance-debootstrap` which
+misconfigures `ping` (among other things), see [bug #31781](https://bugs.torproject.org/31781). It's
+currently patched on the two known Ganeti nodes, but that patch might
+disappear if there's a spurious upgrade of the package.
+
+This configures the following:
+
+ * redundant disks in a DRBD mirror, use `-t plain` instead of `-t drbd` for
+   tests as that avoids syncing of disks and will speed things up considerably
+   (even with `--no-wait-for-sync` there are some operations that block on
+   synced mirrors).  Only one node should be provided as the argument for
+   `--node` then.
+ * three partitions: one on the default VG (SSD), one on another (HDD)
+   and a swap file on the default VG, if you don't specify a swap device,
+   a 512MB swapfile is created in `/swapfile`
+ * 2GB of RAM with 2 virtual CPUs
+ * an IP allocated from the public gnt-fsn pool:
+   `gnt-instance add` will print the IPv4 address it picked to stdout.  The
+   IPv6 address can be found in `/var/log/ganeti/os/` on the primary node
+   of the instance, see below.
+ * with the `test01.torproject.org` hostname
+
+To find the root password, ssh host key fingerprints, and the IPv6
+address, run this **on the node where the instance was created**, for
+example:
+
+    egrep 'root password|configured eth0 with|SHA256' $(ls -tr /var/log/ganeti/os/* | tail -1) | grep -v $(hostname)
+
+Note that you need to use the `--node` parameter to pick on which
+machines you want the machine to end up, otherwise Ganeti will choose
+for you. Use, for example, `--node fsn-node-01:fsn-node-02` to use
+`node-01` as primary and `node-02` as secondary. It might be better to
+let the Ganeti allocator do its job since it will, eventually do this
+during cluster rebalancing.
+
+We copy root's authorized keys into the new instance, so you should be able to
+log in with your token.  You will be required to change the root password immediately.
+Pick something nice and document it in `tor-passwords`.
+
+Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.your-server.de/).
+
+Then follow [[new-machine]].
+
+## Adding and removing addresses on instances
+
+Say you created an instance but forgot to assign a private IP. You can
+still do so with:
+
+    gnt-instance modify --net -1:add,ip=172.30.135.3,network=internal test01.torproject.org
+
+TODO: the internal network hasn't been created yet.
+
+## Destroying an instance
+
+This totally deletes the instance, including all mirrors and
+everything, be very careful with it:
+
+    gnt-instance remove test01.torproject.org
+
+## Accessing serial console
+
+Our instances do serial console, starting in grub.  To access it, run
+
+    gnt-instance console test01.torproject.org
+
+To exit, use `^]` -- that is, Control-&lt;Closing Bracket&gt;.
+
+## Disk operations (DRBD)
+
+Instances should be setup using the DRBD backend, in which case you
+should probably take a look at [[drbd]] if you have problems with
+that. Ganeti handles most of the logic there so that should generally
+not be necessary.
+
+## Rebooting
+
+Those hosts need special care, as we can accomplish zero-downtime
+reboots on those machines. There's a script (`ganeti-reboot-cluster`)
+deployed in the ganeti cluster that can be ran on the master to
+migrate all instances around and perform a clean reboot.
+
+Such a reboot should be ran interactively, inside a `tmux` or `screen`
+session, and takes over 15 minutes to complete right now, but depends
+on the size of the cluster (in terms of core memory usage).
+
+Once the reboot is completed, all instances might end up on a single
+machine, and the cluster might need to be rebalanced. This is
+automatically scheduled by the `ganeti-reboot-cluster` script and will
+be done within 30 minutes of the reboot.
+
+## Rebalancing a cluster
+
+After a reboot or a downtime, all nodes might end up on the same
+machine. This is normally handled by the reboot script, but it might
+be desirable to do this by hand if there was a crash or another
+special condition.
+
+This can be easily corrected with this command, which will spread
+instances around the cluster to balance it:
+
+    hbal -L -C -v -X
+
+This will automatically move the instances around and rebalance the
+cluster. Here's an example run on a small cluster:
+
+    root@fsn-node-01:~# gnt-instance list
+    Instance                          Hypervisor OS                 Primary_node               Status  Memory
+    loghost01.torproject.org          kvm        debootstrap+buster fsn-node-02.torproject.org running   2.0G
+    onionoo-backend-01.torproject.org kvm        debootstrap+buster fsn-node-02.torproject.org running  12.0G
+    static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
+    web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+    web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+    root@fsn-node-01:~# hbal -L -X
+    Loaded 2 nodes, 5 instances
+    Group size 2 nodes, 5 instances
+    Selected node group: default
+    Initial check done: 0 bad nodes, 0 bad instances.
+    Initial score: 8.45007519
+    Trying to minimize the CV...
+        1. onionoo-backend-01 fsn-node-02:fsn-node-01 => fsn-node-01:fsn-node-02   4.98124611 a=f
+        2. loghost01          fsn-node-02:fsn-node-01 => fsn-node-01:fsn-node-02   1.78271883 a=f
+    Cluster score improved from 8.45007519 to 1.78271883
+    Solution length=2
+    Got job IDs 16345
+    Got job IDs 16346
+    root@fsn-node-01:~# gnt-instance list
+    Instance                          Hypervisor OS                 Primary_node               Status  Memory
+    loghost01.torproject.org          kvm        debootstrap+buster fsn-node-01.torproject.org running   2.0G
+    onionoo-backend-01.torproject.org kvm        debootstrap+buster fsn-node-01.torproject.org running  12.0G
+    static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
+    web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+    web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
+
+## Pager playbook
+
+## Disaster recovery
+
+# Reference
+
+## Installation
 
 ### Cluster Setup Preliminaries
 
@@ -155,176 +321,6 @@ the cluster, above. The current values can be found with `gnt-cluster
 info`.
 
 TODO: create a private network.
-
-### Listing instances and nodes
-
-    gnt-instance list
-    gnt-node list
-    watch -n5 -d 'gnt-instance list -o pnode,name,be/vcpus,be/memory,status,disk_template  |  sort; echo; gnt-node list'
-
-## Instance Operations
-
-### Adding a new instance
-
-This command creates a new guest, or "instance" in Ganeti's
-vocabulary:
-
-    gnt-instance add \
-      -o debootstrap+buster \
-      -t drbd --no-wait-for-sync \
-      --disk 0:size=10G \
-      --disk 1:size=2G,name=swap \
-      --disk 2:size=20G \
-      --disk 3:size=800G,vg=vg_ganeti_hdd \
-      --backend-parameters memory=8g,vcpus=2 \
-      --net 0:ip=pool,network=gnt-fsn \
-      --no-name-check \
-      --no-ip-check \
-      static-master-fsn.torproject.org
-
-TODO: the above doesn't include the private network configuration.
-
-WARNING: there is a bug in `ganeti-instance-debootstrap` which
-misconfigures `ping` (among other things), see [bug #31781](https://bugs.torproject.org/31781). It's
-currently patched on the two known Ganeti nodes, but that patch might
-disappear if there's a spurious upgrade of the package.
-
-This configures the following:
-
- * redundant disks in a DRBD mirror, use `-t plain` instead of `-t drbd` for
-   tests as that avoids syncing of disks and will speed things up considerably
-   (even with `--no-wait-for-sync` there are some operations that block on
-   synced mirrors).  Only one node should be provided as the argument for
-   `--node` then.
- * three partitions: one on the default VG (SSD), one on another (HDD)
-   and a swap file on the default VG, if you don't specify a swap device,
-   a 512MB swapfile is created in `/swapfile`
- * 2GB of RAM with 2 virtual CPUs
- * an IP allocated from the public gnt-fsn pool:
-   `gnt-instance add` will print the IPv4 address it picked to stdout.  The
-   IPv6 address can be found in `/var/log/ganeti/os/` on the primary node
-   of the instance, see below.
- * with the `test01.torproject.org` hostname
-
-To find the root password, ssh host key fingerprints, and the IPv6
-address, run this **on the node where the instance was created**, for
-example:
-
-    egrep 'root password|configured eth0 with|SHA256' $(ls -tr /var/log/ganeti/os/* | tail -1) | grep -v $(hostname)
-
-Note that you need to use the `--node` parameter to pick on which
-machines you want the machine to end up, otherwise Ganeti will choose
-for you. Use, for example, `--node fsn-node-01:fsn-node-02` to use
-`node-01` as primary and `node-02` as secondary. It might be better to
-let the Ganeti allocator do its job since it will, eventually do this
-during cluster rebalancing.
-
-We copy root's authorized keys into the new instance, so you should be able to
-log in with your token.  You will be required to change the root password immediately.
-Pick something nice and document it in `tor-passwords`.
-
-Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.your-server.de/).
-
-Then follow [[new-machine]].
-
-### Adding and removing addresses on instances
-
-Say you created an instance but forgot to assign a private IP. You can
-still do so with:
-
-    gnt-instance modify --net -1:add,ip=172.30.135.3,network=internal test01.torproject.org
-
-TODO: the internal network hasn't been created yet.
-
-### Destroying an instance
-
-This totally deletes the instance, including all mirrors and
-everything, be very careful with it:
-
-    gnt-instance remove test01.torproject.org
-
-### Accessing serial console
-
-Our instances do serial console, starting in grub.  To access it, run
-
-    gnt-instance console test01.torproject.org
-
-To exit, use `^]` -- that is, Control-&lt;Closing Bracket&gt;.
-
-### Disk operations (DRBD)
-
-Instances should be setup using the DRBD backend, in which case you
-should probably take a look at [[drbd]] if you have problems with
-that. Ganeti handles most of the logic there so that should generally
-not be necessary.
-
-### Rebooting
-
-Those hosts need special care, as we can accomplish zero-downtime
-reboots on those machines. There's a script (`ganeti-reboot-cluster`)
-deployed in the ganeti cluster that can be ran on the master to
-migrate all instances around and perform a clean reboot.
-
-Such a reboot should be ran interactively, inside a `tmux` or `screen`
-session, and takes over 15 minutes to complete right now, but depends
-on the size of the cluster (in terms of core memory usage).
-
-Once the reboot is completed, all instances might end up on a single
-machine, and the cluster might need to be rebalanced. This is
-automatically scheduled by the `ganeti-reboot-cluster` script and will
-be done within 30 minutes of the reboot.
-
-### Rebalancing a cluster
-
-After a reboot or a downtime, all nodes might end up on the same
-machine. This is normally handled by the reboot script, but it might
-be desirable to do this by hand if there was a crash or another
-special condition.
-
-This can be easily corrected with this command, which will spread
-instances around the cluster to balance it:
-
-    hbal -L -C -v -X
-
-This will automatically move the instances around and rebalance the
-cluster. Here's an example run on a small cluster:
-
-    root@fsn-node-01:~# gnt-instance list
-    Instance                          Hypervisor OS                 Primary_node               Status  Memory
-    loghost01.torproject.org          kvm        debootstrap+buster fsn-node-02.torproject.org running   2.0G
-    onionoo-backend-01.torproject.org kvm        debootstrap+buster fsn-node-02.torproject.org running  12.0G
-    static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
-    web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
-    web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
-    root@fsn-node-01:~# hbal -L -X
-    Loaded 2 nodes, 5 instances
-    Group size 2 nodes, 5 instances
-    Selected node group: default
-    Initial check done: 0 bad nodes, 0 bad instances.
-    Initial score: 8.45007519
-    Trying to minimize the CV...
-        1. onionoo-backend-01 fsn-node-02:fsn-node-01 => fsn-node-01:fsn-node-02   4.98124611 a=f
-        2. loghost01          fsn-node-02:fsn-node-01 => fsn-node-01:fsn-node-02   1.78271883 a=f
-    Cluster score improved from 8.45007519 to 1.78271883
-    Solution length=2
-    Got job IDs 16345
-    Got job IDs 16346
-    root@fsn-node-01:~# gnt-instance list
-    Instance                          Hypervisor OS                 Primary_node               Status  Memory
-    loghost01.torproject.org          kvm        debootstrap+buster fsn-node-01.torproject.org running   2.0G
-    onionoo-backend-01.torproject.org kvm        debootstrap+buster fsn-node-01.torproject.org running  12.0G
-    static-master-fsn.torproject.org  kvm        debootstrap+buster fsn-node-02.torproject.org running   8.0G
-    web-fsn-01.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
-    web-fsn-02.torproject.org         kvm        debootstrap+buster fsn-node-02.torproject.org running   4.0G
-
-## Pager playbook
-
-## Disaster recovery
-
-# Reference
-
-## Installation
-<!-- how to setup the service from scratch -->
 
 ## SLA
 <!-- this describes an acceptable level of service for this service -->
