@@ -8,8 +8,13 @@ another, etc.
 
 # Tutorial
 
-<!-- simple, brainless step-by-step instructions requiring little or -->
-<!-- no technical background -->
+In Ganeti, a physical machine is called a *node* and a virtual machine
+is an *instance*. A node is elected to be the *master* where all
+commands should be ran from. Nodes are interconnected through a
+private network that is used to communicate commands and synchronise
+disks (with [[drbd]]). Instances are normally assigned two nodes: a
+*primary* and a *secondary*: the *primary* is where the virtual
+machine actually runs and th *secondary* acts as a hot failover.
 
 ## Listing instances
 
