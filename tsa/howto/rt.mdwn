@@ -1,0 +1,42 @@
+How-to
+======
+
+Creating a queue
+----------------
+
+On the RT web interface:
+
+ 1. authenticate to <https://rt.torproject.org/>
+ 2. head to the [Queue creation form](https://rt.torproject.org/Admin/Queues/Modify.html?Create=1) (Admin -> Queues -> Create)
+ 3. pick a Queue Name, set the `Reply Address` to
+    `QUEUENAME@rt.torproject.org` and leave the `Comment Address`
+    blank
+ 4. hit the `Create` button
+ 5. grant a group access to the queue, in the `Group rights` tab
+    ([create a group](https://rt.torproject.org/Admin/Groups/Modify.html?Create=1) if necessary)
+
+On the RT server (currently `rude`):
+
+ 1. edit the `/etc/aliases` file to add a line like:
+
+        rt-QUEUENAME: rtmailarchive+QUEUENAME,      "|/usr/bin/rt-mailgate --queue QUEUENAME --action correspond --url https://rt.torproject.org/"
+
+ 2. regenerate the alias database:
+    
+        newaliases
+
+ 3. add an entry in the virtual table (`/etc/postfix/virtual`):
+    
+        QUEUENAME@rt.torproject.org rt-QUEUENAME
+
+In Puppet:
+
+ 1. add an entry in the main mail server virtual file (currently
+    `tor-puppet/modules/postfix/files/virtual`) like:
+    
+        QUEUENAME@torproject.org         QUEUENAME@rt.torproject.org
+
+TODO: the above should be automated. Ideally,
+`QUEUENAME@rt.torproject.org` should be an alias that automatically
+sends the message to the relevant `QUEUENAME`. That way, RT admins can
+create Queues without requiring the intervention of a sysadmin.
