@@ -14,6 +14,43 @@ specifically the instructions on how to:
 
 # How-to
 
+## Troubleshooting changes@ failures
+
+A common user question is that they are unable to change their SSH
+key. This can happen if their email client somehow has trouble sending
+a PGP signature correctly. Most often than not, this is because their
+email client does a line wrap or somehow corrupts the OpenPGP
+signature in the email.
+
+A good place to start looking for such problems is the log files on
+the LDAP server (currently `alberti`). For example, this has a trace
+of all the emails received by the `changes@` alias:
+
+    /srv/db.torproject.org/mail-logs/received.changes
+
+A common problem is people using `--clearsign` instead of `--sign`
+when sending an SSH key. When that hapepns, many email clients
+(including Gmail) will word-wrap the SSH key after the comment,
+breaking the signature. For example, this might happen:
+
+    -----BEGIN PGP SIGNED MESSAGE-----
+    Hash: SHA512
+
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKxqYYEeus8dRXBHhLsp0SjH7ut2X8UM9hdXN=
+    wJIl89otcJ5qKoXj90K9hq8eBjG2KuAZtp0taGQHqzBOFK+sFm9/gIqvzzQ07Pn0xtkmg10Hunq=
+    vPKMj4gDFLIqTF0WSPA2E6L/TWaeVJ+IiGuE49j+0Ohd7UFDEquM1H/zno22vIEm/dxWLPWD9gG=
+    MmwBghvfK/dRyzSEDGlAVeWLzoIvVOG12/ANgic3TlftbhiLKTs52hy8Qhq/aQBqd0McaE4JGxe=
+    9k71OCg+0WHVS4q7HVdTUqT3VFFfz0kjDzYTYQQcHMqPHvYzZghxMVCmteNdJNwJmGSNPVaUeJG=
+    MumJ9
+    anarcat@curie
+
+    -----BEGIN PGP SIGNATURE-----
+    [...]
+    -----END PGP SIGNATURE-----
+
+Using `--sign --armor` will work around this problem, as the original
+message will all be ascii-armored.
+
 ## Restoring from backups
 
 There's no special backup procedures for the LDAP server: it's backed
