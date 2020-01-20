@@ -3,6 +3,11 @@
 Procedure
 =========
 
+Before upgrading a box, it might be preferable to coordinate with the
+service admins to see if the box will survive the upgrade. See
+[[upgrades]] for the list of teams and how they prefer to handle that
+process.
+
  1. Preperation:
 
         : reset to the default locale
