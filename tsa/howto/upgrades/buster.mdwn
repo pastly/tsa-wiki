@@ -8,7 +8,7 @@ service admins to see if the box will survive the upgrade. See
 [[upgrades]] for the list of teams and how they prefer to handle that
 process.
 
- 1. Preperation:
+ 1. Preparation:
 
         : reset to the default locale
         export LC_ALL=C.UTF-8 &&
