@@ -106,6 +106,26 @@ process.
 
 [this guide to free up space]: http://www.debian.org/releases/buster/amd64/release-notes/ch-upgrading.en.html#sufficient-space
 
+Service-specific upgrade procedures
+===================================
+
+PostgreSQL
+----------
+
+PostgreSQL is special and needs to be upgraded manually. The exact
+procedure remains to be determined, but it should be something like:
+
+    pg_upgradecluster -m upgrade -k &&
+    for cluster in `ls /etc/postgresql/9.6/`; do
+        mv /etc/postgresql/9.6/$cluster/conf.d/* /etc/postgresql/11/$cluster/conf.d/
+    done
+
+Then the backups need to be reset on the backup storage host because
+the WAL counters may change:
+
+    12:23:44 <weasel> and once you're done with the upgrade, move the backup on the backuphost aside and let it backup to a new directory
+    12:23:54 <weasel> upgrades might/will(?) reset the WAL counter
+
 Issues
 ======
 
