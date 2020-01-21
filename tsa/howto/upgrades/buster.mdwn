@@ -112,19 +112,25 @@ Service-specific upgrade procedures
 PostgreSQL
 ----------
 
-PostgreSQL is special and needs to be upgraded manually. The exact
-procedure remains to be determined, but it should be something like:
+PostgreSQL is special and needs to be upgraded manually. First, make a
+full backup of the old cluster:
+
+    ssh bungei.torproject.org "sudo -u torbackup postgres-make-one-base-backup $(grep ^meronense.torproject.org $(which postgres-make-base-backups ))"
+
+The above assumes the host to backup is `meronense` and the backup
+server is `bungei`. See [[postgresql]] for details of that procedure.
+
+Once the backup completes, move the directory out of the way and
+recreate it:
+
+    ssh bungei.torproject.org "mv /srv/backups/pg/meronense /srv/backups/pg/meronense-9.6 && sudo -u torbackup mkdir /srv/backups/pg/meronense"
+
+Then do the actual cluster upgrade:
 
     pg_upgradecluster -m upgrade -k &&
     for cluster in `ls /etc/postgresql/9.6/`; do
         mv /etc/postgresql/9.6/$cluster/conf.d/* /etc/postgresql/11/$cluster/conf.d/
     done
-
-Then the backups need to be reset on the backup storage host because
-the WAL counters may change:
-
-    12:23:44 <weasel> and once you're done with the upgrade, move the backup on the backuphost aside and let it backup to a new directory
-    12:23:54 <weasel> upgrades might/will(?) reset the WAL counter
 
 Issues
 ======
