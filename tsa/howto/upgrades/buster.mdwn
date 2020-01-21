@@ -1,4 +1,8 @@
-[[!toc]]
+Debian 10 [buster](https://wiki.debian.org/DebianBuster) was released on [july 6th 2019](https://lists.debian.org/debian-devel-announce/2019/07/msg00002.html). Tor started
+the upgrade to buster during the freeze and hopes to complete the
+process before the stretch EOL, somewhere in 2020.
+
+[[!toc levels=3]]
 
 Procedure
 =========
@@ -165,6 +169,37 @@ PostgreSQL is special and needs to be upgraded manually.
            # db.tpo
            alberti:
              address: 94.130.28.196
+
+Notable changes
+===============
+
+Here is a subset of the [notable changes in this release](https://www.debian.org/releases/buster/amd64/release-notes/ch-whats-new.en.html#newdistro), along
+with our risk analysis and notes:
+
+| Package      | Stretch | Buster | Notes |
+| ------------ | ------- | ------ | ----- |
+| Apache       | 2.4.25  | 2.4.38 | |
+| Bind         | 9.10    | 9.11   | |
+| Cryptsetup   | 1.7     | 2.1    | |
+| Docker       | N/A     | 18     | Docker back in Debian? |
+| GnuPG        | 2.1     | 2.2    | |
+| Linux kernel | 4.9     | 4.19   | |
+| MariaDB      | 10.1    | 10.3   | |
+| OpenJDK      | 8       | 11     | major upgrade, TBD |
+| OpenSSH      | 7.4     | 7.8    | |
+| Perl         | 5.24    | 5.28   | |
+| Postfix      | 3.1.8   | 3.3.2  | |
+| PostgreSQL   | 9.6     | 11     | two major upgrades, release notes: [10](https://www.postgresql.org/docs/10/release-10.html) [11](https://www.postgresql.org/docs/11/release-11.html)|
+| Rustc        | N/A     | 1.34   | Rust enters Debian |
+
+Many packages were removed from Buster. Anarcat built an [exhaustive
+list](https://paste.anarc.at/publish/debian-packages-removed-from-buster-without-libs/stdin.txt) on May 16th 2019, but it's probably changed since then. See
+also the [noteworthy obsolete packages](https://www.debian.org/releases/buster/amd64/release-notes/ch-information.en.html#noteworthy-obsolete-packages) list.
+
+Python 2 is unsupported upstream since January 1st 2020. We have a
+significant number of Python scripts that will need to be upgraded. It
+is unclear what will happen to Python 2 in Debian in terms of security
+support for the buster lifetime.
 
 Issues
 ======
