@@ -31,8 +31,7 @@ process.
 
  3. Enable module loading (for ferm) and test reboots:
 
-        systemctl disable modules_disabled.timer
-
+        systemctl disable modules_disabled.timer &&
         shutdown -r +1 "rebooting with module loading enabled"
 
         export LC_ALL=C.UTF-8 &&
@@ -80,10 +79,8 @@ process.
         dpkg --purge libsensors4:amd64 syslog-ng-mod-json || true &&
         puppet agent --enable &&
         (puppet agent -t || true) &&
-        (puppet agent -t || true)
-
- 7. reboot once so we can then get rid of the old kernel image
-
+        (puppet agent -t || true) &&
+        printf "End of Step 7\a\n" &&
         shutdown -r +1 "rebooting to get rid of old kernel image..."
 
  8. Post-upgrade checks:
