@@ -77,6 +77,17 @@ Same with databases:
 
 Source: [PostgreSQL wiki](https://wiki.postgresql.org/wiki/Disk_Usage). See also [the upstream manual](https://www.postgresql.org/docs/9.1/disk-usage.html).
 
+Running a full backup
+---------------------
+
+Backups are normally automatically ran on the backup server (currently
+`bungei`) but you can also run a backup by hand. This will run a
+backup of `meronense`, for example:
+
+    sudo -u torbackup postgres-make-one-base-backup $(grep ^meronense.torproject.org $(which postgres-make-base-backups ))
+
+See the [reference](#Reference) section for details.
+
 Picking a restore procedures
 ----------------------------
 
