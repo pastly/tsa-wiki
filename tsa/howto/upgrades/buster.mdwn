@@ -56,7 +56,7 @@ process.
 
  5. Enable module loading (for ferm)
 
-        sed -i -e 's/.*modules_disabled/#&/' /etc/rc.local
+        systemctl disable modules_disabled.timer
 
         reboot
 
