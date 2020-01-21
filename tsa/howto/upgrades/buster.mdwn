@@ -33,7 +33,7 @@ process.
 
         systemctl disable modules_disabled.timer
 
-        reboot
+        shutdown -r +1 "rebooting with module loading enabled"
 
         export LC_ALL=C.UTF-8 &&
         sudo ttyrec -a -e screen /var/log/upgrade-buster.ttyrec
@@ -85,7 +85,7 @@ process.
 
  7. reboot once so we can then get rid of the old kernel image
 
-        reboot
+        shutdown -r +1 "rebooting to get rid of old kernel image..."
 
  8. Post-upgrade checks:
 
@@ -101,7 +101,7 @@ process.
         apt clean
         # review packages that are not in the new distribution
         apt-show-versions | grep -v /buster
-        reboot
+        shutdown -r +1 "testing reboots one final time"
 
  9. Change the hostgroup of the host to buster in Nagios (in
     `tor-nagios/config/nagios-master.cfg` on `git@git-rw.tpo`)
