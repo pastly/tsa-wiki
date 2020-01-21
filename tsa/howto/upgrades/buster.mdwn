@@ -1,6 +1,7 @@
-Debian 10 [buster](https://wiki.debian.org/DebianBuster) was released on [july 6th 2019](https://lists.debian.org/debian-devel-announce/2019/07/msg00002.html). Tor started
+Debian 10 [buster](https://wiki.debian.org/DebianBuster) was released on [July 6th 2019](https://lists.debian.org/debian-devel-announce/2019/07/msg00002.html). Tor started
 the upgrade to buster during the freeze and hopes to complete the
-process before the stretch EOL, somewhere in 2020.
+process before the stretch EOL, [one year after the stable
+release](https://www.debian.org/security/faq#lifespan), so normally around July 2020.
 
 [[!toc levels=3]]
 
