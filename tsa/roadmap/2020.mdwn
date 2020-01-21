@@ -120,6 +120,7 @@ June
 July
 ====
 
+ * Debian stretch EOL, final deadline for buster upgrades
  * anarcat vacation
  * tor meeting?
  * hiro tentative vacations
@@ -152,7 +153,6 @@ November
 December
 ========
 
- * Debian stretch EOL, final deadline for buster upgrades
  * stabilisation & bugfixing
  * 2021 roadmapping
  * one or two week xmas holiday
