@@ -112,25 +112,27 @@ Service-specific upgrade procedures
 PostgreSQL
 ----------
 
-PostgreSQL is special and needs to be upgraded manually. First, make a
-full backup of the old cluster:
+PostgreSQL is special and needs to be upgraded manually. 
 
-    ssh bungei.torproject.org "sudo -u torbackup postgres-make-one-base-backup $(grep ^meronense.torproject.org $(which postgres-make-base-backups ))"
+ 1. make a full backup of the old cluster:
 
-The above assumes the host to backup is `meronense` and the backup
-server is `bungei`. See [[postgresql]] for details of that procedure.
+        ssh bungei.torproject.org "sudo -u torbackup postgres-make-one-base-backup $(grep ^meronense.torproject.org $(which postgres-make-base-backups ))"
 
-Once the backup completes, move the directory out of the way and
-recreate it:
+    The above assumes the host to backup is `meronense` and the backup
+    server is `bungei`. See [[postgresql]] for details of that
+    procedure.
 
-    ssh bungei.torproject.org "mv /srv/backups/pg/meronense /srv/backups/pg/meronense-9.6 && sudo -u torbackup mkdir /srv/backups/pg/meronense"
+ 2. Once the backup completes, move the directory out of the way and
+    recreate it:
 
-Then do the actual cluster upgrade:
+        ssh bungei.torproject.org "mv /srv/backups/pg/meronense /srv/backups/pg/meronense-9.6 && sudo -u torbackup mkdir /srv/backups/pg/meronense"
 
-    pg_upgradecluster -m upgrade -k &&
-    for cluster in `ls /etc/postgresql/9.6/`; do
-        mv /etc/postgresql/9.6/$cluster/conf.d/* /etc/postgresql/11/$cluster/conf.d/
-    done
+ 3. do the actual cluster upgrade, on the database server:
+
+        pg_upgradecluster -m upgrade -k &&
+        for cluster in `ls /etc/postgresql/9.6/`; do
+            mv /etc/postgresql/9.6/$cluster/conf.d/* /etc/postgresql/11/$cluster/conf.d/
+        done
 
 Issues
 ======
