@@ -296,6 +296,10 @@ TBD.
  * [list of debian setup tools](https://wiki.debian.org/SystemBuildTools), see also
    [AutomatedInstallation](https://wiki.debian.org/AutomatedInstallation)
  * [livewrapper](https://salsa.debian.org/enrico/live-wrapper) is also one of those installers, in a way
+ * [vmdb2](https://vmdb2.liw.fi/) - a rewrite of vmdeboostrap, which uses a YAML file to
+   describe a set of "steps" to take to install Debian, should work on
+   VM images but also disks, no RAID support and a [significant number
+   of bugs](https://bugs.debian.org/cgi-bin/pkgreport.cgi?repeatmerged=no&src=vmdb2) might affect reliability in production
  * [MAAS](https://maas.io/) - PXE-based, assumes network control which we don't have
    and has all sorts of features we don't want
  * [[puppet]] - Puppet could bootstrap itself, with `puppet apply` ran
