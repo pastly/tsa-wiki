@@ -1,0 +1,162 @@
+[[!toc]]
+
+Introduction
+============
+
+This page documents a possible roadmap for the TPA team for the year 2020.
+
+Items should be "SMART" <https://en.wikipedia.org/wiki/SMART_criteria>, that is:
+
+ * specific
+ * measurable
+ * achievable
+ * relevant
+ * time-bound
+
+Main objectives (need to have):
+
+ * decommissining of old machines (moly in particular)
+ * move critical services in ganeti
+ * buster upgrades before LTS
+ * within budget
+
+Secondary objectives (nice to have):
+
+ * new mail service
+ * conversion of the kvm* fleet to ganeti for higher reliability and availability
+ * buster upgrade completion before anarcat vacation
+
+Non-objective:
+
+ * service admin roadmapping?
+ * kubernetes cluster deployment?
+
+TODO:
+
+ * identify critical services and realistic improvements #31243
+ * hiro roadmap
+ * anarcat roadmap post vacation
+ * gitlab / nextcloud roadmap?
+
+Assertions:
+
+ * new gnt-fsn nodes with current hardware (PX62-NVMe, 118EUR/mth), cost savings possible with the AX line (-20EUR/mth) or by reducing disk space requirements (-39EUR/mth) per node
+ * cymru actually delivers hardware and is used for moly decom
+ * gitlab hardware requirements covered by another budget
+ * we absorb the extra bandwidth costs from the new hardware design (currently 38EUR per month but could rise when new bandwidth usage comes in) - could be shifted to TBB team or at least labeled as such
+
+January
+=======
+
+ * catchup after holidays
+ * agree internally on a roadmap for 2020
+ * first phase of installer automation (setup-storage and friends) #31239
+ * new FSN node in the Ganeti cluster (fsn-node-03) #32937
+ * textile shutdown and VM relocation,. 2 VMs to migrate #31686 (+86EUR)
+ * enable needrestart fleet-wide (#31957)
+ * communicate buster upgrade timeline to service admins
+ * buster upgrade 63% done: 48 buster, 28 stretch machines
+
+February
+========
+
+ * 2020 roadmap officially adopted
+ * second phase of installer automation #31239 (esp. puppet automation, e.g. #32901, #32914)
+ * automate upgrades: enable unattended-upgrades fleet-wide (#31957)
+ * nc.riseup.net cleanup #32391
+ * storm shutdown #32390
+ * unifolium decom (after storm), 5 VMs to migrate, +72EUR=+158EUR
+ * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR
+ * SVN shutdown? #17202
+ * submit service R&D #30608
+ * buster upgrade 70% done: 53 buster (+5), 23 stretch (-5)
+
+March
+=====
+
+High possibility of overload here (two major decoms and many machines setup). Possible to push moly/cymru work to april?
+
+ * 2021 budget proposal?
+ * possible gnt-cymru cluster setup (~6 machines) #29397
+ * moly decom #29974, 5 VMs to migrate
+ * kvm3 decom, 7 VMs to migrate (inc. crm-int and crm-ext), +72EUR=+112EUR
+ * new gnt-fsn node -118EUR=-6EUR
+ * eugeni VM migration to gnt-fsn
+ * submit service R&D #30608
+ * buster upgrade 80% done: 61 buster (+8), 15 stretch (-8)
+
+April
+=====
+
+ * kvm4 decom, 9 VMs to migrate #32802 (w/o eugeni), +121EUR=+115EUR
+ * new gnt-fsn node (fsn-node-05) -118EUR=-3EUR
+ * buster upgrade 90% done: 68 buster (+7), 8 stretch (-7)
+ * first submit service prototype? #30608
+
+May
+===
+
+ * kvm5 decom, 10 VMs to migrate, +111EUR=+108EUR
+ * new gnt-fsn node (fsn-node-06) -118EUR=-10EUR
+ * buster upgrade 100% done: 76 buster (+8), 0 stretch (-8)
+ * current planned completion date of Buster upgrades
+ * start ramping down work, training and documentation
+
+June
+====
+
+ * Debian jessie LTS EOL, chiwui forcibly shutdown #29399
+ * finish ramp-down, final bugfixing and training before vacation
+
+July
+====
+
+ * anarcat vacation
+ * tor meeting?
+
+August
+======
+
+ * anarcat vacation
+
+September
+=========
+
+ * plan contingencies for christmas holidays
+ * catchup following vacation
+
+October
+=======
+
+ * puppet work (finish prometheus module development, puppet environments, trocla, Hiera, publish code #29387)
+ * varnish to nginx conversion #32462
+
+November
+========
+
+ * TBD
+
+December
+========
+
+ * Debian stretch EOL, final deadline for buster upgrades
+ * stabilisation & bugfixing
+ * 2021 roadmapping
+ * one or two week xmas holiday
+ * CCC?
+
+2021 preview
+============
+
+Objectives:
+
+ * complete puppetization
+ * experiment with containers/kubernetes?
+ * close and merge more services
+ * replace nagios with prometheus? #29864
+ * new hire?
+
+Monhtly goals:
+
+ * january: roadmap approval
+ * march/april: anarcat vacation
