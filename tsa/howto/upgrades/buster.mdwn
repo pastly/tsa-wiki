@@ -128,6 +128,10 @@ PostgreSQL is special and needs to be upgraded manually.
 
  3. do the actual cluster upgrade, on the database server:
 
+        export LC_ALL=C.UTF-8 &&
+        printf "about to drop cluster main on postgresql-11, press enter to continue" &&
+        read _ &&
+        pg_dropcluster --stop 11 main &&
         pg_upgradecluster -m upgrade -k &&
         for cluster in `ls /etc/postgresql/9.6/`; do
             mv /etc/postgresql/9.6/$cluster/conf.d/* /etc/postgresql/11/$cluster/conf.d/
