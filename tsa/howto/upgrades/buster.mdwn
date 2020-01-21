@@ -27,7 +27,7 @@ process.
         : look for dkms packages and make sure they are relevant, if not, purge. &&
         ( dpkg -l '*dkms' || true ) &&
         : make sure backups are up to date in Nagios &&
-        echo End of Step 2
+        printf "End of Step 2\a\n"
 
  3. Enable module loading (for ferm) and test reboots:
 
@@ -51,7 +51,7 @@ process.
         : look for packages from backports, other suites or archives &&
         : if possible, switch to official packages by disabling third-party repositories &&
         apt-show-versions | grep -v /stretch | grep -v 'not installed$' &&
-        echo End of Step 3
+        printf "End of Step 4\a\n"
 
  5. Check free space, see [this guide to free up space][] and
     download packages:
@@ -61,14 +61,14 @@ process.
         df -h &&
         apt -y -d upgrade &&
         apt -y -d dist-upgrade &&
-        echo End of Step 4
+        printf "End of Step 5\a\n"
 
  6. Actual upgrade run:
 
         apt install -y dpkg apt &&
         apt install ferm &&
         apt dist-upgrade &&
-        echo 'End of Step 6'
+        printf "End of Step 6\a\n"
 
  7. Post-upgrade procedures:
 
@@ -97,6 +97,7 @@ process.
         apt clean
         # review packages that are not in the new distribution
         apt-show-versions | grep -v /buster
+        printf "End of Step 8\a\n"
         shutdown -r +1 "testing reboots one final time"
 
  9. Change the hostgroup of the host to buster in Nagios (in
