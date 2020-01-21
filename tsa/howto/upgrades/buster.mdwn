@@ -137,6 +137,35 @@ PostgreSQL is special and needs to be upgraded manually.
             mv /etc/postgresql/9.6/$cluster/conf.d/* /etc/postgresql/11/$cluster/conf.d/
         done
 
+ 4. change the cluster target in the backup system, in `tor-puppet`,
+    for example:
+
+        --- a/modules/postgres/manifests/backup_source.pp
+        +++ b/modules/postgres/manifests/backup_source.pp
+        @@ -30,7 +30,7 @@ class postgres::backup_source {
+                case $hostname {
+                        'gitlab-01': {
+                        }
+        -               'subnotabile', 'bacula-director-01': {
+        +               'meronense', 'subnotabile', 'bacula-director-01': {
+                                postgres::backup_cluster { $::hostname:
+                                        pg_version => '11',
+                                }
+
+ 5. change the postgres version in `tor-nagios` as well:
+
+        --- a/config/nagios-master.cfg
+        +++ b/config/nagios-master.cfg
+        @@ -354,7 +354,7 @@ servers:
+           meronense:
+             address: 94.130.28.195
+             parents: kvm4
+        -    hostgroups: computers, buster, syslog-ng-hosts, hassrvfs, apache2-hosts, apache-https-host, postgres96-hosts, hassrvfs90
+        +    hostgroups: computers, buster, syslog-ng-hosts, hassrvfs, apache2-hosts, apache-https-host, postgres11-hosts, hassrvfs90
+           # db.tpo
+           alberti:
+             address: 94.130.28.196
+
 Issues
 ======
 
