@@ -36,7 +36,7 @@ process.
         reboot
 
         export LC_ALL=C.UTF-8 &&
-        sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec.2
+        sudo ttyrec -a -e screen /var/log/upgrade-buster.ttyrec
 
  4. Perform any pending upgrade and clear out old pins:
 
@@ -88,7 +88,7 @@ process.
  8. Post-upgrade checks:
 
         export LC_ALL=C.UTF-8 &&
-        sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec.3
+        sudo ttyrec -a -e screen /var/log/upgrade-buster.ttyrec
 
         # review and purge old packages, including kernels
         apt --purge autoremove
