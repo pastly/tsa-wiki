@@ -34,9 +34,8 @@ Non-objective:
 TODO:
 
  * identify critical services and realistic improvements #31243
- * hiro roadmap
- * anarcat roadmap post vacation
- * gitlab / nextcloud roadmap?
+ * gitlab roadmap
+ * nextcloud roadmap
 
 Assertions:
 
@@ -52,8 +51,10 @@ January
  * agree internally on a roadmap for 2020
  * first phase of installer automation (setup-storage and friends) #31239
  * new FSN node in the Ganeti cluster (fsn-node-03) #32937
- * textile shutdown and VM relocation,. 2 VMs to migrate #31686 (+86EUR)
+ * textile shutdown and VM relocation, 2 VMs to migrate #31686 (+86EUR)
  * enable needrestart fleet-wide (#31957)
+ * review website build errors
+ * evaluate if discourse can be used as comments platform for the blog
  * communicate buster upgrade timeline to service admins
  * buster upgrade 63% done: 48 buster, 28 stretch machines
 
@@ -70,6 +71,9 @@ February
  * SVN shutdown? #17202
  * submit service R&D #30608
  * buster upgrade 70% done: 53 buster (+5), 23 stretch (-5)
+ * migrate gitlab-01 to a new VM (gitlab-02) and use the omnibus package instead of ansible (#32949)
+ * migrate CRM machines to gnt and test with Giant Rabbit #32198
+ * anti-censorship monitoring (external prometheus setup assistance) #31159
 
 March
 =====
@@ -84,6 +88,8 @@ High possibility of overload here (two major decoms and many machines setup). Po
  * eugeni VM migration to gnt-fsn
  * submit service R&D #30608
  * buster upgrade 80% done: 61 buster (+8), 15 stretch (-8)
+ * solr deployment
+ * anti-censorship monitorining (external prometheus setup assistance) #31159
 
 April
 =====
@@ -92,6 +98,7 @@ April
  * new gnt-fsn node (fsn-node-05) -118EUR=-3EUR
  * buster upgrade 90% done: 68 buster (+7), 8 stretch (-7)
  * first submit service prototype? #30608
+ * solr configuration
 
 May
 ===
@@ -101,35 +108,41 @@ May
  * buster upgrade 100% done: 76 buster (+8), 0 stretch (-8)
  * current planned completion date of Buster upgrades
  * start ramping down work, training and documentation
+ * solr text updates and maintenance
 
 June
 ====
 
  * Debian jessie LTS EOL, chiwui forcibly shutdown #29399
  * finish ramp-down, final bugfixing and training before vacation
+ * search.tp.o soft launch
 
 July
 ====
 
  * anarcat vacation
  * tor meeting?
+ * hiro tentative vacations
 
 August
 ======
 
  * anarcat vacation
+ * web metrics R&D (investigate a platform for web metrics)
 
 September
 =========
 
  * plan contingencies for christmas holidays
  * catchup following vacation
+ * web metrics deployment
 
 October
 =======
 
  * puppet work (finish prometheus module development, puppet environments, trocla, Hiera, publish code #29387)
  * varnish to nginx conversion #32462
+ * web metrics soft launch (in time for eoy campaign)
 
 November
 ========
