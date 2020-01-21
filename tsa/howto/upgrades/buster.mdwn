@@ -140,20 +140,13 @@ Pending
         /etc/default/stunnel4
         /etc/ferm/ferm.conf
         /etc/init.d/stunnel4
-        /etc/logrotate.d/ulogd2
         /etc/nagios/nrpe.cfg
         /etc/ntp.conf
-        /etc/ssh/sshd_config
         /etc/syslog-ng/syslog-ng.conf
 
- * ferm failed to reload during upgrade, with the following error:
+ * ferm fails to reload during upgrade, with the following error:
  
         Couldn't load match `state':No such file or directory
-
- * Puppet will warn with the following when running against a stretch
-   master, harmlessly:
-   
-        Warning: Downgrading to PSON for future requests
 
  * Puppet might try to downgrade the `sources.list` files to `stretch`
    or `n/a` for some reason, just re-run Puppet after fixing the
@@ -175,6 +168,16 @@ Resolved
    followed before the note was added:
 
         apt-get update --allow-releaseinfo-change
+
+ * the following config files were updated to buster:
+
+        /etc/logrotate.d/ulogd2
+        /etc/ssh/sshd_config
+
+ * Puppet was warning with the following when running against a
+   master running stretch, harmlessly:
+
+        Warning: Downgrading to PSON for future requests
 
 References
 ==========
