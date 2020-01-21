@@ -29,7 +29,16 @@ process.
         : make sure backups are up to date in Nagios &&
         echo End of Step 2
 
- 3. Perform any pending upgrade and clear out old pins:
+ 3. Enable module loading (for ferm) and test reboots:
+
+        systemctl disable modules_disabled.timer
+
+        reboot
+
+        export LC_ALL=C.UTF-8 &&
+        sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec.2
+
+ 4. Perform any pending upgrade and clear out old pins:
 
         : Check for pinned, on hold, packages, and possibly disable &&
         rm -f /etc/apt/preferences /etc/apt/preferences.d/* &&
@@ -44,7 +53,7 @@ process.
         apt-show-versions | grep -v /stretch | grep -v 'not installed$' &&
         echo End of Step 3
 
- 4. Check free space, see [this guide to free up space][] and
+ 5. Check free space, see [this guide to free up space][] and
     download packages:
 
         sed -i 's/stretch/buster/g' /etc/apt/sources.list.d/* &&
@@ -53,15 +62,6 @@ process.
         apt -y -d upgrade &&
         apt -y -d dist-upgrade &&
         echo End of Step 4
-
- 5. Enable module loading (for ferm)
-
-        systemctl disable modules_disabled.timer
-
-        reboot
-
-        export LC_ALL=C.UTF-8 &&
-        sudo ttyrec -e screen /var/log/upgrade-buster.ttyrec.2
 
  6. Actual upgrade run:
 
