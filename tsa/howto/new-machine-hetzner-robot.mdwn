@@ -140,7 +140,7 @@ which we'll use below.
     can be done with the `tor-install-luks-setup` in the `tsa-misc`
     repository.
 
-        cd /target && bash /root/tsa-misc/installer/tor-install-luks-setup
+        /root/tsa-misc/installer/tor-install-luks-setup /target
 
  8. Review the crypto configuration:
 
