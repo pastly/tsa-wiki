@@ -162,16 +162,17 @@ which we'll use below.
 
         chroot /target grub-install /dev/nvme1n1
 
- 10. Review the network configuration:
+ 12. Review the network configuration:
 
-        cat /target/etc/network/interfaces
+         cat /target/etc/network/interfaces
 
-    An example safe configuration is:
+     An example safe configuration is:
 
-        iface lo inet loopback
+         iface lo inet loopback
+         
+         allow-hotplug eth0
+         iface eth0 inet dhcp
 
-        allow-hotplug eth0
-        iface eth0 inet dhcp
 
  12. If any of those latter things changed, you need to regenerate the
     initramfs:
