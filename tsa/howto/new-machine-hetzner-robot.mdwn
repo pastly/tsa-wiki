@@ -130,7 +130,13 @@ which we'll use below.
         tmpfs /tmp tmpfs defaults,size=512m 0 0
         EOF
 
- 5. setup dropbear-initramfs to unlock the filesystem on boot. this
+ 6. Copy paste your key into the root's authorized keys, just to make
+    sure you can login:
+
+        mkdir -p /target/root/.ssh/ &&
+        cp /root/.ssh/authorized_keys /target/root/.ssh/authorized_keys
+
+ 7. setup dropbear-initramfs to unlock the filesystem on boot. this
     can be done with the `tor-install-luks-setup` in the `tsa-misc`
     repository.
 
@@ -166,12 +172,6 @@ which we'll use below.
 
         allow-hotplug eth0
         iface eth0 inet dhcp
-
- 11. Copy paste your key into the root's authorized keys, just to make
-    sure you can login:
-
-        mkdir -p /target/root/.ssh/ &&
-        cp /root/.ssh/authorized_keys /target/root/.ssh/authorized_keys
 
  12. If any of those latter things changed, you need to regenerate the
     initramfs:
