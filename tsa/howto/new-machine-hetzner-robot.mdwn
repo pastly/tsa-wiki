@@ -56,7 +56,11 @@ which we'll use below.
 
         perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'
 
- 2. Partition disks. This might vary wildly between hosts, but in
+ 2. Set a hostname (short version, not the FQDN):
+ 
+        echo -n 'New hostname: ' && read hn && hostname "$hn" && exec bash
+
+ 3. Partition disks. This might vary wildly between hosts, but in
     general, we want:
 
       * GPT partitionning, with space for a 8MB grub partition and
@@ -77,7 +81,7 @@ which we'll use below.
     Check that the master hash matches what you expect
      `(cd tsa-misc && git show-ref master)`.
 
- 3. Install the system. This can be done with `grml-debootstrap` which
+ 4. Install the system. This can be done with `grml-debootstrap` which
     will also configure grub, a root password and so on. This should
     get you started, assuming the formatted root disk is mounted on
     `/target`:
@@ -114,7 +118,7 @@ which we'll use below.
 
         umount /target/run/udev /target/run
 
- 4. Once the bootstrapping is complete, you still need to make sure
+ 5. Once the bootstrapping is complete, you still need to make sure
     the system can boot as, the above doesn't (unfortunately)
     configure everything for you. First, make a reasonable etc/fstab:
 
@@ -132,23 +136,23 @@ which we'll use below.
 
         cd /target && bash /root/tsa-misc/installer/tor-install-luks-setup
 
- 6. Review the crypto configuration:
+ 8. Review the crypto configuration:
 
         cat /target/etc/crypttab
 
     If the backing device is *NOT* an SSD, remove the  `,discard` option.
 
- 7. mount the helper filesystems once more
+ 9. mount the helper filesystems once more
 
         for fs in dev proc run sys  ; do
           mount -o bind /$fs "/target/$fs";
         done
 
- 8. Do the same with the RAID configuration, probably with something like:
+ 10. Do the same with the RAID configuration, probably with something like:
 
         chroot /target sh -c "/usr/share/mdadm/mkconf > /etc/mdadm/mdadm.conf"
 
- 9. install grub on any secondary disk, for instance
+ 11. install grub on any secondary disk, for instance
 
         chroot /target grub-install /dev/nvme1n1
 
@@ -183,15 +187,15 @@ which we'll use below.
         umount /target/boot
         cd / && umount /target
 
- 14. close things
+ 15. close things
 
         vgchange -a n
         cryptsetup luksClose cpv_nvme
         for i in /dev/md/*; do mdadm --stop $i; done
 
- 15. Document the LUKS passphrase and root password in `tor-passwords`
+ 16. Document the LUKS passphrase and root password in `tor-passwords`
 
- 16. Cross fingers and reboot:
+ 17. Cross fingers and reboot:
 
         reboot
 
