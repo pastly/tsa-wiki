@@ -192,7 +192,7 @@ which we'll use below.
 
         vgchange -a n
         cryptsetup luksClose cpv_nvme
-        for i in /dev/md/*; do mdadm --stop $i; done
+        mdadm --stop /dev/md*
 
  16. Document the LUKS passphrase and root password in `tor-passwords`
 
