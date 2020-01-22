@@ -142,6 +142,12 @@ PostgreSQL is special and needs to be upgraded manually.
             mv /etc/postgresql/9.6/$cluster/conf.d/* /etc/postgresql/11/$cluster/conf.d/
         done
 
+ 4. make sure the new cluster isn't backed up by bacula:
+
+        touch /var/lib/postgresql/11/.nobackup
+
+    TODO: put in Puppet.
+
  4. change the cluster target in the backup system, in `tor-puppet`,
     for example:
 
@@ -170,6 +176,14 @@ PostgreSQL is special and needs to be upgraded manually.
            # db.tpo
            alberti:
              address: 94.130.28.196
+
+ 6. once everything works okay, remove the old packages:
+
+        apt purge postgresql-9.6 postgresql-client-9.6
+
+ 7. purge the old backups directory after a week:
+
+        ssh bungei.torproject.org "echo 'rm -r /srv/backups/pg/meronense-9.6/' | at now + 7day"
 
 Notable changes
 ===============
