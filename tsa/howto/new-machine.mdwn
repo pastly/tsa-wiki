@@ -69,14 +69,14 @@ All commands to be run as root unless otherwise noted.
 
         sudo -u sshdist ud-generate && sudo -H ud-replicate && sudo puppet agent -t
 
-  * on nevii:
+  * on nevii (optional):
 
         sudo -H ud-replicate
 
 * set up puppet:
   * on pauli:
 
-        ( puppet agent -t --environment=production || true ) && \
+        ( puppet agent -t || true ) && \
         ud-replicate && \
         sudo -H -u puppet make -C /srv/puppet.torproject.org/auto-ca install
 
@@ -143,7 +143,12 @@ All commands to be run as root unless otherwise noted.
         dpkg --purge portmap nfs-common exim4 exim4-base exim4-config exim4-daemon-light
         userdel -r Debian-exim
 
-* fix `/etc/aliases`:
+  TODO: remove the above once we figure out it's obsolete. It's not
+  necessary with the folowing procedures:
+
+    * [[new-machine-hetzner-robot]]
+
+* fix `/etc/aliases` (TODO: #32283):
 
         ( ! grep '^root:' /etc/aliases && echo 'root: torproject-admin@torproject.org' >> /etc/aliases ) &&
         sed -i -e 's/^root:.*/root: torproject-admin@torproject.org/' /etc/aliases && newaliases
