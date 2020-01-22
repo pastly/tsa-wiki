@@ -173,19 +173,19 @@ which we'll use below.
          allow-hotplug eth0
          iface eth0 inet dhcp
 
-
- 12. If any of those latter things changed, you need to regenerate the
+ 13. If any of those latter things changed, you need to regenerate the
     initramfs:
 
         chroot /target update-initramfs -u
         chroot /target update-grub
 
- 13. umount things
-        umount /target/run/udev
+ 14. umount things:
+ 
+        umount /target/run/udev || true &&
         for fs in dev proc run sys  ; do
-            umount /target/$fs
-        done
-        umount /target/boot
+            umount /target/$fs || true
+        done &&
+        umount /target/boot &&
         cd / && umount /target
 
  15. close things
