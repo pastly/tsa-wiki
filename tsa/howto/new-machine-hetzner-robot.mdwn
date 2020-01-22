@@ -83,7 +83,7 @@ which we'll use below.
     `/target`:
 
         # make target/run stay clean
-        mkdir /target/run && mount -t tmpfs tgt-run /target/run
+        mkdir -p /target/run && mount -t tmpfs tgt-run /target/run
         # grml-debootstrap hangs for weasel in vgs without this:
         mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev
 
@@ -136,7 +136,7 @@ which we'll use below.
 
         cat /target/etc/crypttab
 
-    If the backing device is an SSD, add `,discard` after the luks option.
+    If the backing device is *NOT* an SSD, remove the  `,discard` option.
 
  7. mount the helper filesystems once more
 
