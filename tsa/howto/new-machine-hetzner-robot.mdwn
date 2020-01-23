@@ -71,7 +71,7 @@ which we'll use below.
       * LVM, with separate volume groups for different medium (SSD vs
         HDD)
 
-    This can be done with the `tor-install-format-disks` in the
+    This can be done with one of the `tor-install-format-disks` in the
     `tsa-misc` repository, which should be carefully checked and
     configured before running.
 
