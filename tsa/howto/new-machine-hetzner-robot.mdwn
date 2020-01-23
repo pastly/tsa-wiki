@@ -148,6 +148,8 @@ which we'll use below.
         tmpfs /tmp tmpfs defaults,size=512m 0 0
         EOF
 
+    TODO: take the `fstab` from FAI.
+
  6. Copy paste your key into the root's authorized keys, just to make
     sure you can login:
 
@@ -159,6 +161,17 @@ which we'll use below.
     repository.
 
         /root/tsa-misc/installer/tor-install-luks-setup /target
+
+    TODO: use the FAI keyfiles and set a LUKS passphrase for the first
+    disk. For example:
+
+        LUKS_PASSPHRASE=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) &&
+        echo $LUKS_PASSPHRASE | cryptsetup luksAddKey /dev/md1 --key-file=/tmp/fai/crypt_dev_md1 &&
+        echo $LUKS_PASSPHRASE | cryptsetup luksAddKey /dev/md2 --key-file=/tmp/fai/crypt_dev_md2 &&
+        cryptsetup luksRemoveKey /dev/md1 --key-file=/tmp/fai/crypt_dev_md1 &&
+        cryptsetup luksRemoveKey /dev/md2 --key-file=/tmp/fai/crypt_dev_md2
+
+    ... although that doesn't correctly setup the second disk to use a keyfile.
 
  8. Review the crypto configuration:
 
