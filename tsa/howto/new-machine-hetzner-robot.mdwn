@@ -71,20 +71,40 @@ which we'll use below.
       * LVM, with separate volume groups for different medium (SSD vs
         HDD)
 
-    This can be done with one of the `tor-install-format-disks` in the
-    `tsa-misc` repository, which should be carefully checked and
-    configured before running.
+    We are experimenting with FAI's [setup-storage](https://manpages.debian.org/setup-storage) to partition
+    disks instead of rolling our own scripts. You first need to
+    checkout the installer's configuration:
 
-    To get the scripts onto the host, you can clone them using
-     `git clone https://git.torproject.org/admin/tsa-misc`.
+            apt install git
+            git clone https://git.torproject.org/admin/tsa-misc
+            cd tsa-misc/installer
+            git show-ref master
 
-    Check that the master hash matches what you expect
-     `(cd tsa-misc && git show-ref master)`.
+    Check that the above hashes match a trusted copy.
+
+    Use the following to setup a Ganeti node, for example:
+
+            apt install fai-setup-storage
+
+            setup-storage -f "disk_config/gnt-fsn" -X
+
+    TODO: convert the other existing `tor-install-format-disks-4HDDs`
+    script into a `setup-storage` configuration.
+
+    And finally mount the filesystems:
+
+        . /tmp/fai/disk_var.sh
+
+        mkdir /target
+        mount "$ROOT_PARTITION" /target
+        mkdir /target/boot
+        mount "$BOOT_PARTITION" /target/boot
 
  4. Install the system. This can be done with `grml-debootstrap` which
     will also configure grub, a root password and so on. This should
     get you started, assuming the formatted root disk is mounted on
-    `/target`:
+    `/target` and that the boot device is defined by `$BOOT_DEVICE`
+    (populated above by FAI):
 
         # make target/run stay clean
         mkdir -p /target/run && mount -t tmpfs tgt-run /target/run
@@ -92,7 +112,6 @@ which we'll use below.
         mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev
 
         ROOTPASSWORD=\$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) \
-        echo -n "boot disk device: " && read bootdisk &&
         apt-get install -y grml-debootstrap && \
         sed -e 's/postfix//;
                 s/vlan//;
@@ -109,7 +128,7 @@ which we'll use below.
                 $adbus
                 $acryptsetup-initramfs
                 ' /etc/debootstrap/packages > /root/grml-packages &&
-        grml-debootstrap --grub "$bootdisk" --target /target \
+        grml-debootstrap --grub "$BOOT_DEVICE" --target /target \
             --hostname `hostname` --release buster \
             --mirror https://mirror.hetzner.de/debian/packages/ \
             --packages /root/grml-packages \
