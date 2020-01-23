@@ -106,12 +106,10 @@ which we'll use below.
     `/target` and that the boot device is defined by `$BOOT_DEVICE`
     (populated above by FAI):
 
-        # make target/run stay clean
-        mkdir -p /target/run && mount -t tmpfs tgt-run /target/run
-        # grml-debootstrap hangs for weasel in vgs without this:
-        mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev
-
-        ROOTPASSWORD=\$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) \
+        mkdir -p /target/run && mount -t tmpfs tgt-run /target/run &&
+        mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev &&
+        bootdisk=/dev/nvme1n1 &&
+        ROOTPASSWORD=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) &&
         apt-get install -y grml-debootstrap && \
         sed -e 's/postfix//;
                 s/vlan//;
@@ -133,8 +131,7 @@ which we'll use below.
             --mirror https://mirror.hetzner.de/debian/packages/ \
             --packages /root/grml-packages \
             --password "$ROOTPASSWORD" \
-            --remove-configs --defaultinterfaces
-
+            --remove-configs --defaultinterfaces &&
         umount /target/run/udev /target/run
 
  5. Once the bootstrapping is complete, you still need to make sure
