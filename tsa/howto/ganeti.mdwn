@@ -397,10 +397,36 @@ catastrophic data loss bug in Ganeti or [[drbd]].
 
 [PX62-NVMe]: https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER
 
-- Make sure all nodes have the same LVM setup and the same network setup.  They want openvswitch.  Cf. host `fsn-node-01`'s /etc/network/interfaces.
+- Network setup:
 
-- Prepare all the nodes by configuring them in puppet.  They should be in the class `roles::ganeti::fsn` if they
-  are part of the fsn cluster.  If you make a new cluster, make a new role and add nodes.
+  1. Add the server to the two vSwitch in Hetzner Robot
+
+  2. install openvswitch and allow modules to be loaded
+
+        touch /etc/no_modules_disabled
+        reboot
+        apt install openvswitch-switch
+
+  3. Allocate a private IP address in the 30.172.in-addr.arpa zone for
+     the node.
+
+  4. copy over the `/etc/network/interfaces` from another ganeti node,
+     changing the `address` and `gateway` fields to match the local
+     entry.
+
+  5. knock on wood, cross your fingers, or whatever, and reboot:
+  
+        reboot
+
+- Prepare all the nodes by configuring them in puppet.  They should be
+  in the class `roles::ganeti::fsn` if they are part of the fsn
+  cluster.
+
+- Re-enable modules disabling:
+
+        rm /etc/no_modules_disabled
+
+- reboot again
 
 ### New cluster
 
