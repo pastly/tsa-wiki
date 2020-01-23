@@ -88,6 +88,8 @@ which we'll use below.
 
             setup-storage -f "disk_config/gnt-fsn" -X
 
+    TODO: include the `tmpfs` in the above config.
+
     TODO: convert the other existing `tor-install-format-disks-4HDDs`
     script into a `setup-storage` configuration.
 
