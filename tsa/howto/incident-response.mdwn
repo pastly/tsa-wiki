@@ -89,29 +89,85 @@ TBD
 Emergency policies
 ==================
 
-Those still need to be defined more clearly, but we can consider there
-are three "support levels" for emergencies:
+We consider there are three "support levels" for problems that come up
+with services:
 
- * code red: house is on fire, go go go
- * code yellow: houston, we have a problem, but we'll live for a day
+ * code red: immediate emergency, fix ASAP
+ * code yellow: serious problem that doesn't require immediate
+   attention but that could turn into a code red if nothing is donw
  * routine: file a bug report, we'll get to it soon!
+
+We do not have 24/7 oncall support, so requests are processed during
+work times of available staff. We do try to provide continuous support
+as much as possible, but it's possible that some weekends or vacations
+are unattended for more than a day. This is the definition of a
+"business day".
 
 Code red
 --------
 
 A "code red" is a critical condition that requires immediate
-action. It's what we consider an "emergency".
+action. It's what we consider an "emergency". Our SLA for those is
+24h business days, as defined above. Services qualifying for a code
+red are:
+
+ * incoming email and forwards
+ * [main website](https://www.torproject.org/)
+ * [donation website](https://donate.torproject.org/)
+
+Other services fall under "routine" or "code yellow" below, which can
+be upgraded in priority.
+
+Examples of problems falling under code red include:
+
+ * website unreachable
+ * emails to torproject.org not reaching our server
+
+Some problems fall under other teams and are not the responsability of
+TPA, even if they can be otherwise considered a code red. Examples:
+
+ * website has a major design problem rendering it unusable
+ * donation backend failing because of a problem in CiviCRM
+ * gmail refusing all email forwards
+ * encrypted mailing lists failures
+ * gitolite refuses connexions
 
 Code yellow
 -----------
 
-A "code yellow" is a situation where we are overwhelmed but there
-isn't exactly an immediate emergency to deal with. There's a separate
-process, called a "[code yellow](https://devops.com/code-yellow-when-operations-isnt-perfect/)" ([SRECON19 presentation](https://www.usenix.org/conference/srecon19americas/presentation/kehoe),
-[slides](https://www.usenix.org/sites/default/files/conference/protected-files/sre19amer_slides_kehoe.pdf)), as opposed to a code red, above, which we might want to
-consider for fixing longer term issues.
+A "[code yellow](https://devops.com/code-yellow-when-operations-isnt-perfect/)" is a situation where we are overwhelmed but there
+isn't exactly an immediate emergency to deal with. A good introduction
+is this [SRECON19 presentation](https://www.usenix.org/conference/srecon19americas/presentation/kehoe) ([slides](https://www.usenix.org/sites/default/files/conference/protected-files/sre19amer_slides_kehoe.pdf)). The basic idea is
+that a code yellow is a "problem [that] creeps up on you over time and
+suddenly the hole is so deep you can’t find the way out".
+
+There's no clear timeline on when such a problem can be resolved. If
+the problem is serious enough, it *may* eventually be upgraded to a
+code red by the approval of a team lead after a week's delay,
+regardless of the affected service. In that case, a "hot fix" (some
+hack like throwing hardware at the problem) may be deployed instead of
+fixing the actual long term issue, in which case the problem becomes a
+code yellow again.
+
+Examples of a code yellow include:
+
+ * Trac gets overwhelmed ([ticket 29672](https://bugs.torproject.org/29672))
+ * gitweb performance problems ([ticket 32133](https://bugs.debian.org/32133))
+ * upgrade metrics.tpo to buster in the hope of fixing broken graphs
+   ([ticket 32998](https://bugs.torproject.org/32998))
 
 Routine
 -------
 
-TBD.
+Routine tasks are normal requests that are not an emergency and can be
+processed as part of the normal workflow.
+
+Example of routine tasks include:
+
+ * account creation
+ * group access changes
+ * email alias changes
+ * static web component changes
+ * examine disk usage warning
+ * security upgrades
+ * server reboots
