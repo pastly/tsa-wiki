@@ -124,7 +124,9 @@ Examples of problems falling under code red include:
  * emails to torproject.org not reaching our server
 
 Some problems fall under other teams and are not the responsability of
-TPA, even if they can be otherwise considered a code red. Examples:
+TPA, even if they can be otherwise considered a code red.
+
+So, for example, those are *not* code reds for TPA:
 
  * website has a major design problem rendering it unusable
  * donation backend failing because of a problem in CiviCRM
