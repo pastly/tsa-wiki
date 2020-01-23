@@ -86,8 +86,8 @@ Open a ticket by writing <support@cymru.com>.
 
 TBD
 
-Emergency policies
-==================
+Support policies
+================
 
 We consider there are three "support levels" for problems that come up
 with services:
@@ -102,6 +102,16 @@ work times of available staff. We do try to provide continuous support
 as much as possible, but it's possible that some weekends or vacations
 are unattended for more than a day. This is the definition of a
 "business day".
+
+TPA is responsible for the base service in the operating system, see
+the [[service admin definition|doc/admins]] for details on
+that.
+
+Debian GNU/Linux is the only supported operating system, and we
+support only the "stable" and "oldstable" distributions, until the
+latter becomes EOL. We do *not* support Debian LTS. It is the
+responsability of service admins to upgrade their services to keep up
+with the Debian release schedule.
 
 Code red
 --------
