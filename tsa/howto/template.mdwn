@@ -35,6 +35,9 @@
 <!-- "architectural" document, which the final result might differ -->
 <!-- from, sometimes significantly -->
 
+<!-- a good guide to "audit" an existing project's design: -->
+<!-- https://bluesock.org/~willkg/blog/dev/auditing_projects.html -->
+
 ## Issues
 
 <!-- such projects are never over. add a pointer to well-known issues -->
