@@ -1,3 +1,5 @@
+This document is synchronized regularly between <https://help.torproject.org/tsa/roadmap/2020/> and <https://pad.riseup.net/p/CYOUx21kpxLL_5Eui61J-tpa-roadmap-2020>. Keep the format in markdown for now. It should eventually be moved into Trac keywords.
+
 [[!toc]]
 
 Introduction
@@ -31,7 +33,7 @@ TODO
    * restart/stop service
    * upgrade services
    * problems with the service
-   
+
 Main objectives (need to have):
 
  * decommissining of old machines (moly in particular)
@@ -139,7 +141,7 @@ August
 ======
 
  * anarcat vacation
- * web metrics R&D (investigate a platform for web metrics) <-- is this a priority?
+ * web metrics R&D (investigate a platform for web metrics) <-- is this a priority? CHECK WITH HIRO?
 
 September
 =========
@@ -185,3 +187,4 @@ Monhtly goals:
 
  * january: roadmap approval
  * march/april: anarcat vacation
+
