@@ -139,7 +139,7 @@ August
 ======
 
  * anarcat vacation
- * web metrics R&D (investigate a platform for web metrics)
+ * web metrics R&D (investigate a platform for web metrics) <-- is this a priority?
 
 September
 =========
