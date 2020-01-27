@@ -76,15 +76,13 @@ February
 
  * 2020 roadmap officially adopted
  * second phase of installer automation #31239 (esp. puppet automation, e.g. #32901, #32914)
- * automate upgrades: enable unattended-upgrades fleet-wide (#31957)
- * nc.riseup.net cleanup #32391
+ * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR (priority)
  * storm shutdown #32390
  * unifolium decom (after storm), 5 VMs to migrate, +72EUR=+158EUR
- * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR
- * SVN shutdown? #17202
  * buster upgrade 70% done: 53 buster (+5), 23 stretch (-5)
  * migrate gitlab-01 to a new VM (gitlab-02) and use the omnibus package instead of ansible (#32949)
- * migrate CRM machines to gnt and test with Giant Rabbit #32198
+ * migrate CRM machines to gnt and test with Giant Rabbit #32198 (priority)
+ * automate upgrades: enable unattended-upgrades fleet-wide (#31957)
  * anti-censorship monitoring (external prometheus setup assistance) #31159
 
 March
@@ -101,6 +99,8 @@ High possibility of overload here (two major decoms and many machines setup). Po
  * buster upgrade 80% done: 61 buster (+8), 15 stretch (-8)
  * solr deployment
  * anti-censorship monitorining (external prometheus setup assistance) #31159
+ * nc.riseup.net cleanup #32391
+ * SVN shutdown? #17202
 
 April
 =====
