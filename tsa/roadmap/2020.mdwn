@@ -82,7 +82,6 @@ February
  * unifolium decom (after storm), 5 VMs to migrate, +72EUR=+158EUR
  * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR
  * SVN shutdown? #17202
- * submit service R&D #30608
  * buster upgrade 70% done: 53 buster (+5), 23 stretch (-5)
  * migrate gitlab-01 to a new VM (gitlab-02) and use the omnibus package instead of ansible (#32949)
  * migrate CRM machines to gnt and test with Giant Rabbit #32198
@@ -99,7 +98,6 @@ High possibility of overload here (two major decoms and many machines setup). Po
  * kvm3 decom, 7 VMs to migrate (inc. crm-int and crm-ext), +72EUR=+112EUR
  * new gnt-fsn node -118EUR=-6EUR
  * eugeni VM migration to gnt-fsn
- * submit service R&D #30608
  * buster upgrade 80% done: 61 buster (+8), 15 stretch (-8)
  * solr deployment
  * anti-censorship monitorining (external prometheus setup assistance) #31159
@@ -110,7 +108,6 @@ April
  * kvm4 decom, 9 VMs to migrate #32802 (w/o eugeni), +121EUR=+115EUR
  * new gnt-fsn node (fsn-node-05) -118EUR=-3EUR
  * buster upgrade 90% done: 68 buster (+7), 8 stretch (-7)
- * first submit service prototype? #30608
  * solr configuration
 
 May
@@ -157,11 +154,13 @@ October
  * puppet work (finish prometheus module development, puppet environments, trocla, Hiera, publish code #29387)
  * varnish to nginx conversion #32462
  * web metrics soft launch (in time for eoy campaign)
+ * submit service R&D #30608
+
 
 November
 ========
 
- * TBD
+ * first submit service prototype? #30608
 
 December
 ========
