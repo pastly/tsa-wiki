@@ -217,20 +217,98 @@ node is unresponsive.
 
 ## Importing external instances
 
-TODO: Procedure in brainstorm.
+Import procedure:
 
-Battle plan:
+ 1. pick a viable node to import the instance (see "evaluating cluster
+    capacity" above, when in doubt)
 
- 1. check if disk layout is compatible
- 2. check how to convert if not
- 3. check how to create LV (just by hand?)
- 4. adopt
- 5. convert
- 6. shutdown
- 7. switch DNS?
- 8. resync
- 9. startup
- 10. decom
+ 2. establish VM specs:
+ 
+    * disk space in GiB:
+    
+        for disk in /srv/vmstore/chiwui.torproject.org/*; do
+            printf "$disk: "
+            echo "$(qemu-img info --output=json $disk | jq '."virtual-size"') / 1024 / 1024 / 1024" | bc
+        done
+
+    * number of CPU cores:
+
+        sed -n '/<vcpu/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml
+
+    * memory, assuming from KiB to GiB:
+
+        echo "$(sed -n '/<memory/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml) /1024 /1024" | bc
+
+ 3. setup a copy channel, on the KVM host:
+ 
+        ssh-agent bash
+        ssh-add /etc/ssh/ssh_host_ed25519_key
+        cat /etc/ssh/ssh_host_ed25519_key.pub
+
+    on the ganeti node:
+    
+        echo "$KEY_FROM_KVM_HOST" > /etc/ssh/userkeys/root.more
+
+ 4. copy the `.qcow` file over, from the KVM host to the node:
+ 
+        rsync --progress /srv/vmstore/chiwui.torproject.org/chiwui.torproject.org-root fsn-node-03.torproject.org:/srv/
+
+ 5. on the node, create and initialize a logical volume with the predetermined size:
+ 
+        lvcreate -L 20GiB -n chiwui-root vg_ganeti
+        qemu-img convert /srv/chiwui.torproject.org-root  -O raw /dev/vg_ganeti/chiwui
+        lvcreate -L 4GiB -n chiwui-swap vg_ganeti
+
+ 6. on the master, create the instance, adopting the LV:
+ 
+        gnt-instance add -t plain \
+            -n fsn-node-03 \
+            --disk 0:adopt=chiwui-root \
+            --disk 1:adopt=chiwui-swap \
+            --backend-parameters memory=2g,vcpus=2 \
+            --net 0:ip=pool,network=gnt-fsn \
+            --no-name-check \
+            --no-ip-check \
+            -o debootstrap+default \
+            chiwui.torproject.org
+
+ 7. cross your fingers and watch the party:
+ 
+        gnt-instance console chiwui.torproject.org
+
+ 8. on this particular machine, boot hangs for a while on this console
+    message:
+    
+        [  *** ] A start job is running for dev-disk-by\x2duuid-484b5...26s / 1min 30s)
+
+    but strangely the machine eventually boots and `/etc/fstab` looks okay.
+
+ 9. IP address change on new instance:
+ 
+      edit `/etc/network/interfaces` by hand and add IPv4 and IPv6
+      ip. IPv4 configuration can be found in:
+      
+          gnt-instance show chiwui.torproject.org
+          
+      Latter can be guessed by concatenating `2a01:4f8:fff0:4f::` and
+      the IPv6 local local address without `fe80::`. For example: a
+      link local address of `fe80::266:37ff:fe65:870f/64` should yield
+      the following configuration:
+      
+          iface eth0 inet6 static
+              accept_ra 0
+              address 2a01:4f8:fff0:4f:266:37ff:fe65:870f/64
+              gateway 2a01:4f8:fff0:4f::1
+
+Missing steps:
+      
+ * functional tests
+ * shutdown original node
+ * switch DNS
+ * resync and reconvert image
+ * redo IP adress change
+ * start new instance
+ * decom old instance
 
 References:
 
@@ -254,6 +332,23 @@ References:
         gnt-instance modify -t drbd -n czerny.debian.org lully.debian.org
         gnt-instance failover lully.debian.org
         gnt-instance startup lully.debian.org
+
+ * [Riseup docs](https://we.riseup.net/riseup+tech/ganeti#move-an-instance-from-one-cluster-to-another-from-) suggest creating a VM without installing, shutting
+   down and then syncing
+
+Ganeti [supports importing and exporting](http://docs.ganeti.org/ganeti/2.15/html/design-ovf-support.html?highlight=qcow) from the [Open
+Virtualization Format](https://en.wikipedia.org/wiki/Open_Virtualization_Format) (OVF), but unfortunately it [doesn't seem
+libvirt supports *exporting* to OVF](https://forums.centos.org/viewtopic.php?t=49231). There's a [virt-convert](http://manpages.debian.org/virt-convert)
+tool which can *import* OVF, but not the reverse. The [libguestfs](http://www.libguestfs.org/)
+library also has a [converter](http://www.libguestfs.org/virt-v2v.1.html) but it also doesn't support
+exporting to OVF or anything Ganeti can load directly.
+
+So people have written [their own conversion tools](https://virtuallyhyper.com/2013/06/migrate-from-libvirt-kvm-to-virtualbox/) or [their own
+conversion procedure](https://scienceofficersblog.blogspot.com/2014/04/using-cloud-images-with-ganeti.html).
+
+Ganeti also supports [file-backed instances](http://docs.ganeti.org/ganeti/2.15/html/design-file-based-storage.html) but "adoption" is
+specifically designed for logical volumes, so it doesn't work for our
+use case.
 
 ## Rebooting
 
@@ -358,13 +453,6 @@ Say you created an instance but forgot to need to assign an extra
 IP. You can still do so with:
 
     gnt-instance modify --net -1:add,ip=116.202.120.174,network=gnt-fsn test01.torproject.org
-
-## Importing foreign VMs
-
-We do not have documentation on how to do those imports yet, but
-Riseup has [a section in their documentation](https://we.riseup.net/riseup+tech/ganeti#move-an-instance-from-one-cluster-to-another-from-) about this that we
-might want to take a look at. The Ganeti manual also has a (very
-short) section on [importing foreign instances](http://docs.ganeti.org/ganeti/2.15/html/admin.html#import-of-foreign-instances)
 
 ## Pager playbook
 
