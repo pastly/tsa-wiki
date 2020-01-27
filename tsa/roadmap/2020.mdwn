@@ -13,6 +13,25 @@ Items should be "SMART" <https://en.wikipedia.org/wiki/SMART_criteria>, that is:
  * relevant
  * time-bound
 
+DEPRECATED (only to be able to have gaba's notes on the roadmap)
+
+TODO
+----
+
+ * nextcloud roadmap
+ * identify critical services and realistic improvements #31243
+ * (anarcat & gaba) sort out each month by priority
+ * (gaba) add keywords #tpa-roadmap- for each month
+ * (anarcat) create tickets for what it doesnt have tickets
+ * (at tpa meeting) estimate tickets! (1pt = 1 day)
+ * (gaba) reorganize budget file per month https://nc.torproject.net/apps/onlyoffice/7374?filePath=%2FTeams%2FSysadmin%2FBudget%20Sysadmin.xlsx
+ * (gaba) create a roadmap for gitlab migration
+ * (gaba) find service admins for gitlab (nobody for trac in https://trac.torproject.org/projects/tor/wiki/org/operations/services ) - gaba to talk with isa and alex and look for service admins
+   * have a shell account in the server
+   * restart/stop service
+   * upgrade services
+   * problems with the service
+   
 Main objectives (need to have):
 
  * decommissining of old machines (moly in particular)
@@ -31,12 +50,6 @@ Non-objective:
  * service admin roadmapping?
  * kubernetes cluster deployment?
 
-TODO:
-
- * identify critical services and realistic improvements #31243
- * gitlab roadmap
- * nextcloud roadmap
-
 Assertions:
 
  * new gnt-fsn nodes with current hardware (PX62-NVMe, 118EUR/mth), cost savings possible with the AX line (-20EUR/mth) or by reducing disk space requirements (-39EUR/mth) per node
@@ -47,16 +60,16 @@ Assertions:
 January
 =======
 
- * catchup after holidays
- * agree internally on a roadmap for 2020
- * first phase of installer automation (setup-storage and friends) #31239
- * new FSN node in the Ganeti cluster (fsn-node-03) #32937
- * textile shutdown and VM relocation, 2 VMs to migrate #31686 (+86EUR)
- * enable needrestart fleet-wide (#31957)
- * review website build errors
- * evaluate if discourse can be used as comments platform for the blog
- * communicate buster upgrade timeline to service admins
- * buster upgrade 63% done: 48 buster, 28 stretch machines
+ * [x] catchup after holidays
+ * [x] agree internally on a roadmap for 2020
+ * [x] first phase of installer automation (setup-storage and friends) #31239
+ * [x] new FSN node in the Ganeti cluster (fsn-node-03) #32937
+ * [ ] textile shutdown and VM relocation, 2 VMs to migrate #31686 (+86EUR) IN PROGRESS
+ * [ ] enable needrestart fleet-wide (#31957) CHECK-WITH-HIRO
+ * [ ] review website build errors CHECK-WITH-HIRO
+ * [ ] evaluate if discourse can be used as comments platform for the blog CHECK-WITH-HIRO
+ * [ ] communicate buster upgrade timeline to service admins IN PROGRESS
+ * [x] buster upgrade 63% done: 48 buster, 28 stretch machines
 
 February
 ========
