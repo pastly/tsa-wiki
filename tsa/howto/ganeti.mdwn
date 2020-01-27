@@ -215,6 +215,46 @@ hard-recover from a completely crashed node:
 Note that you might need the `--ignore-consistency` flag if the
 node is unresponsive.
 
+## Importing external instances
+
+TODO: Procedure in brainstorm.
+
+Battle plan:
+
+ 1. check if disk layout is compatible
+ 2. check how to convert if not
+ 3. check how to create LV (just by hand?)
+ 4. adopt
+ 5. convert
+ 6. shutdown
+ 7. switch DNS?
+ 8. resync
+ 9. startup
+ 10. decom
+
+References:
+
+ * [Upstream docs](http://docs.ganeti.org/ganeti/2.15/html/admin.html#import-of-foreign-instances):
+
+        gnt-instance add -t plain -n HOME_NODE ... --disk 0:adopt=lv_name[,vg=vg_name] INSTANCE_NAME
+
+ * [DSA docs](https://dsa.debian.org/howto/install-ganeti/), adoption:
+
+        gnt-instance add -t plain --os-type debootstrap+dsa-wheezy \
+            --disk 0:adopt=lully-boot \
+            --disk 1:adopt=lully-root \
+            --disk 2:adopt=lully-swap \
+            --disk 3:adopt=lully-log  \
+            --hypervisor-parameters kvm:initrd_path=,kernel_path= \
+            --net 0:ip=82.195.75.99 -n clementi.debian.org  lully.debian.org
+
+   DRBD conversion:
+
+        gnt-instance shutdown lully.debian.org
+        gnt-instance modify -t drbd -n czerny.debian.org lully.debian.org
+        gnt-instance failover lully.debian.org
+        gnt-instance startup lully.debian.org
+
 ## Rebooting
 
 Those hosts need special care, as we can accomplish zero-downtime
