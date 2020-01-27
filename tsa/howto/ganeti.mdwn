@@ -177,7 +177,7 @@ A sick node would have said something like this instead:
 
 See the [ganeti manual](http://docs.ganeti.org/ganeti/2.15/html/walkthrough.html#n-1-errors) for a more extensive example
 
-## Moving instances and failove
+## Moving instances and failover
 
 Ganeti is smart about assigning instances to nodes. There's also a
 command (`hbal`) to automatically rebalance the cluster (see
