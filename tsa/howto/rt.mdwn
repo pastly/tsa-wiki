@@ -29,6 +29,10 @@ On the RT server (currently `rude`):
     
         QUEUENAME@rt.torproject.org rt-QUEUENAME
 
+ 4. regenerate the virtual database:
+ 
+        portmap /etc/postfix/virtual
+
 In Puppet:
 
  1. add an entry in the main mail server virtual file (currently
