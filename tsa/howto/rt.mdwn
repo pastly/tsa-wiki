@@ -13,7 +13,28 @@ On the RT web interface:
     blank
  4. hit the `Create` button
  5. grant a group access to the queue, in the `Group rights` tab
-    ([create a group](https://rt.torproject.org/Admin/Groups/Modify.html?Create=1) if necessary)
+    ([create a group](https://rt.torproject.org/Admin/Groups/Modify.html?Create=1) if necessary) - you want to grant the
+    following to the group
+    * all "General rights"
+    * in "Rights for staff":
+      * Delete tickets (`DeleteTicket`)
+      * Forward messages outside of RT (`ForwardMessage`)
+      * Modify ticket owner on owned tickets (`ReassignTicket`)
+      * Modify tickets (`ModifyTicket`)
+      * Own tickets (`OwnTicket`)
+      * Sign up as a ticket or queue AdminCc (`WatchAsAdminCc`)
+      * Take tickets (`TakeTicket`)
+      * View exact outgoing email messages and their recipients (`ShowOutgoingEmail`)
+      * View ticket private (`commentary `)
+      That is, everything but:
+      * Add custom field values only at object creation time (`SetInitialCustomField`)
+      * Modify custom field values (`ModifyCustomField`)
+      * Steal tickets (`StealTicket`)
+ 6. if the queue is public (and it most likely is), grant the
+    following to the `Everyone`, `Privileged`, and `Unprivileged`
+    groups:
+      * Create tickets (`CreateTicket`)
+      * Reply to tickets (`ReplyToTicket`)
 
 On the RT server (currently `rude`):
 
