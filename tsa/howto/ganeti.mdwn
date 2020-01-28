@@ -300,6 +300,14 @@ Import procedure:
               address 2a01:4f8:fff0:4f:266:37ff:fe65:870f/64
               gateway 2a01:4f8:fff0:4f::1
 
+ 10. change IP address in the following locations:
+
+     * nagios
+     * LDAP
+     * Puppet (grep in tor-puppet source, run `puppet agent -t; ud-replicate` on pauli)
+     * DNS (grep in tor-dns source, `puppet agent -t; ud-replicate` on nevii)
+     * reverse DNS (upstream web UI, e.g. Hetzner Robot)
+
 Missing steps:
       
  * functional tests
