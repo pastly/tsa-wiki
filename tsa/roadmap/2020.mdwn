@@ -22,9 +22,9 @@ TODO
 
  * nextcloud roadmap
  * identify critical services and realistic improvements [#31243][]
- * (anarcat & gaba) sort out each month by priority
+ * (anarcat & gaba) sort out each month by priority (mostly done for feb/march)
  * (gaba) add keywords #tpa-roadmap- for each month
- * (anarcat) create tickets for what it doesnt have tickets
+ * (anarcat) create missing tickets for february/march (partially done, missing some from hiro)
  * (at tpa meeting) estimate tickets! (1pt = 1 day)
  * (gaba) reorganize budget file per month https://nc.torproject.net/apps/onlyoffice/7374?filePath=%2FTeams%2FSysadmin%2FBudget%20Sysadmin.xlsx
  * (gaba) create a roadmap for gitlab migration
@@ -225,4 +225,5 @@ Monhtly goals:
 
  * january: roadmap approval
  * march/april: anarcat vacation
+
 
