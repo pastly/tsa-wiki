@@ -256,7 +256,7 @@ Import procedure:
  5. on the node, create and initialize a logical volume with the predetermined size:
  
         lvcreate -L 20GiB -n chiwui-root vg_ganeti
-        qemu-img convert /srv/chiwui.torproject.org-root  -O raw /dev/vg_ganeti/chiwui
+        qemu-img convert /srv/chiwui.torproject.org-root  -O raw /dev/vg_ganeti/chiwui-root
         lvcreate -L 4GiB -n chiwui-swap vg_ganeti
 
  6. on the master, create the instance, adopting the LV:
