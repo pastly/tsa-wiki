@@ -21,7 +21,7 @@ TODO
 ----
 
  * nextcloud roadmap
- * identify critical services and realistic improvements #31243
+ * identify critical services and realistic improvements [#31243][]
  * (anarcat & gaba) sort out each month by priority
  * (gaba) add keywords #tpa-roadmap- for each month
  * (anarcat) create tickets for what it doesnt have tickets
@@ -33,6 +33,8 @@ TODO
    * restart/stop service
    * upgrade services
    * problems with the service
+
+[#31243]: https://bugs.torproject.org/31243
 
 Main objectives (need to have):
 
@@ -64,14 +66,19 @@ January
 
  * [x] catchup after holidays
  * [x] agree internally on a roadmap for 2020
- * [x] first phase of installer automation (setup-storage and friends) #31239
- * [x] new FSN node in the Ganeti cluster (fsn-node-03) #32937
- * [ ] textile shutdown and VM relocation, 2 VMs to migrate #31686 (+86EUR) IN PROGRESS
- * [ ] enable needrestart fleet-wide (#31957) CHECK-WITH-HIRO
+ * [x] first phase of installer automation (setup-storage and friends) [#31239][]
+ * [x] new FSN node in the Ganeti cluster (fsn-node-03) [#32937][]
+ * [ ] textile shutdown and VM relocation, 2 VMs to migrate [#31686][] (+86EUR) IN PROGRESS
+ * [ ] enable needrestart fleet-wide ([#31957][]) CHECK-WITH-HIRO
  * [ ] review website build errors CHECK-WITH-HIRO
  * [ ] evaluate if discourse can be used as comments platform for the blog CHECK-WITH-HIRO
  * [ ] communicate buster upgrade timeline to service admins IN PROGRESS
  * [x] buster upgrade 63% done: 48 buster, 28 stretch machines
+
+[#31957]: https://bugs.torproject.org/31957
+[#31686]: https://bugs.torproject.org/31686
+[#32937]: https://bugs.torproject.org/32937
+[#31239]: https://bugs.torproject.org/31239
 
 February
 ========
@@ -79,15 +86,24 @@ February
 <https://trac.torproject.org/projects/tor/query?status=!closed&keywords=~tpa-roadmap-february>
 
  * 2020 roadmap officially adopted
- * second phase of installer automation #31239 (esp. puppet automation, e.g. #32901, #32914)
- * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR (#33081)
- * storm shutdown #32390
- * unifolium decom (after storm), 5 VMs to migrate, #33085 +72EUR=+158EUR
+ * second phase of installer automation [#31239][] (esp. puppet automation, e.g. [#32901][], [#32914][])
+ * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR ([#33081][])
+ * storm shutdown [#32390][]
+ * unifolium decom (after storm), 5 VMs to migrate, [#33085][] +72EUR=+158EUR
  * buster upgrade 70% done: 53 buster (+5), 23 stretch (-5)
- * migrate gitlab-01 to a new VM (gitlab-02) and use the omnibus package instead of ansible (#32949)
- * migrate CRM machines to gnt and test with Giant Rabbit #32198 (priority)
- * automate upgrades: enable unattended-upgrades fleet-wide (#31957)
- * anti-censorship monitoring (external prometheus setup assistance) #31159
+ * migrate gitlab-01 to a new VM (gitlab-02) and use the omnibus package instead of ansible ([#32949][])
+ * migrate CRM machines to gnt and test with Giant Rabbit [#32198][] (priority)
+ * automate upgrades: enable unattended-upgrades fleet-wide ([#31957][] )
+ * anti-censorship monitoring (external prometheus setup assistance) [#31159][]
+
+[#31159]: https://bugs.torproject.org/31159
+[#32198]: https://bugs.torproject.org/32198
+[#32949]: https://bugs.torproject.org/32949
+[#33085]: https://bugs.torproject.org/33085
+[#32390]: https://bugs.torproject.org/32390
+[#33081]: https://bugs.torproject.org/33081
+[#32914]: https://bugs.torproject.org/32914
+[#32901]: https://bugs.torproject.org/32901
 
 March
 =====
@@ -97,41 +113,54 @@ March
 High possibility of overload here (two major decoms and many machines setup). Possible to push moly/cymru work to april?
 
  * 2021 budget proposal?
- * possible gnt-cymru cluster setup (~6 machines) #29397
- * moly decom #29974, 5 VMs to migrate
- * kvm3 decom, 7 VMs to migrate (inc. crm-int and crm-ext), #33082 +72EUR=+112EUR
- * new gnt-fsn node (fsn-node-05) #33083 -118EUR=-6EUR
- * eugeni VM migration to gnt-fsn #32803
+ * possible gnt-cymru cluster setup (~6 machines) [#29397][]
+ * moly decom [#29974][], 5 VMs to migrate
+ * kvm3 decom, 7 VMs to migrate (inc. crm-int and crm-ext), [#33082][] +72EUR=+112EUR
+ * new gnt-fsn node (fsn-node-05) [#33083][] -118EUR=-6EUR
+ * eugeni VM migration to gnt-fsn [#32803][]
  * buster upgrade 80% done: 61 buster (+8), 15 stretch (-8)
  * solr deployment
- * anti-censorship monitorining (external prometheus setup assistance) #31159
- * nc.riseup.net cleanup #32391
- * SVN shutdown? #17202
+ * anti-censorship monitorining (external prometheus setup assistance) [#31159][]
+ * nc.riseup.net cleanup [#32391][]
+ * SVN shutdown? [#17202][]
 
+[#17202]: https://bugs.torproject.org/17202
+[#32391]: https://bugs.torproject.org/32391
+[#32803]: https://bugs.torproject.org/32803
+[#33083]: https://bugs.torproject.org/33083
+[#33082]: https://bugs.torproject.org/33082
+[#29974]: https://bugs.torproject.org/29974
+[#29397]: https://bugs.torproject.org/29397
 April
 =====
 
- * kvm4 decom, 9 VMs to migrate #32802 (w/o eugeni), +121EUR=+115EUR
+ * kvm4 decom, 9 VMs to migrate [#32802][] (w/o eugeni), +121EUR=+115EUR
  * new gnt-fsn node (fsn-node-06) -118EUR=-3EUR
  * buster upgrade 90% done: 68 buster (+7), 8 stretch (-7)
  * solr configuration
 
+[#32802]: https://bugs.torproject.org/32802
+
 May
 ===
 
- * kvm5 decom, 9 VMs to migrate #33084, +111EUR=+108EUR
+ * kvm5 decom, 9 VMs to migrate [#33084][], +111EUR=+108EUR
  * new gnt-fsn node (fsn-node-07) -118EUR=-10EUR
  * buster upgrade 100% done: 76 buster (+8), 0 stretch (-8)
  * current planned completion date of Buster upgrades
  * start ramping down work, training and documentation
  * solr text updates and maintenance
 
+[#33084]: https://bugs.torproject.org/33084
+
 June
 ====
 
- * Debian jessie LTS EOL, chiwui forcibly shutdown #29399
+ * Debian jessie LTS EOL, chiwui forcibly shutdown [#29399][]
  * finish ramp-down, final bugfixing and training before vacation
  * search.tp.o soft launch
+
+[#29399]: https://bugs.torproject.org/29399
 
 July
 ====
@@ -157,16 +186,19 @@ September
 October
 =======
 
- * puppet work (finish prometheus module development, puppet environments, trocla, Hiera, publish code #29387)
- * varnish to nginx conversion #32462
+ * puppet work (finish prometheus module development, puppet environments, trocla, Hiera, publish code [#29387][])
+ * varnish to nginx conversion [#32462][]
  * web metrics soft launch (in time for eoy campaign)
- * submit service R&D #30608
+ * submit service R&D [#30608][]
 
+[#30608]: https://bugs.torproject.org/30608
+[#32462]: https://bugs.torproject.org/32462
+[#29387]: https://bugs.torproject.org/29387
 
 November
 ========
 
- * first submit service prototype? #30608
+ * first submit service prototype? [#30608][]
 
 December
 ========
@@ -184,8 +216,10 @@ Objectives:
  * complete puppetization
  * experiment with containers/kubernetes?
  * close and merge more services
- * replace nagios with prometheus? #29864
+ * replace nagios with prometheus? [#29864][]
  * new hire?
+
+[#29864]: https://bugs.torproject.org/29864
 
 Monhtly goals:
 
