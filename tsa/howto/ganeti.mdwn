@@ -317,12 +317,13 @@ Import procedure:
      * reverse DNS (upstream web UI, e.g. Hetzner Robot)
 
 Missing steps:
-      
+
  * functional tests
  * shutdown original node
- * switch DNS
  * resync and reconvert image
+ * DRBD switch
  * redo IP adress change
+ * switch DNS ("change IP" above)
  * start new instance
  * decom old instance
 
