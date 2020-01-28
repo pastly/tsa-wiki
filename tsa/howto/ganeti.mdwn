@@ -281,17 +281,19 @@ Import procedure:
 
  5. on the SPARE NODE, create and initialize a logical volume with the predetermined size:
  
-        lvcreate -L 20GiB -n chiwui-root vg_ganeti
-        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/chiwui-root
-        lvcreate -L 4GiB -n chiwui-swap vg_ganeti
-        mkswap --uuid $SWAP_UUID /dev/vg_ganeti/chiwui-swap
+        lvcreate -L 20GiB -n $INSTANCE-root vg_ganeti
+        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root
+        lvcreate -L 4GiB -n $INSTANCE-swap vg_ganeti
+        mkswap --uuid $SWAP_UUID /dev/vg_ganeti/$INSTANCE-swap
+
+    TODO: the above assumes only two disk devices, which is usually incorrect.
 
  6. on the MASTER NODE, create the instance, adopting the LV:
  
         gnt-instance add -t plain \
             -n fsn-node-03 \
-            --disk 0:adopt=chiwui-root \
-            --disk 1:adopt=chiwui-swap \
+            --disk 0:adopt=$INSTANCE-root \
+            --disk 1:adopt=$INSTANCE-swap \
             --backend-parameters memory=2g,vcpus=2 \
             --net 0:ip=pool,network=gnt-fsn \
             --no-name-check \
@@ -345,7 +347,7 @@ Import procedure:
 
      on the Ganeti node:
 
-        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/chiwui-root
+        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root
 
  13. switch to DRBD, still on the Ganeti MASTER NODE:
 
