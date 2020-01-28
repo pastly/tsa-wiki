@@ -1,0 +1,34 @@
+Commandline access
+==================
+
+Install:
+
+    virtualenv --python=python3 --system-site-packages ~/.virtualenvs/cartman
+    ~/.virtualenvs/cartman/bin/pip install cartman
+    alias cm=~/.virtualenvs/cartman/bin/cm
+
+Config:
+
+    [trac]
+    base_url = https://trac.torproject.org/projects/tor
+    username = anarcat
+    password = ....
+    auth_type = basic
+
+Template:
+
+    To: anarcat
+    Cc: 
+    Milestone: 
+    Component: Internal Services/Tor Sysadmin Team
+    Priority: Medium
+    Type: defect
+    Keywords: 
+    Version: 
+    Subject: test
+
+    test
+
+Running:
+
+    TRAC_PASSWORD=$(pass trac.torproject.org) cm new
