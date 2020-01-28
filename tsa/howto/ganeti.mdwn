@@ -217,32 +217,51 @@ node is unresponsive.
 
 ## Importing external instances
 
+Assumptions:
+
+ * `INSTANCE`: name of the instance being migrated, the "old" one
+   being outside the cluster and the "new" one being the one created
+   inside the cluster (e.g. `chiwui.torproject.org`)
+ * `SPARE_NODE`: a ganeti node with free space
+   (e.g. `fsn-node-03.torproject.org`) where the `INSTANCE` will be
+   migrated
+ * `MASTER_NODE`: the master ganeti node
+   (e.g. `fsn-node-01.torproject.org`)
+ * `KVM_NODE`: the machine which we migrate the `INSTANCE` from
+ * the `INSTANCE` has only `root` and `swap` partitions
+
 Import procedure:
 
- 1. pick a viable node to import the instance (see "evaluating cluster
-    capacity" above, when in doubt)
+ 1. pick a viable SPARE NODE to import the instance (see "evaluating
+    cluster capacity" above, when in doubt), login to the three
+    servers, setting the proper environment everywhere, for example:
+    
+        KVM_NODE=kvm1.torproject.org
+        INSTANCE=test.torproject.org
+        SPARE_NODE=fsn-node-03.torproject.org
+        MASTER_NODE=fsn-node-01.torproject.org
 
- 2. establish VM specs:
+ 2. establish VM specs, on the KVM NODE:
  
     * disk space in GiB:
     
-          for disk in /srv/vmstore/chiwui.torproject.org/*; do
+          for disk in /srv/vmstore/$INSTANCE/*; do
               printf "$disk: "
-              echo "$(qemu-img info --output=json $disk | jq '."virtual-size"') / 1024 / 1024 / 1024" | bc
+              echo "$(qemu-img info --output=json $disk | jq '."virtual-size"') / 1024 / 1024 / 1024" | bc -l
           done
 
     * number of CPU cores:
 
-          sed -n '/<vcpu/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml
+          sed -n '/<vcpu/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/$INSTANCE.xml
 
     * memory, assuming from KiB to GiB:
 
-          echo "$(sed -n '/<memory/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml) /1024 /1024" | bc
+          echo "$(sed -n '/<memory/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/$INSTANCE.xml) /1024 /1024" | bc -l
 
       TODO: make sure the memory line is in KiB and that the number
       makes sense.
 
-    * find the swap device UUID so we can recreate it later:
+    * on the INSTANCE, find the swap device UUID so we can recreate it later:
 
           blkid -t TYPE=swap -s UUID -o value
 
@@ -252,22 +271,22 @@ Import procedure:
         ssh-add /etc/ssh/ssh_host_ed25519_key
         cat /etc/ssh/ssh_host_ed25519_key.pub
 
-    on the ganeti node:
+    on the ganeti SPARE NODE:
     
         echo "$KEY_FROM_KVM_HOST" >> /etc/ssh/userkeys/root
 
- 4. copy the `.qcow` file over, from the KVM host to the node:
+ 4. copy the `.qcow` file over, from the KVM host to the SPARE NODE:
  
-        rsync -P /srv/vmstore/chiwui.torproject.org/chiwui.torproject.org-root fsn-node-03.torproject.org:/srv/
+        rsync -P /srv/vmstore/$INSTANCE/$INSTANCE-root $SPARE_NODE:/srv/
 
- 5. on the node, create and initialize a logical volume with the predetermined size:
+ 5. on the SPARE NODE, create and initialize a logical volume with the predetermined size:
  
         lvcreate -L 20GiB -n chiwui-root vg_ganeti
-        qemu-img convert /srv/chiwui.torproject.org-root  -O raw /dev/vg_ganeti/chiwui-root
+        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/chiwui-root
         lvcreate -L 4GiB -n chiwui-swap vg_ganeti
         mkswap --uuid $SWAP_UUID /dev/vg_ganeti/chiwui-swap
 
- 6. on the master, create the instance, adopting the LV:
+ 6. on the MASTER NODE, create the instance, adopting the LV:
  
         gnt-instance add -t plain \
             -n fsn-node-03 \
@@ -278,11 +297,11 @@ Import procedure:
             --no-name-check \
             --no-ip-check \
             -o debootstrap+default \
-            chiwui.torproject.org
+            $INSTANCE
 
  7. cross your fingers and watch the party:
  
-        gnt-instance console chiwui.torproject.org
+        gnt-instance console $INSTANCE
 
  8. on this particular machine, boot hangs for a while on this console
     message:
@@ -296,7 +315,7 @@ Import procedure:
       edit `/etc/network/interfaces` by hand and add IPv4 and IPv6
       ip. IPv4 configuration can be found in:
       
-          gnt-instance show chiwui.torproject.org
+          gnt-instance show $INSTANCE
           
       Latter can be guessed by concatenating `2a01:4f8:fff0:4f::` and
       the IPv6 local local address without `fe80::`. For example: a
@@ -316,23 +335,23 @@ Import procedure:
 
  11. shutdown original instance
 
- 12. resync and reconvert image, on the Ganeti master:
+ 12. resync and reconvert image, on the Ganeti MASTER NODE:
  
-        gnt-instance stop chiwui.torproject.org
+        gnt-instance stop $INSTANCE
 
      on the KVM node:
 
-        rsync -P /srv/vmstore/chiwui.torproject.org/chiwui.torproject.org-root fsn-node-03.torproject.org:/srv/
+        rsync -P /srv/vmstore/$INSTANCE/$INSTANCE-root $SPARE_NODE:/srv/
 
      on the Ganeti node:
 
-        qemu-img convert /srv/chiwui.torproject.org-root  -O raw /dev/vg_ganeti/chiwui-root
+        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/chiwui-root
 
- 13. switch to DRBD, on the ganeti master:
+ 13. switch to DRBD, still on the Ganeti MASTER NODE:
 
-        gnt-instance modify -t drbd chiwui.torproject.org
-        gnt-instance failover chiwui.torproject.org
-        gnt-instance startup chiwui.torproject.org
+        gnt-instance modify -t drbd $INSTANCE
+        gnt-instance failover $INSTANCE
+        gnt-instance startup $INSTANCE
 
  14. redo IP adress change in `/etc/network/interfaces`
 
