@@ -1,4 +1,4 @@
-This document is synchronized regularly between <https://help.torproject.org/tsa/roadmap/2020/> and <https://pad.riseup.net/p/CYOUx21kpxLL_5Eui61J-tpa-roadmap-2020>. Keep the format in markdown for now. It should eventually be moved into Trac keywords.
+This document is manually synchronized regularly between <https://help.torproject.org/tsa/roadmap/2020/> and <https://pad.riseup.net/p/CYOUx21kpxLL_5Eui61J-tpa-roadmap-2020>. Keep the format in markdown for now. It should eventually be moved into Trac keywords.
 
 [[!toc]]
 
@@ -76,11 +76,13 @@ January
 February
 ========
 
+<https://trac.torproject.org/projects/tor/query?status=!closed&keywords=~tpa-roadmap-february>
+
  * 2020 roadmap officially adopted
  * second phase of installer automation #31239 (esp. puppet automation, e.g. #32901, #32914)
- * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR (priority)
+ * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR (#33081)
  * storm shutdown #32390
- * unifolium decom (after storm), 5 VMs to migrate, +72EUR=+158EUR
+ * unifolium decom (after storm), 5 VMs to migrate, #33085 +72EUR=+158EUR
  * buster upgrade 70% done: 53 buster (+5), 23 stretch (-5)
  * migrate gitlab-01 to a new VM (gitlab-02) and use the omnibus package instead of ansible (#32949)
  * migrate CRM machines to gnt and test with Giant Rabbit #32198 (priority)
@@ -90,14 +92,16 @@ February
 March
 =====
 
+<https://trac.torproject.org/projects/tor/query?status=!closed&keywords=~tpa-roadmap-march>
+
 High possibility of overload here (two major decoms and many machines setup). Possible to push moly/cymru work to april?
 
  * 2021 budget proposal?
  * possible gnt-cymru cluster setup (~6 machines) #29397
  * moly decom #29974, 5 VMs to migrate
- * kvm3 decom, 7 VMs to migrate (inc. crm-int and crm-ext), +72EUR=+112EUR
- * new gnt-fsn node -118EUR=-6EUR
- * eugeni VM migration to gnt-fsn
+ * kvm3 decom, 7 VMs to migrate (inc. crm-int and crm-ext), #33082 +72EUR=+112EUR
+ * new gnt-fsn node (fsn-node-05) #33083 -118EUR=-6EUR
+ * eugeni VM migration to gnt-fsn #32803
  * buster upgrade 80% done: 61 buster (+8), 15 stretch (-8)
  * solr deployment
  * anti-censorship monitorining (external prometheus setup assistance) #31159
@@ -108,15 +112,15 @@ April
 =====
 
  * kvm4 decom, 9 VMs to migrate #32802 (w/o eugeni), +121EUR=+115EUR
- * new gnt-fsn node (fsn-node-05) -118EUR=-3EUR
+ * new gnt-fsn node (fsn-node-06) -118EUR=-3EUR
  * buster upgrade 90% done: 68 buster (+7), 8 stretch (-7)
  * solr configuration
 
 May
 ===
 
- * kvm5 decom, 10 VMs to migrate, +111EUR=+108EUR
- * new gnt-fsn node (fsn-node-06) -118EUR=-10EUR
+ * kvm5 decom, 9 VMs to migrate #33084, +111EUR=+108EUR
+ * new gnt-fsn node (fsn-node-07) -118EUR=-10EUR
  * buster upgrade 100% done: 76 buster (+8), 0 stretch (-8)
  * current planned completion date of Buster upgrades
  * start ramping down work, training and documentation
