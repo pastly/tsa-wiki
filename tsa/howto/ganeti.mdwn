@@ -226,18 +226,18 @@ Import procedure:
  
     * disk space in GiB:
     
-        for disk in /srv/vmstore/chiwui.torproject.org/*; do
-            printf "$disk: "
-            echo "$(qemu-img info --output=json $disk | jq '."virtual-size"') / 1024 / 1024 / 1024" | bc
-        done
+          for disk in /srv/vmstore/chiwui.torproject.org/*; do
+              printf "$disk: "
+              echo "$(qemu-img info --output=json $disk | jq '."virtual-size"') / 1024 / 1024 / 1024" | bc
+          done
 
     * number of CPU cores:
 
-        sed -n '/<vcpu/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml
+          sed -n '/<vcpu/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml
 
     * memory, assuming from KiB to GiB:
 
-        echo "$(sed -n '/<memory/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml) /1024 /1024" | bc
+          echo "$(sed -n '/<memory/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml) /1024 /1024" | bc
 
  3. setup a copy channel, on the KVM host:
  
