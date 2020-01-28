@@ -286,7 +286,13 @@ Import procedure:
         lvcreate -L 4GiB -n $INSTANCE-swap vg_ganeti
         mkswap --uuid $SWAP_UUID /dev/vg_ganeti/$INSTANCE-swap
 
-    TODO: the above assumes only two disk devices, which is usually incorrect.
+    TODO: the above assumes only two disk devices, which is usually
+    incorrect.
+    
+    Sometimes it might be worth using pv to get progress on long
+    transfers:
+    
+        pv /srv/$INSTANCE-lvm.raw | dd of=/dev/vg_ganeti_hdd/$INSTANCE-lvm bs=4k
 
  6. on the MASTER NODE, create the instance, adopting the LV:
  
