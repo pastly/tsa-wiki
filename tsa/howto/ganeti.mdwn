@@ -239,6 +239,9 @@ Import procedure:
 
           echo "$(sed -n '/<memory/{s/[^>]*>//;s/<.*//;p}' < /etc/libvirt/qemu/chiwui.torproject.org.xml) /1024 /1024" | bc
 
+      TODO: make sure the memory line is in KiB and that the number
+      makes sense.
+
  3. setup a copy channel, on the KVM host:
  
         ssh-agent bash
