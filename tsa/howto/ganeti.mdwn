@@ -308,7 +308,34 @@ Import procedure:
               address 2a01:4f8:fff0:4f:266:37ff:fe65:870f/64
               gateway 2a01:4f8:fff0:4f::1
 
- 10. change IP address in the following locations:
+ 10. functional tests: change your `/etc/hosts` to point to the new
+     server and see if everything still kind of works
+
+ 11. shutdown original instance
+
+ 12. resync and reconvert image, on the Ganeti master:
+ 
+        gnt-instance stop chiwui.torproject.org
+
+     on the KVM node:
+
+        rsync -P /srv/vmstore/chiwui.torproject.org/chiwui.torproject.org-root fsn-node-03.torproject.org:/srv/
+
+     on the Ganeti node:
+
+        qemu-img convert /srv/chiwui.torproject.org-root  -O raw /dev/vg_ganeti/chiwui-root
+
+ 13. switch to DRBD, on the ganeti master:
+
+        gnt-instance modify -t drbd chiwui.torproject.org
+        gnt-instance failover chiwui.torproject.org
+        gnt-instance startup chiwui.torproject.org
+
+ 14. redo IP adress change in `/etc/network/interfaces`
+
+ 15. final functional test
+
+ 16. change IP address in the following locations:
 
      * nagios
      * LDAP
@@ -316,16 +343,7 @@ Import procedure:
      * DNS (grep in tor-dns source, `puppet agent -t; ud-replicate` on nevii)
      * reverse DNS (upstream web UI, e.g. Hetzner Robot)
 
-Missing steps:
-
- * functional tests
- * shutdown original node
- * resync and reconvert image
- * DRBD switch
- * redo IP adress change
- * switch DNS ("change IP" above)
- * start new instance
- * decom old instance
+ 17. decomission old instance ([[retire-a-host]])
 
 References:
 
