@@ -247,7 +247,7 @@ Import procedure:
 
     on the ganeti node:
     
-        echo "$KEY_FROM_KVM_HOST" > /etc/ssh/userkeys/root.more
+        echo "$KEY_FROM_KVM_HOST" >> /etc/ssh/userkeys/root
 
  4. copy the `.qcow` file over, from the KVM host to the node:
  
