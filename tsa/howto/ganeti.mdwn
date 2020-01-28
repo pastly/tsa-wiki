@@ -251,7 +251,7 @@ Import procedure:
 
  4. copy the `.qcow` file over, from the KVM host to the node:
  
-        rsync --progress /srv/vmstore/chiwui.torproject.org/chiwui.torproject.org-root fsn-node-03.torproject.org:/srv/
+        rsync -P /srv/vmstore/chiwui.torproject.org/chiwui.torproject.org-root fsn-node-03.torproject.org:/srv/
 
  5. on the node, create and initialize a logical volume with the predetermined size:
  
