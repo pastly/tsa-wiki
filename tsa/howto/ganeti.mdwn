@@ -308,6 +308,9 @@ Import procedure:
               address 2a01:4f8:fff0:4f:266:37ff:fe65:870f/64
               gateway 2a01:4f8:fff0:4f::1
 
+      TODO: reuse `gnt-debian-interfaces` from the ganeti puppet
+      module script here?
+
  10. functional tests: change your `/etc/hosts` to point to the new
      server and see if everything still kind of works
 
