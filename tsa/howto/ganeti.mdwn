@@ -292,6 +292,7 @@ Import procedure:
     Sometimes it might be worth using pv to get progress on long
     transfers:
     
+        qemu-img convert /srv/$INSTANCE-lvm -O raw /srv/$INSTANCE-lvm.raw
         pv /srv/$INSTANCE-lvm.raw | dd of=/dev/vg_ganeti_hdd/$INSTANCE-lvm bs=4k
 
  6. on the MASTER NODE, create the instance, adopting the LV:
