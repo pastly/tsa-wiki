@@ -19,6 +19,9 @@ Config:
     password = ....
     auth_type = basic
 
+The password can be ommitted and passed through the environment
+instead with [this patch](https://github.com/tamentis/cartman/pull/30).
+
 Template:
 
     To: anarcat
