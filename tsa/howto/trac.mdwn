@@ -39,3 +39,11 @@ Template:
 Running:
 
     TRAC_PASSWORD=$(pass trac.torproject.org) cm new
+
+Other documentation
+===================
+
+There's very little documentation on our Trac instance out there. This
+page was originally created to quickly jot down notes on how to
+batch-create tickets. There's also a [Trac page in the Tor Trac
+wiki](https://trac.torproject.org/projects/tor/wiki/org/operations/services/trac) and the [upstream documentation](https://trac.edgewall.org/).
