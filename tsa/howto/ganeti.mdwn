@@ -275,19 +275,25 @@ Import procedure:
     
         echo "$KEY_FROM_KVM_HOST" >> /etc/ssh/userkeys/root
 
- 4. copy the `.qcow` file over, from the KVM host to the SPARE NODE:
+ 4. copy the `.qcow` file(s) over, from the KVM host to the SPARE NODE:
  
         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/
+        rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-lvm /srv/ || true
 
  5. on the SPARE NODE, create and initialize a logical volume with the predetermined size:
  
-        lvcreate -L 20GiB -n $INSTANCE-root vg_ganeti
-        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root
         lvcreate -L 4GiB -n $INSTANCE-swap vg_ganeti
         mkswap --uuid $SWAP_UUID /dev/vg_ganeti/$INSTANCE-swap
+        lvcreate -L 20GiB -n $INSTANCE-root vg_ganeti
+        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root
+        lvcreate -L 40GiB -n $INSTANCE-lvm vg_ganeti
+        qemu-img convert /srv/$INSTANCE-lvm  -O raw /dev/vg_ganeti_hdd/$INSTANCE-lvm
 
-    TODO: the above assumes only two disk devices, which is usually
-    incorrect.
+    Note how we assume two disks above, but the instance might have a
+    different configuration that would require changing the above. The
+    above, common, configuration is to have an LVM disk separate from
+    the "root" disk, the former being on a HDD, but the HDD is
+    sometimes completely omitted and sizes can differ.
     
     Sometimes it might be worth using pv to get progress on long
     transfers:
@@ -295,12 +301,17 @@ Import procedure:
         qemu-img convert /srv/$INSTANCE-lvm -O raw /srv/$INSTANCE-lvm.raw
         pv /srv/$INSTANCE-lvm.raw | dd of=/dev/vg_ganeti_hdd/$INSTANCE-lvm bs=4k
 
+    TODO: ideally, the above procedure (and many steps below as well)
+    would be automatically deduced from the disk listing established
+    in the first step.
+
  6. on the MASTER NODE, create the instance, adopting the LV:
  
         gnt-instance add -t plain \
             -n fsn-node-03 \
             --disk 0:adopt=$INSTANCE-root \
             --disk 1:adopt=$INSTANCE-swap \
+            --disk 2:adopt=$INSTANCE-lvm,vg=vg_ganeti_hdd \
             --backend-parameters memory=2g,vcpus=2 \
             --net 0:ip=pool,network=gnt-fsn \
             --no-name-check \
@@ -348,13 +359,12 @@ Import procedure:
  
         gnt-instance stop $INSTANCE
 
-     on the KVM node:
-
-        rsync -P /srv/vmstore/$INSTANCE/$INSTANCE-root $SPARE_NODE:/srv/
-
      on the Ganeti node:
 
-        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root
+        rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/ &&
+        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root &&
+        rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-lvm /srv/ && 
+        qemu-img convert /srv/$INSTANCE-lvm  -O raw /dev/vg_ganeti_hdd/$INSTANCE-lvm
 
  13. switch to DRBD, still on the Ganeti MASTER NODE:
 
