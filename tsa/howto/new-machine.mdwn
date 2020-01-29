@@ -23,10 +23,10 @@ release, testing. Here are site-specific installs:
 
 * [[new-machine-hetzner-cloud]]
 * [[new-machine-hetzner-robot]]
-* for a new virtual machine in the [[ganeti]] cluster, follow
-  [[ganeti#Adding_a_new_instance]]. new ganeti *nodes* (which host
-  virtual machines) should be installed by following the other
-  procedures here, then [[ganeti#New_node]]
+* [[ganeti]] clusters:
+  * new virtual machine: [[new instance procedure|ganeti#Adding_a_new_instance]]
+  * new *nodes* (which host virtual machines) [[new node
+    procedure|ganeti#New_node]], normally done as a post-install configuration
 * linaro: [[openstack]]
 
 The following sites are not documented yet:
