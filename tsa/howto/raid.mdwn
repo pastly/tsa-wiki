@@ -1,3 +1,40 @@
+[[!toc levels=3]]
+
+Software RAID
+=============
+
+Replacing a drive
+-----------------
+
+If a drive fails in a server, the procedure is essentially to open a
+ticket, wait for the drive change, partition and re-add it to the RAID
+array. The following procdure assumes that `sda` failed and `sdb` is
+good in a RAID-1 array, but can vary with other RAID configurations or
+drive models.
+
+ 1. file a ticket upstream
+
+    [Hetzner Support](https://robot.your-server.de/support/), for example, has an excellent service which
+    asks you the disk serial number (available in the SMART email
+    notification) and the SMART log (output of `smartctl -x
+    /dev/sda`). Then they will turn off the machine, replace the disk,
+    and start it up again.
+
+ 2. wait for the server to return with the new disk
+
+    Hetzner will send an email to the tpa alias when that is done.
+
+ 3. partition the new drive (`sda`) to match the old (`sdb`):
+
+        sfdisk -d /dev/sdb | sfdisk --no-reread /dev/sda --force
+
+ 4. re-add the new disk to the RAID array:
+
+        mdadm /dev/md0 -a /dev/sda
+
+Note that Hetzner also has [pretty good documentation on how to deal
+with SMART output](https://wiki.hetzner.de/index.php/Seriennummern_von_Festplatten_und_Hinweise_zu_defekten_Festplatten/en).
+
 Hardware RAID
 =============
 
