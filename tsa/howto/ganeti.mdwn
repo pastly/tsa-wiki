@@ -280,6 +280,21 @@ Import procedure:
         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/
         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-lvm /srv/ || true
 
+    it's possible there is not enough room in `/srv`: in the base
+    Ganeti installs, everything is in the same root partition (`/`)
+    which will fill up if the instance is (say) over ~30GiB. In that
+    case, create a filesystem in `/srv`:
+
+        (mkdir /root/srv && mv /srv/* /root/srv true) || true &&
+        lvcreate -L 200G vg_ganeti -n srv &&
+        mkfs /dev/vg_ganeti/srv &&
+        echo "/dev/vg_ganeti/srv /srv ext4 rw,noatime,errors=remount-ro 0 2" >> /etc/fstab &&
+        mount /srv &&
+        ( mv /root/srv/* ; rmdir /root/srv )
+
+    This partition can be reclaimed once the VM migrations are
+    completed, as it needlessly takes up space on the node.
+
  5. on the SPARE NODE, create and initialize a logical volume with the predetermined size:
  
         lvcreate -L 4GiB -n $INSTANCE-swap vg_ganeti
