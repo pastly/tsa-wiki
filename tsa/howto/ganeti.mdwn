@@ -338,13 +338,6 @@ Import procedure:
  
         gnt-instance console $INSTANCE
 
- 8. on this particular machine, boot hangs for a while on this console
-    message:
-    
-        [  *** ] A start job is running for dev-disk-by\x2duuid-484b5...26s / 1min 30s)
-
-    but strangely the machine eventually boots and `/etc/fstab` looks okay.
-
  9. IP address change on new instance:
  
       edit `/etc/network/interfaces` by hand and add IPv4 and IPv6
@@ -401,7 +394,22 @@ Import procedure:
 
  17. decomission old instance ([[retire-a-host]])
 
-References:
+### Troubleshooting
+
+ * if boot takes a long time and you see a message like this on the console:
+ 
+        [  *** ] A start job is running for dev-disk-by\x2duuid-484b5...26s / 1min 30s)
+
+   ... which is generally followed by:
+   
+        [DEPEND] Dependency failed for /dev/disk/by-…6f4b5-f334-4173-8491-9353d4f94e04.
+        [DEPEND] Dependency failed for Swap.
+
+   it means the swap device UUID wasn't setup properly, and does not
+   match the one provided in `/etc/fstab`. That is probably because
+   you missed the `mkswap -U` step documented above.
+
+### References
 
  * [Upstream docs](http://docs.ganeti.org/ganeti/2.15/html/admin.html#import-of-foreign-instances) have the canonical incantation:
 
