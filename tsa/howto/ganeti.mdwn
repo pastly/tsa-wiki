@@ -265,19 +265,19 @@ Import procedure:
 
           blkid -t TYPE=swap -s UUID -o value
 
- 3. setup a copy channel, on the KVM host:
+ 3. setup a copy channel, on the SPARE NODE:
  
         ssh-agent bash
         ssh-add /etc/ssh/ssh_host_ed25519_key
         cat /etc/ssh/ssh_host_ed25519_key.pub
 
-    on the ganeti SPARE NODE:
+    on the KVM NODE:
     
         echo "$KEY_FROM_KVM_HOST" >> /etc/ssh/userkeys/root
 
  4. copy the `.qcow` file over, from the KVM host to the SPARE NODE:
  
-        rsync -P /srv/vmstore/$INSTANCE/$INSTANCE-root $SPARE_NODE:/srv/
+        rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/
 
  5. on the SPARE NODE, create and initialize a logical volume with the predetermined size:
  
