@@ -1,5 +1,16 @@
 [[!toc levels=3]]
 
+Burn-in
+======
+
+Before we even install the machine, we should do some sort of
+stress-testing or [burn-in](https://en.wikipedia.org/wiki/Burn-in) so that we don't go through the lengthy
+install process and put into production fautly hardware.
+
+This implies testing the various components to see if they support a
+moderate to high load. a tool like [stressant](https://stressant.readthedocs.io/) can be used for that
+purpose, but a full procedure still needs to be established.
+
 Installation
 ============
 
