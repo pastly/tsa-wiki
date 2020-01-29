@@ -388,26 +388,12 @@ Import procedure:
 
 References:
 
- * [Upstream docs](http://docs.ganeti.org/ganeti/2.15/html/admin.html#import-of-foreign-instances):
+ * [Upstream docs](http://docs.ganeti.org/ganeti/2.15/html/admin.html#import-of-foreign-instances) have the canonical incantation:
 
         gnt-instance add -t plain -n HOME_NODE ... --disk 0:adopt=lv_name[,vg=vg_name] INSTANCE_NAME
 
- * [DSA docs](https://dsa.debian.org/howto/install-ganeti/), adoption:
-
-        gnt-instance add -t plain --os-type debootstrap+dsa-wheezy \
-            --disk 0:adopt=lully-boot \
-            --disk 1:adopt=lully-root \
-            --disk 2:adopt=lully-swap \
-            --disk 3:adopt=lully-log  \
-            --hypervisor-parameters kvm:initrd_path=,kernel_path= \
-            --net 0:ip=82.195.75.99 -n clementi.debian.org  lully.debian.org
-
-   DRBD conversion:
-
-        gnt-instance shutdown lully.debian.org
-        gnt-instance modify -t drbd -n czerny.debian.org lully.debian.org
-        gnt-instance failover lully.debian.org
-        gnt-instance startup lully.debian.org
+ * [DSA docs](https://dsa.debian.org/howto/install-ganeti/) also use disk adoption and have a procedure to
+   migrate to DRBD
 
  * [Riseup docs](https://we.riseup.net/riseup+tech/ganeti#move-an-instance-from-one-cluster-to-another-from-) suggest creating a VM without installing, shutting
    down and then syncing
