@@ -1,7 +1,10 @@
 [[!toc levels=3]]
 
-Burn-in
+How to
 ======
+
+Burn-in
+-------
 
 Before we even install the machine, we should do some sort of
 stress-testing or [burn-in](https://en.wikipedia.org/wiki/Burn-in) so that we don't go through the lengthy
@@ -12,7 +15,7 @@ moderate to high load. a tool like [stressant](https://stressant.readthedocs.io/
 purpose, but a full procedure still needs to be established.
 
 Installation
-============
+------------
 
 This document assumes the machine is already installed with a Debian
 operating system. We preferably install stable or, when close to the
@@ -33,8 +36,8 @@ The following sites are not documented yet:
  * scaleway
  * sunet
 
-Configuration procedure
-=======================
+Post-install configuration
+--------------------------
 
 All commands to be run as root unless otherwise noted.
 
