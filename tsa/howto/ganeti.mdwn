@@ -616,9 +616,9 @@ catastrophic data loss bug in Ganeti or [[drbd]].
 
   2. install openvswitch and allow modules to be loaded
 
-        touch /etc/no_modules_disabled
-        reboot
-        apt install openvswitch-switch
+         touch /etc/no_modules_disabled
+         reboot
+         apt install openvswitch-switch
 
   3. Allocate a private IP address in the 30.172.in-addr.arpa zone for
      the node.
@@ -629,7 +629,7 @@ catastrophic data loss bug in Ganeti or [[drbd]].
 
   5. knock on wood, cross your fingers, or whatever, and reboot:
   
-        reboot
+         reboot
 
 - Prepare all the nodes by configuring them in puppet.  They should be
   in the class `roles::ganeti::fsn` if they are part of the fsn
