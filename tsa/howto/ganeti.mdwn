@@ -596,7 +596,7 @@ catastrophic data loss bug in Ganeti or [[drbd]].
 
 ## Installation
 
-### Cluster Setup Preliminaries
+### New node
 
 - To create a new box, follow [[new-machine-hetzner-robot]] but change
   the following settings:
@@ -641,9 +641,15 @@ catastrophic data loss bug in Ganeti or [[drbd]].
 
 - reboot again
 
-### New cluster
+Then the node is ready to be added to the cluster, with:
 
-To create the fsn master, we added fsngnt to DNS, then ran
+    gnt-node add \
+      --secondary-ip 172.30.135.2 \
+      --no-ssh-key-check \
+      --no-node-setup \
+      fsn-node-02.torproject.org
+
+If this is an entirely new cluster, you need a different procedure:
 
     gnt-cluster init \
       --master-netdev vlan-gntbe \
@@ -656,15 +662,7 @@ To create the fsn master, we added fsngnt to DNS, then ran
       --no-etc-hosts \
       fsngnt.torproject.org
 
-### Add a new node
-
-We did run the following on fsn-node-01:
-
-    gnt-node add \
-      --secondary-ip 172.30.135.2 \
-      --no-ssh-key-check \
-      --no-node-setup \
-      fsn-node-02.torproject.org
+The above assumes that `fsngnt` is already in DNS.
 
 ### cluster config
 
