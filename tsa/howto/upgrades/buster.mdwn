@@ -200,13 +200,16 @@ with our risk analysis and notes:
 | Git          | 2.11    | 2.20   | |
 | Gitolite     | 3.6.6   | 3.6.11 | |
 | GnuPG        | 2.1     | 2.2    | |
+| Icinga       | 1.14.2  | 2.10.3 | major upgrade |
 | Linux kernel | 4.9     | 4.19   | |
 | MariaDB      | 10.1    | 10.3   | |
 | OpenJDK      | 8       | 11     | major upgrade, TBD |
+| OpenLDAP     | 2.4.47  | 2.4.48 | |
 | OpenSSH      | 7.4     | 7.8    | |
 | Perl         | 5.24    | 5.28   | |
-| Postfix      | 3.1.8   | 3.3.2  | |
+| Postfix      | 3.1.12  | 3.4.8  | |
 | PostgreSQL   | 9.6     | 11     | two major upgrades, release notes: [10](https://www.postgresql.org/docs/10/release-10.html) [11](https://www.postgresql.org/docs/11/release-11.html)|
+| RT           | 4.4.1   | 4.4.3  | |
 | Rustc        | N/A     | 1.34   | Rust enters Debian |
 
 Many packages were removed from Buster. Anarcat built an [exhaustive
@@ -310,34 +313,34 @@ Per host progress
 This table shows which team has checked their services to see if they
 are affected by the major upgrade:
 
-| machine         | team        | policy   | ticket     | notes               |
-| --------------- | ---------   | -------- | ---------  |                     |
-| alberti         | TPA         | check    |            |                     |
-| bracteata       | ops         | decom    | [#32390][] |                     |
-| colchicifolium  | metrics     | sched    |            |                     |
-| corsicum        | metrics     | sched    |            |                     |
-| crm-ext-01      | funding     | sched    | [#32198][] |                     |
-| crm-int-01      | funding     | sched    | [#32198][] |                     |
-| cupani          | git         | check    |            |                     |
-| eugeni          | TPA         | check    |            |                     |
-| gayi            | ops         | decom    | [#17202][] |                     |
-| gitlab-01       | gitlab      | check    |            |                     |
-| hetzner-hel1-01 | TPA         | check    |            |                     |
-| hetzner-nbg1-01 | TPA         | justdoit |            |                     |
-| kvm4            | TPA         | decom    | [#32802][] | moved to ganeti     |
-| macrum          | TPA         | decom    | TODO       | moved to ganeti     |
-| majus           | translation | check    |            |                     |
-| materculae      | metrics     | sched    |            |                     |
-| moly            | TPA         | decom    | [#29974][] | moved to ganeti     |
-| omeiense        | metrics     | sched    |            |                     |
-| oo-hetzner-03   | metrics     | decom?   |            |                     |
-| orestis         | metrics     | decom?   |            |                     |
-| rude            | TPA         | check    |            |                     |
-| scw-arm-par-01  | TPA         | decom    | [#32920][] |                     |
-| textile         | TPA         | decom    | [#31686][] | moved to ganeti     |
-| troodi          | trac        | decom    | TODO       | replaced by gitlab? |
-| unifolium       | TPA         | decom    | [#33085][] | moved to ganeti     |
-| vineale         | git         | check    |            |                     |
+| machine         | team        | policy   | ticket     | notes                        |
+| --------------- | ---------   | -------- | ---------  |                              |
+| alberti         | TPA         | justdoit |            | test with openldap backport? |
+| bracteata       | ops         | decom    | [#32390][] |                              |
+| colchicifolium  | metrics     | sched    |            |                              |
+| corsicum        | metrics     | sched    |            |                              |
+| crm-ext-01      | funding     | sched    | [#32198][] |                              |
+| crm-int-01      | funding     | sched    | [#32198][] |                              |
+| cupani          | git         | check    |            |                              |
+| eugeni          | TPA         | check    |            |                              |
+| gayi            | ops         | decom    | [#17202][] |                              |
+| gitlab-01       | gitlab      | decom    |            | migrate to new box           |
+| hetzner-hel1-01 | TPA         | justdoit |            | test with backport first     |
+| hetzner-nbg1-01 | TPA         | justdoit |            |                              |
+| kvm4            | TPA         | decom    | [#32802][] | moved to ganeti              |
+| macrum          | TPA         | decom    | TODO       | moved to ganeti              |
+| majus           | translation | check    | [#33110][] |                              |
+| materculae      | metrics     | sched    |            |                              |
+| moly            | TPA         | decom    | [#29974][] | moved to ganeti              |
+| omeiense        | metrics     | sched    |            |                              |
+| oo-hetzner-03   | metrics     | decom?   |            |                              |
+| orestis         | metrics     | decom?   |            |                              |
+| rude            | TPA         | justdoit |            |                              |
+| scw-arm-par-01  | TPA         | decom    | [#32920][] |                              |
+| textile         | TPA         | decom    | [#31686][] | moved to ganeti              |
+| troodi          | trac        | decom    | TODO       | replaced by gitlab?          |
+| unifolium       | TPA         | decom    | [#33085][] | moved to ganeti              |
+| vineale         | git         | check    |            |                              |
 
 [#33085]: https://trac.torproject.org/projects/tor/ticket/33085
 [#31686]: https://trac.torproject.org/projects/tor/ticket/31686
@@ -347,13 +350,13 @@ are affected by the major upgrade:
 [#17202]: https://trac.torproject.org/projects/tor/ticket/17202
 [#32198]: https://trac.torproject.org/projects/tor/ticket/32198
 [#32390]: https://trac.torproject.org/projects/tor/ticket/32390
-
+[#33110]: https://trac.torproject.org/projects/tor/ticket/33110
 Keywords:
 
  * sched: scheduled maintenance window
  * decom: to be decomissioned, not to be upgraded
  * justdoit: ready to be upgraded
- * check: needs verification
+ * check: needs verification, either by service team or TPA
 
 List of servers obtained with:
 
