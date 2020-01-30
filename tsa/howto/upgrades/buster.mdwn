@@ -314,11 +314,11 @@ This table shows which team has checked their services to see if they
 are affected by the major upgrade:
 
 | machine         | team        | policy   | ticket     | notes                        |
-| --------------- | ---------   | -------- | ---------  |                              |
+| --------------- | ---------   | -------- | ---------  | ---------------------------- |
 | alberti         | TPA         | justdoit |            | test with openldap backport? |
 | bracteata       | ops         | decom    | [#32390][] |                              |
-| colchicifolium  | metrics     | sched    |            |                              |
-| corsicum        | metrics     | sched    |            |                              |
+| colchicifolium  | metrics     | sched    | [#33111][] |                              |
+| corsicum        | metrics     | sched    | [#33111][] |                              |
 | crm-ext-01      | funding     | sched    | [#32198][] |                              |
 | crm-int-01      | funding     | sched    | [#32198][] |                              |
 | cupani          | git         | check    |            |                              |
@@ -330,11 +330,11 @@ are affected by the major upgrade:
 | kvm4            | TPA         | decom    | [#32802][] | moved to ganeti              |
 | macrum          | TPA         | decom    | TODO       | moved to ganeti              |
 | majus           | translation | check    | [#33110][] |                              |
-| materculae      | metrics     | sched    |            |                              |
+| materculae      | metrics     | sched    | [#33111][] |                              |
 | moly            | TPA         | decom    | [#29974][] | moved to ganeti              |
-| omeiense        | metrics     | sched    |            |                              |
-| oo-hetzner-03   | metrics     | decom?   |            |                              |
-| orestis         | metrics     | decom?   |            |                              |
+| omeiense        | metrics     | sched    | [#33111][] |                              |
+| oo-hetzner-03   | metrics     | sched    | [#33111][] |                              |
+| orestis         | metrics     | sched    | [#33111][] |                              |
 | rude            | TPA         | justdoit |            |                              |
 | scw-arm-par-01  | TPA         | decom    | [#32920][] |                              |
 | textile         | TPA         | decom    | [#31686][] | moved to ganeti              |
@@ -342,6 +342,7 @@ are affected by the major upgrade:
 | unifolium       | TPA         | decom    | [#33085][] | moved to ganeti              |
 | vineale         | git         | check    |            |                              |
 
+[#33111]: https://trac.torproject.org/projects/tor/ticket/33111
 [#33085]: https://trac.torproject.org/projects/tor/ticket/33085
 [#31686]: https://trac.torproject.org/projects/tor/ticket/31686
 [#32920]: https://trac.torproject.org/projects/tor/ticket/32920
@@ -351,6 +352,7 @@ are affected by the major upgrade:
 [#32198]: https://trac.torproject.org/projects/tor/ticket/32198
 [#32390]: https://trac.torproject.org/projects/tor/ticket/32390
 [#33110]: https://trac.torproject.org/projects/tor/ticket/33110
+
 Keywords:
 
  * sched: scheduled maintenance window
