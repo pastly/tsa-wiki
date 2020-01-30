@@ -197,6 +197,8 @@ with our risk analysis and notes:
 | Bind         | 9.10    | 9.11   | |
 | Cryptsetup   | 1.7     | 2.1    | |
 | Docker       | N/A     | 18     | Docker back in Debian? |
+| Git          | 2.11    | 2.20   | |
+| Gitolite     | 3.6.6   | 3.6.11 | |
 | GnuPG        | 2.1     | 2.2    | |
 | Linux kernel | 4.9     | 4.19   | |
 | MariaDB      | 10.1    | 10.3   | |
@@ -308,34 +310,34 @@ Per host progress
 This table shows which team has checked their services to see if they
 are affected by the major upgrade:
 
-| machine                        | team      | policy   | ticket     |
-| ------------------------------ | --------- | -------- | ---------  |
-| alberti.torproject.org         | TPA       | check    |            |
-| bracteata.torproject.org       | ops       | decom    | [#32390][] |
-| colchicifolium.torproject.org  | metrics   | sched    |            |
-| corsicum.torproject.org        | metrics   | sched    |            |
-| crm-ext-01.torproject.org      | funding   | sched    | [#32198][] |
-| crm-int-01.torproject.org      | funding   | sched    | [#32198][] |
-| cupani.torproject.org          | git       | check    |            |
-| eugeni.torproject.org          | TPA       | check    |            |
-| gayi.torproject.org            | ops       | decom    | [#17202][] |
-| gitlab-01.torproject.org       | ?         | check    |            |
-| hetzner-hel1-01.torproject.org | TPA       | check    |            |
-| hetzner-nbg1-01.torproject.org | TPA       | justdoit |            |
-| kvm4.torproject.org            | TPA       | decom    | [#32802][] |
-| macrum.torproject.org          | TPA       | decom    | TODO       |
-| majus.torproject.org           | ?         | check    |            |
-| materculae.torproject.org      | metrics   | sched    |            |
-| moly.torproject.org            | TPA       | decom    | [#29974][] |
-| omeiense.torproject.org        | metrics   | sched    |            |
-| oo-hetzner-03.torproject.org   | metrics   | decom?   |            |
-| orestis.torproject.org         | metrics   | decom?   |            |
-| rude.torproject.org            | community | check    |            |
-| scw-arm-par-01.torproject.org  | ?         | decom    | [#32920][] |
-| textile.torproject.org         | TPA       | decom    | [#31686][] |
-| troodi.torproject.org          | git       | check    |            |
-| unifolium.torproject.org       | TPA       | decom    | [#33085][] |
-| vineale.torproject.org         | git       | check    |            |
+| machine         | team        | policy   | ticket     | notes                         |
+| --------------- | ---------   | -------- | ---------  |                               |
+| alberti         | TPA         | check    |            |                               |
+| bracteata       | ops         | decom    | [#32390][] |                               |
+| colchicifolium  | metrics     | sched    |            |                               |
+| corsicum        | metrics     | sched    |            |                               |
+| crm-ext-01      | funding     | sched    | [#32198][] |                               |
+| crm-int-01      | funding     | sched    | [#32198][] |                               |
+| cupani          | git         | check    |            |                               |
+| eugeni          | TPA         | check    |            |                               |
+| gayi            | ops         | decom    | [#17202][] |                               |
+| gitlab-01       | gitlab      | check    |            |                               |
+| hetzner-hel1-01 | TPA         | check    |            |                               |
+| hetzner-nbg1-01 | TPA         | justdoit |            |                               |
+| kvm4            | TPA         | decom    | [#32802][] | moved to ganeti               |
+| macrum          | TPA         | decom    | TODO       | moved to ganeti               |
+| majus           | translation | check    |            |                               |
+| materculae      | metrics     | sched    |            |                               |
+| moly            | TPA         | decom    | [#29974][] | moved to ganeti               |
+| omeiense        | metrics     | sched    |            |                               |
+| oo-hetzner-03   | metrics     | decom?   |            |                               |
+| orestis         | metrics     | decom?   |            |                               |
+| rude            | TPA         | check    |            | community, but checked by TPA |
+| scw-arm-par-01  | ?           | decom    | [#32920][] |                               |
+| textile         | TPA         | decom    | [#31686][] | moved to ganeti               |
+| troodi          | trac        | decom    | TODO       | replaced by gitlab?           |
+| unifolium       | TPA         | decom    | [#33085][] | moved to ganeti               |
+| vineale         | git         | check    |            |                               |
 
 [#33085]: https://trac.torproject.org/projects/tor/ticket/33085
 [#31686]: https://trac.torproject.org/projects/tor/ticket/31686
