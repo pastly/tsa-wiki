@@ -32,7 +32,7 @@ upgrade, however.
 Team policies:
 
  * anti-censorship: TBD
- * metrics: one or two work-day advance notice
+ * metrics: one or two work-day advance notice ([source](https://trac.torproject.org/projects/tor/ticket/32998#comment:2))
  * funding: schedule a maintenance window
  * git: TBD
  * gitlab: TBD
