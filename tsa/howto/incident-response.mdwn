@@ -103,6 +103,10 @@ as much as possible, but it's possible that some weekends or vacations
 are unattended for more than a day. This is the definition of a
 "business day".
 
+The TPA team is currently small and there might be specific situations
+where a code RED might require more time than expected and as a
+organization we need to do an effort in understanding that.
+
 TPA is responsible for the base operating system and not *all*
 services running on TPO infrastructure, see the [[service admin
 definition|doc/admins]] for details on that distinction.
