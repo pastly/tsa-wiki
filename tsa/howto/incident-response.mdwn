@@ -103,9 +103,9 @@ as much as possible, but it's possible that some weekends or vacations
 are unattended for more than a day. This is the definition of a
 "business day".
 
-TPA is responsible for the base service in the operating system, see
-the [[service admin definition|doc/admins]] for details on
-that.
+TPA is responsible for the base operating system and not *all*
+services running on TPO infrastructure, see the [[service admin
+definition|doc/admins]] for details on that distinction.
 
 Debian GNU/Linux is the only supported operating system, and we
 support only the "stable" and "oldstable" distributions, until the
