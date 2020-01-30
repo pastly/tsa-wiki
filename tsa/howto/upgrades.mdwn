@@ -32,16 +32,13 @@ upgrade, however.
 Team policies:
 
  * anti-censorship: TBD
- * applications: TBD
- * community: TBD
- * fundraising: TBD
  * metrics: one or two work-day advance notice
- * network: TBD
- * ooni: TBD
- * operations: TBD
- * network health: TBD
- * sysadmin: N/A
- * ux: TBD
+ * funding: schedule a maintenance window
+ * git: TBD
+ * gitlab: TBD
+ * translation: TBD
+
+Some teams might be missing from the list.
 
 Minor upgrades
 --------------

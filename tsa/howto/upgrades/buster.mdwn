@@ -310,34 +310,34 @@ Per host progress
 This table shows which team has checked their services to see if they
 are affected by the major upgrade:
 
-| machine         | team        | policy   | ticket     | notes                         |
-| --------------- | ---------   | -------- | ---------  |                               |
-| alberti         | TPA         | check    |            |                               |
-| bracteata       | ops         | decom    | [#32390][] |                               |
-| colchicifolium  | metrics     | sched    |            |                               |
-| corsicum        | metrics     | sched    |            |                               |
-| crm-ext-01      | funding     | sched    | [#32198][] |                               |
-| crm-int-01      | funding     | sched    | [#32198][] |                               |
-| cupani          | git         | check    |            |                               |
-| eugeni          | TPA         | check    |            |                               |
-| gayi            | ops         | decom    | [#17202][] |                               |
-| gitlab-01       | gitlab      | check    |            |                               |
-| hetzner-hel1-01 | TPA         | check    |            |                               |
-| hetzner-nbg1-01 | TPA         | justdoit |            |                               |
-| kvm4            | TPA         | decom    | [#32802][] | moved to ganeti               |
-| macrum          | TPA         | decom    | TODO       | moved to ganeti               |
-| majus           | translation | check    |            |                               |
-| materculae      | metrics     | sched    |            |                               |
-| moly            | TPA         | decom    | [#29974][] | moved to ganeti               |
-| omeiense        | metrics     | sched    |            |                               |
-| oo-hetzner-03   | metrics     | decom?   |            |                               |
-| orestis         | metrics     | decom?   |            |                               |
-| rude            | TPA         | check    |            | community, but checked by TPA |
-| scw-arm-par-01  | ?           | decom    | [#32920][] |                               |
-| textile         | TPA         | decom    | [#31686][] | moved to ganeti               |
-| troodi          | trac        | decom    | TODO       | replaced by gitlab?           |
-| unifolium       | TPA         | decom    | [#33085][] | moved to ganeti               |
-| vineale         | git         | check    |            |                               |
+| machine         | team        | policy   | ticket     | notes               |
+| --------------- | ---------   | -------- | ---------  |                     |
+| alberti         | TPA         | check    |            |                     |
+| bracteata       | ops         | decom    | [#32390][] |                     |
+| colchicifolium  | metrics     | sched    |            |                     |
+| corsicum        | metrics     | sched    |            |                     |
+| crm-ext-01      | funding     | sched    | [#32198][] |                     |
+| crm-int-01      | funding     | sched    | [#32198][] |                     |
+| cupani          | git         | check    |            |                     |
+| eugeni          | TPA         | check    |            |                     |
+| gayi            | ops         | decom    | [#17202][] |                     |
+| gitlab-01       | gitlab      | check    |            |                     |
+| hetzner-hel1-01 | TPA         | check    |            |                     |
+| hetzner-nbg1-01 | TPA         | justdoit |            |                     |
+| kvm4            | TPA         | decom    | [#32802][] | moved to ganeti     |
+| macrum          | TPA         | decom    | TODO       | moved to ganeti     |
+| majus           | translation | check    |            |                     |
+| materculae      | metrics     | sched    |            |                     |
+| moly            | TPA         | decom    | [#29974][] | moved to ganeti     |
+| omeiense        | metrics     | sched    |            |                     |
+| oo-hetzner-03   | metrics     | decom?   |            |                     |
+| orestis         | metrics     | decom?   |            |                     |
+| rude            | TPA         | check    |            |                     |
+| scw-arm-par-01  | TPA         | decom    | [#32920][] |                     |
+| textile         | TPA         | decom    | [#31686][] | moved to ganeti     |
+| troodi          | trac        | decom    | TODO       | replaced by gitlab? |
+| unifolium       | TPA         | decom    | [#33085][] | moved to ganeti     |
+| vineale         | git         | check    |            |                     |
 
 [#33085]: https://trac.torproject.org/projects/tor/ticket/33085
 [#31686]: https://trac.torproject.org/projects/tor/ticket/31686
