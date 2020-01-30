@@ -164,7 +164,7 @@ code yellow again.
 Examples of a code yellow include:
 
  * Trac gets overwhelmed ([ticket 29672](https://bugs.torproject.org/29672))
- * gitweb performance problems ([ticket 32133](https://bugs.debian.org/32133))
+ * gitweb performance problems ([ticket 32133](https://bugs.torproject.org/32133))
  * upgrade metrics.tpo to buster in the hope of fixing broken graphs
    ([ticket 32998](https://bugs.torproject.org/32998))
 
