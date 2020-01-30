@@ -301,3 +301,60 @@ written during the freeze and buster is not there yet.
  * [Koumbit guide](https://wiki.koumbit.net/BusterUpgrade)
  * [DSA guide](https://dsa.debian.org/howto/upgrade-to-buster/)
  * [Solution proposal to automate this](https://wiki.debian.org/AutomatedUpgrade)
+
+Per host progress
+=================
+
+This table shows which team has checked their services to see if they
+are affected by the major upgrade:
+
+| machine                        | team      | policy   | ticket     |
+| ------------------------------ | --------- | -------- | ---------  |
+| alberti.torproject.org         | TPA       | check    |            |
+| bracteata.torproject.org       | ops       | decom    | [#32390][] |
+| colchicifolium.torproject.org  | metrics   | sched    |            |
+| corsicum.torproject.org        | metrics   | sched    |            |
+| crm-ext-01.torproject.org      | funding   | sched    | [#32198][] |
+| crm-int-01.torproject.org      | funding   | sched    | [#32198][] |
+| cupani.torproject.org          | git       | check    |            |
+| eugeni.torproject.org          | TPA       | check    |            |
+| gayi.torproject.org            | ops       | decom    | [#17202][] |
+| gitlab-01.torproject.org       | ?         | check    |            |
+| hetzner-hel1-01.torproject.org | TPA       | check    |            |
+| hetzner-nbg1-01.torproject.org | TPA       | justdoit |            |
+| kvm4.torproject.org            | TPA       | decom    | [#32802][] |
+| macrum.torproject.org          | TPA       | decom    | TODO       |
+| majus.torproject.org           | ?         | check    |            |
+| materculae.torproject.org      | metrics   | sched    |            |
+| moly.torproject.org            | TPA       | decom    | [#29974][] |
+| omeiense.torproject.org        | metrics   | sched    |            |
+| oo-hetzner-03.torproject.org   | metrics   | decom?   |            |
+| orestis.torproject.org         | metrics   | decom?   |            |
+| rude.torproject.org            | community | check    |            |
+| scw-arm-par-01.torproject.org  | ?         | decom    | [#32920][] |
+| textile.torproject.org         | TPA       | decom    | [#31686][] |
+| troodi.torproject.org          | git       | check    |            |
+| unifolium.torproject.org       | TPA       | decom    | [#33085][] |
+| vineale.torproject.org         | git       | check    |            |
+
+[#33085]: https://trac.torproject.org/projects/tor/ticket/33085
+[#31686]: https://trac.torproject.org/projects/tor/ticket/31686
+[#32920]: https://trac.torproject.org/projects/tor/ticket/32920
+[#29974]: https://trac.torproject.org/projects/tor/ticket/29974
+[#32802]: https://trac.torproject.org/projects/tor/ticket/32802
+[#17202]: https://trac.torproject.org/projects/tor/ticket/17202
+[#32198]: https://trac.torproject.org/projects/tor/ticket/32198
+[#32390]: https://trac.torproject.org/projects/tor/ticket/32390
+
+Keywords:
+
+ * sched: scheduled maintenance window
+ * decom: to be decomissioned, not to be upgraded
+ * justdoit: ready to be upgraded
+ * check: needs verification
+
+List of servers obtained with:
+
+    $ curl -s -G http://localhost:8080/pdb/query/v4 --data-urlencode 'query=nodes { facts { name = "lsbdistcodename" and value = "stretch" }}' | jq .[].certname | sort
+
+Policy established in [[upgrades]].
