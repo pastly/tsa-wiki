@@ -69,9 +69,9 @@ January
  * [x] first phase of installer automation (setup-storage and friends) [#31239][]
  * [x] new FSN node in the Ganeti cluster (fsn-node-03) [#32937][]
  * [ ] textile shutdown and VM relocation, 2 VMs to migrate [#31686][] (+86EUR) IN PROGRESS
- * [ ] enable needrestart fleet-wide ([#31957][]) CHECK-WITH-HIRO
- * [ ] review website build errors CHECK-WITH-HIRO
- * [ ] evaluate if discourse can be used as comments platform for the blog CHECK-WITH-HIRO
+ * [ ] enable needrestart fleet-wide ([#31957][]) 
+ * [ ] review website build errors ([#32996][]) 
+ * [ ] evaluate if discourse can be used as comments platform for the blog ([#33105][])
  * [ ] communicate buster upgrade timeline to service admins IN PROGRESS
  * [x] buster upgrade 63% done: 48 buster, 28 stretch machines
 
@@ -79,6 +79,8 @@ January
 [#31686]: https://bugs.torproject.org/31686
 [#32937]: https://bugs.torproject.org/32937
 [#31239]: https://bugs.torproject.org/31239
+[#32996]: https://bugs.torproject.org/32996
+[#33105]: https://bugs.torproject.org/33105
 
 February
 ========
@@ -119,7 +121,7 @@ High possibility of overload here (two major decoms and many machines setup). Po
  * new gnt-fsn node (fsn-node-05) [#33083][] -118EUR=-6EUR
  * eugeni VM migration to gnt-fsn [#32803][]
  * buster upgrade 80% done: 61 buster (+8), 15 stretch (-8)
- * solr deployment
+ * solr deployment ([#33106][])
  * anti-censorship monitorining (external prometheus setup assistance) [#31159][]
  * nc.riseup.net cleanup [#32391][]
  * SVN shutdown? [#17202][]
@@ -131,6 +133,7 @@ High possibility of overload here (two major decoms and many machines setup). Po
 [#33082]: https://bugs.torproject.org/33082
 [#29974]: https://bugs.torproject.org/29974
 [#29397]: https://bugs.torproject.org/29397
+[#33106]: https://bugs.torproject.org/33106
 April
 =====
 
@@ -174,7 +177,9 @@ August
 ======
 
  * anarcat vacation
- * web metrics R&D (investigate a platform for web metrics) <-- is this a priority? CHECK WITH HIRO?
+ * web metrics R&D (investigate a platform for web metrics) ([#32996])
+ 
+[#32996]: https://bugs.torproject.org/32996
 
 September
 =========
