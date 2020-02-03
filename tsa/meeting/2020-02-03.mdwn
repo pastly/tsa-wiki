@@ -96,6 +96,9 @@ New:
  * automate upgrades: enable unattended-upgrades fleet-wide
    ([#31957][])
 
+[#33085]: https://bugs.torproject.org/33085
+[#33081]: https://bugs.torproject.org/33081
+
 Continued:
 
  * install automation tests and refactoring ([#31239][])
@@ -119,6 +122,7 @@ Postponed:
  * send root@ emails to RT ([#31242][])
  * continue prometheus module merges
 
+[#32802]: https://bugs.torproject.org/33082
 [#17202]: https://bugs.torproject.org/17202
 [#31781]: https://bugs.torproject.org/31781
 [#30608]: https://bugs.torproject.org/30608
@@ -133,6 +137,7 @@ Postponed:
  * migrate CRM machines to gnt and test with Giant Rabbit ([#32198][])
  * prometheus blackbox exporter ([#33027][])
 
+[#32390]: https://bugs.torproject.org/32390
 [#32198]: https://bugs.torproject.org/32198
 [#32949]: https://bugs.torproject.org/32949
 [#32996]: https://bugs.torproject.org/32996
