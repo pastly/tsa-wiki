@@ -13,11 +13,15 @@
 
  4. wipe host data, possibly with a delay:
 
-    * On KVM hosts, remove the LVM logical volumes or virtual disk files:
+    * On some KVM hosts, remove the LVM logical volumes:
 
-        `lvs` will list the logical volumes on the machine
+          echo 'lvremove -y vgname/lvname' | at now + 7 days
 
-        `echo 'lvremove -y vgname/lvname' | at now + 7 days`
+      Use `lvs` will list the logical volumes on the machine.
+
+    * Other KVM hosts use file-backed storage:
+    
+          echo 'rm -r /srv/vmstore/gayi.torproject.org/' | at now + 7 days
 
     * for a normal machine or a machine we do not own the parent host
       for, wipe the disks using the method described below
