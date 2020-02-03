@@ -153,8 +153,8 @@ know what happens with gitlab and so on.
 
 Useful references:
 
- * temporal pad where we are sorting out roadmap: https://pad.riseup.net/p/CYOUx21kpxLL_5Eui61J-tpa-roadmap-2020
- * tickets marked for february and march: https://trac.torproject.org/projects/tor/wiki/org/teams/SysadminTeam
+ * temporal pad where we are sorting out roadmap: <https://pad.riseup.net/p/CYOUx21kpxLL_5Eui61J-tpa-roadmap-2020>
+ * tickets marked for february and march: <https://trac.torproject.org/projects/tor/wiki/org/teams/SysadminTeam>
 
 # TPA-RFC-1: RFC process
 
