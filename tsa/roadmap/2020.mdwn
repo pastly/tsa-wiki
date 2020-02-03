@@ -21,14 +21,14 @@ TODO
 ----
 
  * nextcloud roadmap
- * identify critical services and realistic improvements [#31243][]
+ * identify critical services and realistic improvements [#31243][] (done)
  * (anarcat & gaba) sort out each month by priority (mostly done for feb/march)
- * (gaba) add keywords #tpa-roadmap- for each month
+ * (gaba) add keywords #tpa-roadmap- for each month (doing for february and march to test how this would work) (done)
  * (anarcat) create missing tickets for february/march (partially done, missing some from hiro)
  * (at tpa meeting) estimate tickets! (1pt = 1 day)
  * (gaba) reorganize budget file per month https://nc.torproject.net/apps/onlyoffice/7374?filePath=%2FTeams%2FSysadmin%2FBudget%20Sysadmin.xlsx
  * (gaba) create a roadmap for gitlab migration
- * (gaba) find service admins for gitlab (nobody for trac in https://trac.torproject.org/projects/tor/wiki/org/operations/services ) - gaba to talk with isa and alex and look for service admins
+ * (gaba) find service admins for gitlab (nobody for trac in https://trac.torproject.org/projects/tor/wiki/org/operations/services ) - gaba to talk with isa and alex and look for service admins (sent a mail to las vegas but nobody replied... I will talk with each team lead)
    * have a shell account in the server
    * restart/stop service
    * upgrade services
@@ -71,8 +71,8 @@ January
  * [ ] textile shutdown and VM relocation, 2 VMs to migrate [#31686][] (+86EUR) IN PROGRESS
  * [ ] enable needrestart fleet-wide ([#31957][]) 
  * [ ] review website build errors ([#32996][]) 
- * [ ] evaluate if discourse can be used as comments platform for the blog ([#33105][])
- * [ ] communicate buster upgrade timeline to service admins IN PROGRESS
+ * [ ] evaluate if discourse can be used as comments platform for the blog ([#33105][]) <-- can we move this further down the road (not february) until gitlab is migrated? -->
+ * [x] communicate buster upgrade timeline to service admins DONE
  * [x] buster upgrade 63% done: 48 buster, 28 stretch machines
 
 [#31957]: https://bugs.torproject.org/31957
