@@ -340,8 +340,8 @@ Import procedure:
 
  9. IP address change on new instance:
  
-      edit `/etc/network/interfaces` by hand and add IPv4 and IPv6
-      ip. IPv4 configuration can be found in:
+      edit `/etc/hosts` and `/etc/network/interfaces` by hand and add
+      IPv4 and IPv6 ip. IPv4 configuration can be found in:
       
           gnt-instance show $INSTANCE
           
@@ -380,7 +380,7 @@ Import procedure:
          gnt-instance failover $INSTANCE
          gnt-instance startup $INSTANCE
 
- 14. redo IP adress change in `/etc/network/interfaces`
+ 14. redo IP adress change in `/etc/network/interfaces` and `/etc/hosts`
 
  15. final functional test
 
