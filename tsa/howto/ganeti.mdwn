@@ -301,7 +301,7 @@ Import procedure:
         mkswap --uuid $SWAP_UUID /dev/vg_ganeti/$INSTANCE-swap
         lvcreate -L 20GiB -n $INSTANCE-root vg_ganeti
         qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root
-        lvcreate -L 40GiB -n $INSTANCE-lvm vg_ganeti
+        lvcreate -L 40GiB -n $INSTANCE-lvm vg_ganeti_hdd
         qemu-img convert /srv/$INSTANCE-lvm  -O raw /dev/vg_ganeti_hdd/$INSTANCE-lvm
 
     Note how we assume two disks above, but the instance might have a
@@ -365,20 +365,20 @@ Import procedure:
 
  12. resync and reconvert image, on the Ganeti MASTER NODE:
  
-        gnt-instance stop $INSTANCE
+         gnt-instance stop $INSTANCE
 
      on the Ganeti node:
 
-        rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/ &&
-        qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root &&
-        rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-lvm /srv/ && 
-        qemu-img convert /srv/$INSTANCE-lvm  -O raw /dev/vg_ganeti_hdd/$INSTANCE-lvm
+         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/ &&
+         qemu-img convert /srv/$INSTANCE-root  -O raw /dev/vg_ganeti/$INSTANCE-root &&
+         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-lvm /srv/ &&
+         qemu-img convert /srv/$INSTANCE-lvm  -O raw /dev/vg_ganeti_hdd/$INSTANCE-lvm
 
  13. switch to DRBD, still on the Ganeti MASTER NODE:
 
-        gnt-instance modify -t drbd $INSTANCE
-        gnt-instance failover $INSTANCE
-        gnt-instance startup $INSTANCE
+         gnt-instance modify -t drbd $INSTANCE
+         gnt-instance failover $INSTANCE
+         gnt-instance startup $INSTANCE
 
  14. redo IP adress change in `/etc/network/interfaces`
 
