@@ -227,7 +227,7 @@ Assumptions:
    migrated
  * `MASTER_NODE`: the master ganeti node
    (e.g. `fsn-node-01.torproject.org`)
- * `KVM_NODE`: the machine which we migrate the `INSTANCE` from
+ * `KVM_HOST`: the machine which we migrate the `INSTANCE` from
  * the `INSTANCE` has only `root` and `swap` partitions
 
 Import procedure:
@@ -236,12 +236,12 @@ Import procedure:
     cluster capacity" above, when in doubt), login to the three
     servers, setting the proper environment everywhere, for example:
     
-        KVM_NODE=kvm1.torproject.org
-        INSTANCE=test.torproject.org
-        SPARE_NODE=fsn-node-03.torproject.org
         MASTER_NODE=fsn-node-01.torproject.org
+        SPARE_NODE=fsn-node-03.torproject.org
+        KVM_HOST=kvm1.torproject.org
+        INSTANCE=test.torproject.org
 
- 2. establish VM specs, on the KVM NODE:
+ 2. establish VM specs, on the KVM HOST:
  
     * disk space in GiB:
     
@@ -271,11 +271,11 @@ Import procedure:
         ssh-add /etc/ssh/ssh_host_ed25519_key
         cat /etc/ssh/ssh_host_ed25519_key.pub
 
-    on the KVM NODE:
+    on the KVM HOST:
     
-        echo "$KEY_FROM_KVM_HOST" >> /etc/ssh/userkeys/root
+        echo "$KEY_FROM_SPARE_NODE" >> /etc/ssh/userkeys/root
 
- 4. copy the `.qcow` file(s) over, from the KVM host to the SPARE NODE:
+ 4. copy the `.qcow` file(s) over, from the KVM HOST to the SPARE NODE:
  
         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/
         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-lvm /srv/ || true
