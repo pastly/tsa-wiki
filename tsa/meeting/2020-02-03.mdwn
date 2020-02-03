@@ -1,0 +1,243 @@
+[[!toc levels=2]]
+
+# Roll call: who's there and emergencies
+
+anarcat, gaba, hiro, linus and weasel present
+
+# What has everyone been up to
+
+## anarcat
+
+ * worked on evaluating automated install solutions since we'd
+   possibly have to setup multiple machines if the donation comes
+   through
+ * setup new ganeti node in the cluster (fsn-node-03, [#32937][])
+ * dealt with disk problems with said ganeti node ([#33098][])
+ * switched our install process to setup-storage(8) to standardize
+   disk formatting in our install automation work ([#31239][])
+ * decom'd a ARM build box that was having trouble at scaleway
+   ([#33001][]), future of other scaleway boxes uncertain, delegated
+   to weasel
+ * looked at the test Discourse instance hiro setup
+ * new RT queue ("training") for the community folks ([#32981][])
+ * upgraded meronense to buster ([#32998][]) surprisingly tricky
+ * started evaluating the remaining work for the buster upgrade and
+   contacting teams
+ * established first draft of a [sysadmin roadmap][] with hiro and
+   gaba
+ * worked on a draft "support policy" with hiro ([#31243][])
+ * deployed (locally) a [Trac batch client][] to create tickets for
+   said roadmap
+ * sent and received feedback requests
+ * other daily upkeed included scaleway/ARM boxes problems, disk usage
+   warnings, security upgrades, code reviews, RT queue config and
+   debug ([#32981][]), package install ([#33068][]), proper headings
+   in wiki ([#32985][]), ticket review, access control (irl in
+   [#32999][], old role in [#32787][], key problems), logging issues
+   on archive-01 ([#32827][]), cleanup old rc.local cruft
+   ([#33015][]), puppet code review ([#33027][])
+
+[#33027]: https://bugs.torproject.org/33027
+[#33015]: https://bugs.torproject.org/33015
+[#32827]: https://bugs.torproject.org/32827
+[#32787]: https://bugs.torproject.org/32787
+[#32999]: https://bugs.torproject.org/32999
+[#32985]: https://bugs.torproject.org/32985
+[#33068]: https://bugs.torproject.org/33068
+[#32998]: https://bugs.torproject.org/32998
+[#32981]: https://bugs.torproject.org/32981
+[#33001]: https://bugs.torproject.org/33001
+[#33098]: https://bugs.torproject.org/33098
+[#32937]: https://bugs.torproject.org/32937
+[Trac batch client]: https://help.torproject.org/tsa/howto/trac/ 
+[sysadmin roadmap]: https://help.torproject.org/tsa/roadmap/2020/
+
+## hiro
+
+ * Run system updates (probably twice)
+ * Documenting install process workflow visually on [#32902][]
+ * Handled request from GR [#32862][]
+ * Worked on prometheus blackbox exporter [#33027][]
+ * Looked at the test Discourse instance
+ * Talked to discourse people about using discourse for our blog
+   comments
+ * Preparing to migrate the blog to static ([#33115][])
+ * worked on a draft "support policy" with anarcat ([#31243][])
+ * working on a draft policy regarding services ([#33108][])
+
+[#33108]: https://bugs.torproject.org/33108
+[#33115]: https://bugs.torproject.org/33115
+[#32862]: https://bugs.torproject.org/32862
+[#32902]: https://bugs.torproject.org/32902
+
+## weasel
+
+ * build-arm-10 is now building arm64 binaries.  We build arm32
+   binaries on the scaleway host in paris still.
+
+# What we're up to next
+
+Note that we're adopting a roadmap in this meeting which should be
+merged with this step, once we have agreed on the process. So this
+step might change in the next meetings, but let's keep it this way for
+now.
+
+## anarcat
+
+I pivoting towards stabilisation work and postponed all R&D and other
+tweaks.
+
+New:
+
+ * new gnt-fsn node (fsn-node-04) -118EUR=+40EUR ([#33081][])
+ * unifolium decom (after storm), 5 VMs to migrate, [#33085][]
+   +72EUR=+158EUR
+ * buster upgrade 70% done: 53 buster (+5), 23 stretch (-5)
+ * automate upgrades: enable unattended-upgrades fleet-wide
+   ([#31957][])
+
+Continued:
+
+ * install automation tests and refactoring ([#31239][])
+ * SLA discussion (see below, [#31243][])
+
+[#31243]: https://bugs.torproject.org/31243
+[#32462]: https://bugs.torproject.org/32462
+[#32351]: https://bugs.torproject.org/32351
+[#31239]: https://bugs.torproject.org/31239
+[#29387]: https://bugs.torproject.org/29387
+
+Postponed:
+
+ * kvm4 decom ([#32802][])
+ * varnish -> nginx conversion ([#32462][])
+ * review cipher suites ([#32351][])
+ * publish our puppet source code ([#29387][])
+ * followup on SVN shutdown, only corp missing ([#17202][])
+ * audit of the other installers for ping/ACL issue ([#31781][])
+ * email services R&D ([#30608][])
+ * send root@ emails to RT ([#31242][])
+ * continue prometheus module merges
+
+[#17202]: https://bugs.torproject.org/17202
+[#31781]: https://bugs.torproject.org/31781
+[#30608]: https://bugs.torproject.org/30608
+[#31242]: https://bugs.torproject.org/31242
+
+## Hiro
+ * storm shutdown [#32390][]
+ * enable needrestart fleet-wide ([#31957][])
+ * review website build errors ([#32996][])
+ * migrate gitlab-01 to a new VM (gitlab-02) and use the omnibus
+   package instead of ansible ([#32949][])
+ * migrate CRM machines to gnt and test with Giant Rabbit ([#32198][])
+ * prometheus blackbox exporter ([#33027][])
+
+[#32198]: https://bugs.torproject.org/32198
+[#32949]: https://bugs.torproject.org/32949
+[#32996]: https://bugs.torproject.org/32996
+[#31957]: https://bugs.torproject.org/31957
+
+# Roadmap review
+
+Review the roadmap and estimates.
+
+We agreed to use trac for roadmapping for february and march but keep
+the wiki for soft estimates and longer-term goals for now, until we
+know what happens with gitlab and so on.
+
+Useful references:
+
+ * temporal pad where we are sorting out roadmap: https://pad.riseup.net/p/CYOUx21kpxLL_5Eui61J-tpa-roadmap-2020
+ * tickets marked for february and march: https://trac.torproject.org/projects/tor/wiki/org/teams/SysadminTeam
+
+# TPA-RFC-1: RFC process
+
+One of the interesting takeaways I got from reading the [guide to
+distributed teams][] was the idea of using [technical RFCs as a
+management tool][].
+
+ [guide to distributed teams]: https://increment.com/teams/a-guide-to-distributed-teams/
+ [technical RFCs as a management tool]: https://buriti.ca/6-lessons-i-learned-while-implementing-technical-rfcs-as-a-management-tool-34687dbf46cb
+
+They propose using a formal proposal process for complex questions
+that:
+
+ * might impact more than one system
+ * define a contract between clients or other team members
+ * add or replace tools or languages to the stack
+ * build or rewrite something from scratch
+
+They propose the process as a proposal with minimum of two days and a
+maximum of a week discussion delay.
+
+In the team this could take many forms, but what I would suggest would
+be a text proposal that would be a (currently Trac) ticket with a
+special tag, which would also be explicitely forwarded to the "mailing
+list" (currently tpa alias) with the `RFC` subject to outline it.
+
+Examples of ideas relevant for process:
+
+ * replacing Munin with grafana and prometheus [#29681][]
+ * setting defaut locale to C.UTF-8 [#33042][]
+ * using Ganeti as a clustering solution
+ * using setup-storage as a disk formatting system
+ * setting up a loghost
+ * switching from syslog-ng to rsyslog
+
+[#33042]: https://bugs.torproject.org/33042
+[#29681]: https://bugs.torproject.org/29681
+
+Counter examples:
+
+ * setting up a new Ganeti node (part of the roadmap)
+ * performing security updates (routine)
+ * picking a different machine for the new ganeti node (process wasn't
+   documented explicitely, we accept honest mistake)
+
+The idea behind this process would be to include people for major
+changes so that we don't get into a "hey wait we did what?" situation
+later. It would also allow some decisions to be moved outside of
+meetings and quicker decisions. But we also understand that people can
+make mistakes and might improvise sometimes, especially if something
+is not well documented or established as a process in the
+documentation. We already have the possibility of doing such changes
+right now, but it's unclear how that process works or if it works at
+all. This is therefore a formalization of this process.
+
+If we agree on this idea, anarcat will draft a first meta-RFC
+documenting this formally in trac and we'd adopt it using itself,
+bootstrapping the process.
+
+We agree on the idea, although there are concerns about having too
+much text to read through from some people. The first RFC documenting
+the process will be submitted for discussion this week.
+
+# TPA-RFC-2: support policies
+
+A *second* RFC would be a formalization of our support policy, as per:
+https://trac.torproject.org/projects/tor/ticket/31243#comment:4
+
+Postponed to the RFC process.
+
+# Other discussions
+
+No other discussions, although we worked more on the roadmap after the
+meeting, reassigning tasks, evaluating the monthly capacity, and
+estimating tasks.
+
+# Next meeting
+
+March 2nd, same time, 1500UTC (which is 1600CET and 1000EST).
+
+# Metrics of the month
+
+ * hosts in Puppet: 77, LDAP: 80, Prometheus exporters: 124
+ * number of apache servers monitored: 32, hits per second: 158
+ * number of nginx servers: 2, hits per second: 2, hit ratio: 0.88
+ * number of self-hosted nameservers: 5, mail servers: 10
+ * pending upgrades: 110, reboots: 0
+ * average load: 0.34, memory available: 328.66 GiB/1021.56 GiB,
+   running processes: 404
+ * bytes sent: 160.29 MB/s, received: 101.79 MB/s
+ * completion time of stretch major upgrades: 2020-06-06
