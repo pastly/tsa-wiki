@@ -280,10 +280,17 @@ Import procedure:
         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-root /srv/
         rsync -P $KVM_HOST:/srv/vmstore/$INSTANCE/$INSTANCE-lvm /srv/ || true
 
-    it's possible there is not enough room in `/srv`: in the base
-    Ganeti installs, everything is in the same root partition (`/`)
-    which will fill up if the instance is (say) over ~30GiB. In that
-    case, create a filesystem in `/srv`:
+    Warning: the FSN nodes don't have SSH access everywhere due to a
+    flaw in our installation process ([ticket #33143](https://trac.torproject.org/projects/tor/ticket/33143]). You will
+    need to manually allow them to connect with iptables before the
+    above will work, on the KVM HOST:
+    
+        iptables -I INPUT -s $SPARE_NODE -j ACCEPT
+
+    Note: it's possible there is not enough room in `/srv`: in the
+    base Ganeti installs, everything is in the same root partition
+    (`/`) which will fill up if the instance is (say) over ~30GiB. In
+    that case, create a filesystem in `/srv`:
 
         (mkdir /root/srv && mv /srv/* /root/srv true) || true &&
         lvcreate -L 200G vg_ganeti -n srv &&
