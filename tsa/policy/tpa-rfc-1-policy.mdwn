@@ -1,0 +1,155 @@
+[[!meta title="TPA-RFC-1: RFC process"]]
+
+Summary: policy decisions should be made in an online concensus
+building process with a 2 days to 2 weeks delay, and formally
+documented in this wiki.
+
+# Background
+
+In the sysadmin team (AKA "TPA"), decisions can be made by individuals
+in their daily work, in the regular online or in-person meetings, or
+through an asynchronous online decision making process. This proposal
+documents the latter decision making process and also serves as an
+example of such proposal.
+
+The idea behind this process is to include people for major changes so
+that we don't get into a "hey wait we did what?" situation later. It
+also allows decisions to be moved outside of meetings to have a faster
+decision making process.
+
+We already have the possibility of doing such changes right now, but
+it's unclear how that process works or if it works at all. This is
+therefore a formalization of this process.
+
+We do understand that people can make mistakes and might improvise
+sometimes, especially if process is not currently doumented.
+
+# Proposal
+
+## Scope
+
+This procedure aims to provide process for complex questions that:
+
+ * might impact more than one system
+ * define a contract between clients or other team members
+ * add or replace tools or languages to the stack
+ * build or rewrite something from scratch
+
+When in doubt, use the process.
+
+It is not designed for day-to-day judgement calls and regular
+operations that do not fundamentally change our work processes. 
+
+It also does not cover the larger [Tor Project policies](https://gitweb.torproject.org/community/policies.git/tree/) as a
+whole. When there is a conflict between the policies defined here and
+the larger Tor policies, the latter policies overrule.
+
+## Communication
+
+Decisions in the above scope should be written as a formal proposal,
+explaining the purpose and a formal deadline, along with any relevant
+background information. Such proposals are brought up to seek feedback
+from peers in good faith, and assume trust between team members.
+
+Proposals should be written in a Markdown document in a wiki with
+revision history (currently this wiki).
+
+A notification of the proposal must also be sent by email to the team
+alias (currently `torproject-admin@torproject.org`). If the proposal
+affects other teams outside of TPA, it should also be created as a
+"ticket" in the ticket tracking software (currently "Trac") so that
+other teams can provide feedback.
+
+Each proposal has a unique identifier made up of the string `TPA-RFC-`
+and a unique, incremental number. This proposal, for example, is
+`TPA-RFC-1` and the next one would be `TPA-RFC-2`. 
+
+## Process
+
+When the proposal is first written and the notification is sent, the
+proposal is considered a `draft`. It then enters a discussion period
+during which changes can be proposed and objections can be
+raised. That period ranges from 2 business days and two weeks and is
+picked in good faith by the proposer based on the urgency of the
+changes proposed.
+
+Objections must be formulated constructively and justified with
+reasonable technical or social explanations. The goal of this step is
+to communicate potential negative impacts and evaluate if they
+outweight the possible benefits of the proposal. 
+
+If the negative impacts outweigh the benefits, a constructive
+objection must also propose changes can be made to the proposal to
+mitigate those problems.
+
+## States
+
+A proposal is in any of the following states:
+
+ 1. `draft`
+ 2. `standard`
+ 3. `rejected`
+ 4. `obsolete`
+
+Once the discussion period has passed and no objection is raised, the
+`draft` is adopted and becomes a `standard`.
+
+If objections are raised and no solution is found, the proposal is
+`rejected`.
+
+Some policies can be completely overriden using the current policy
+process, including this policy, in which case the old policy because
+`obsolete`.
+
+Note that a policy can be modified by later proposals. The older
+policy is modified only when the new one becomes `standard`. For
+example, say `TPA-RFC-X` proposes changes to a previous `TPA-RFC-N`
+proposal. In that case, the text of `TPA-RFC-N` would be modified when
+and only if `TPA-RFC-X` becomes a `standard`. The older `TPA-RFC-N`
+would also stay a `standard`.
+
+# Examples
+
+Examples of ideas relevant for the RFC process:
+
+ * replacing Munin with grafana and prometheus [#29681][]
+ * setting defaut locale to C.UTF-8 [#33042][]
+ * using Ganeti as a clustering solution
+ * using setup-storage as a disk formatting system
+ * setting up a loghost
+ * switching from syslog-ng to rsyslog
+ * changes to the RFC process
+
+[#33042]: https://bugs.torproject.org/33042
+[#29681]: https://bugs.torproject.org/29681
+
+Counter examples:
+
+ * setting up a new Ganeti node (part of the roadmap)
+ * performing security updates (routine)
+ * picking a different hardware configuration for the new ganeti node
+   (process wasn't documented explicitely, we accept honest mistakes)
+
+# Deadline
+
+Considering that the proposal was discussed and informally approved at
+the [February 2020 team meeting](https://help.torproject.org/tsa/meeting/2020-02-03/), this proposal will be adopted
+within one week unless an objection is raised, which is on 2020-02-14
+20:00UTC.
+
+# Status
+
+This proposal is currently in the `draft` state.
+
+# References
+
+This proposal is one of the takeaways anarcat got from reading the
+[guide to distributed teams][] was the idea of using [technical RFCs
+as a management tool][].
+
+ [guide to distributed teams]: https://increment.com/teams/a-guide-to-distributed-teams/
+ [technical RFCs as a management tool]: https://buriti.ca/6-lessons-i-learned-while-implementing-technical-rfcs-as-a-management-tool-34687dbf46cb
+
+This process is similar to the [Network Team Meta Policy](https://trac.torproject.org/projects/tor/wiki/org/teams/NetworkTeam/MetaPolicy) except it
+doesn't require a majority "+1" votes to go ahead. In other words,
+silence is consent.
