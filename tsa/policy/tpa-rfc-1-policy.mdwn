@@ -40,9 +40,11 @@ When in doubt, use the process.
 It is not designed for day-to-day judgement calls and regular
 operations that do not fundamentally change our work processes. 
 
-It also does not cover the larger [Tor Project policies](https://gitweb.torproject.org/community/policies.git/tree/) as a
+It also does not cover the larger [Tor Project policies][] as a
 whole. When there is a conflict between the policies defined here and
 the larger Tor policies, the latter policies overrule.
+
+[Tor Project policies]: https://gitweb.torproject.org/community/policies.git/tree/
 
 ## Communication
 
@@ -133,9 +135,11 @@ Counter examples:
 # Deadline
 
 Considering that the proposal was discussed and informally approved at
-the [February 2020 team meeting](https://help.torproject.org/tsa/meeting/2020-02-03/), this proposal will be adopted
+the [February 2020 team meeting][], this proposal will be adopted
 within one week unless an objection is raised, which is on 2020-02-14
 20:00UTC.
+
+[February 2020 team meeting]: https://help.torproject.org/tsa/meeting/2020-02-03/
 
 # Status
 
@@ -150,6 +154,8 @@ as a management tool][].
  [guide to distributed teams]: https://increment.com/teams/a-guide-to-distributed-teams/
  [technical RFCs as a management tool]: https://buriti.ca/6-lessons-i-learned-while-implementing-technical-rfcs-as-a-management-tool-34687dbf46cb
 
-This process is similar to the [Network Team Meta Policy](https://trac.torproject.org/projects/tor/wiki/org/teams/NetworkTeam/MetaPolicy) except it
+This process is similar to the [Network Team Meta Policy][] except it
 doesn't require a majority "+1" votes to go ahead. In other words,
 silence is consent.
+
+[Network Team Meta Policy]: https://trac.torproject.org/projects/tor/wiki/org/teams/NetworkTeam/MetaPolicy
