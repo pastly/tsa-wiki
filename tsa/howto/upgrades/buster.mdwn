@@ -324,7 +324,6 @@ are affected by the major upgrade:
 | eugeni          | TPA         | check    |            |                              |
 | gayi            | ops         | decom    | [#17202][] |                              |
 | gitlab-01       | gitlab      | decom    |            | migrate to new box           |
-| hetzner-hel1-01 | TPA         | justdoit |            | test with backport first     |
 | hetzner-nbg1-01 | TPA         | justdoit |            |                              |
 | kvm4            | TPA         | decom    | [#32802][] | moved to ganeti              |
 | macrum          | TPA         | decom    | TODO       | moved to ganeti              |
