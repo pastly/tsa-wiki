@@ -23,7 +23,7 @@ process.
  2. Backups and checks:
 
         ( umask 0077 &&
-          tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states /var/lib/aptitude/pkgstates /var/cache/debconf &&
+          tar cfz /var/backups/pre-buster-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states $( [ -e /var/lib/aptitude/pkgstates ] && echo /var/lib/aptitude/pkgstates ) /var/cache/debconf &&
           dpkg --get-selections "*" > /var/backups/dpkg-selections-pre-buster.txt &&
           debconf-get-selections > /var/backups/debconf-selections-pre-buster.txt
         ) &&
