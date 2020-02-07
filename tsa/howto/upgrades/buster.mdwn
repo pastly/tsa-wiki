@@ -315,7 +315,6 @@ are affected by the major upgrade:
 
 | machine         | team        | policy   | ticket     | notes                        |
 | --------------- | ---------   | -------- | ---------  | ---------------------------- |
-| alberti         | TPA         | justdoit |            | test with openldap backport? |
 | bracteata       | ops         | decom    | [#32390][] |                              |
 | colchicifolium  | metrics     | sched    | [#33111][] |                              |
 | corsicum        | metrics     | sched    | [#33111][] |                              |
