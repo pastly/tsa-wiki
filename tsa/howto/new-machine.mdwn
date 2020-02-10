@@ -96,50 +96,11 @@ All commands to be run as root unless otherwise noted.
         ud-replicate && \
         sudo -H -u puppet make -C /srv/puppet.torproject.org/auto-ca install
 
-  * on new machine:
+  * on the new machine run the `installer/puppet-bootstrap-client`
+    from the `tsa-misc` git repo cloned above
 
-        me=$(hostname -f) && \
-        [ "$me" != "${me%torproject.org}" ] && \
-        apt-get update && \
-        apt-get install -y --no-install-recommends puppet lsb-release && \
-        service puppet stop && \
-        systemctl mask puppet.service && \
-        (puppet agent -t || true ) && \
-        cd /var/lib/puppet/ssl/certificate_requests && \
-        echo sha256sum output: && \
-        echo && \
-        sha256sum $me.pem && \
-        echo && \
-        echo && \
-        cd /
-
-  * on pauli:
-
-        echo "paste sha256sum output now:" && \
-        read sha256 filename && \
-        cd /var/lib/puppet/ssl/ca/requests && \
-        ( [ -e $filename ] || (echo "$filename does not exist."; exit 1) ) && \
-        echo "$sha256  $filename" | sha256sum -c && \
-        puppet ca sign $(basename "$filename" .pem) && \
-        echo && \
-        echo "--- 8< --- CUT HERE --- 8< ---" && \
-        echo && \
-        echo 'cat > /var/lib/puppet/ssl/certs/ca.pem << EOF ' && \
-        cat /var/lib/puppet/ssl/certs/ca.pem && \
-        echo 'EOF' && \
-        echo "cat > /var/lib/puppet/ssl/certs/$filename << EOF " && \
-        cat /var/lib/puppet/ssl/ca/signed/$filename && \
-        echo 'EOF' && \
-        echo 'puppet agent --enable' && \
-        echo 'puppet agent -t --pluginsync' && \
-        echo 'puppet agent -t --pluginsync' && \
-        echo && \
-        echo "--- 8< --- CUT HERE --- 8< ---" && \
-        echo && \
-        cd /
-
-* copy paste the thing between `CUT HERE` from `pauli` into a root
-  shell on the new host
+  * on pauli, run the `tpa-puppet-sign-client` script, pasting the
+    above SHA-256 checksum literally (including the filename)
 
 * do more puppet runs, and run a ud-replicate to get ldap users, then
   more puppet runs since we now have more users:
