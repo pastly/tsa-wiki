@@ -90,17 +90,14 @@ All commands to be run as root unless otherwise noted.
         sudo -H ud-replicate
 
 * set up puppet:
-  * on pauli:
-
-        ( puppet agent -t || true ) && \
-        ud-replicate && \
-        sudo -H -u puppet make -C /srv/puppet.torproject.org/auto-ca install
+  * on the Puppetmaster (currently `pauli`), run the
+    `tpa-puppet-sign-client` script, which will stop to prompt you for
+    a checksum. it is generated in the next step
 
   * on the new machine run the `installer/puppet-bootstrap-client`
-    from the `tsa-misc` git repo cloned above
-
-  * on pauli, run the `tpa-puppet-sign-client` script, pasting the
-    above SHA-256 checksum literally (including the filename)
+    from the `tsa-misc` git repo cloned earlier. copy-paste the
+    generated checksum literally (including the filename) into the
+    script waiting on the Puppetmaster above.
 
 * do more puppet runs, and run a ud-replicate to get ldap users, then
   more puppet runs since we now have more users:
