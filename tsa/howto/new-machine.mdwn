@@ -99,6 +99,9 @@ All commands to be run as root unless otherwise noted.
     generated checksum literally (including the filename) into the
     script waiting on the Puppetmaster above.
 
+  * Note that those scripts are new and haven't been thoroughly
+    tested, see [ticket #32914](https://trac.torproject.org/projects/tor/ticket/32914) for details
+
 * do more puppet runs, and run a ud-replicate to get ldap users, then
   more puppet runs since we now have more users:
 
