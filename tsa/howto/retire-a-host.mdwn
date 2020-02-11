@@ -65,9 +65,9 @@ garbage:
 
     mdadm --fail /dev/md0 /dev/sdb1 &&
     mdadm --remove /dev/md0 /dev/sdb1 &&
-    mdadm --fail /dev/md1 /dev/sdb2 &&
-    mdadm --remove /dev/md1 /dev/sdb2 &&
-    : etc, for the other RAID elements (see /proc/mdstat) &&
+    mdadm --fail /dev/md1 /dev/sdb3 &&
+    mdadm --remove /dev/md1 /dev/sdb3 &&
+    : etc, for the other RAID elements in /proc/mdstat &&
     badblocks -w -s -v -p 2 /dev/sdb
 
 This will take a long time. When you return:
