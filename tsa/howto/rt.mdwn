@@ -52,7 +52,7 @@ On the RT server (currently `rude`):
 
  4. regenerate the virtual database:
  
-        portmap /etc/postfix/virtual
+        postmap /etc/postfix/virtual
 
 In Puppet:
 
