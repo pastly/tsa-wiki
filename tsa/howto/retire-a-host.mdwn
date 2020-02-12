@@ -43,9 +43,23 @@
         echo rm -rf /srv/backups/bacula/$host.torproject.org.OLD/ | at now + 30 days
 
  13. remove any certs and backup keys from letsencrypt-domains and
-     letsencrypt-domains/backup-keys that are no longer relevant
+     letsencrypt-domains/backup-keys git repositories that are no
+     longer relevant:
+
+        git -C letsencryt-domains grep -e $host -e storm.torproject.org
+        # remove entries found above
+        git -C letsencryt-domains commit
+        git -C letsencryt-domains push
+        find letsencryt-domains/backup-keys -name "$host.torproject.org" -o -name 'storm.torproject.org*' -delete
+        git -C letsencryt-domains/backup-keys commit
+        git -C letsencryt-domains/backup-keys push
+
      Also clean up the relevant files on the letsencrypt master
-     (currently nevii.  Use find to find those.)
+     (currently `nevii`), for example:
+
+        ssh nevii rm -rf /srv/letsencrypt.torproject.org/var/certs/storm.torproject.org
+        ssh nevii find /srv/letsencrypt.torproject.org/ -name 'storm.torproject.org.*' -delete
+
  14. if it's a physical machine or a virtual host we don't control,
      schedule removal from racks or hosts with upstream 
  15. if the machine is handling mail, remove it from [dnswl.org](https://www.dnswl.org/)
