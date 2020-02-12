@@ -125,18 +125,13 @@ All commands to be run as root unless otherwise noted.
 
      * [[new-machine-hetzner-robot]]
 
- 12. fix `/etc/aliases` (TODO: #32283):
-
-        ( ! grep '^root:' /etc/aliases && echo 'root: torproject-admin@torproject.org' >> /etc/aliases ) &&
-        sed -i -e 's/^root:.*/root: torproject-admin@torproject.org/' /etc/aliases && newaliases
-
- 13. reboot to make sure *that* still works:
+ 12. reboot to make sure *that* still works:
 
         reboot
 
- 14. add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
+ 13. add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
 
- 15. if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/)
+ 14. if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/)
      (password in tor-passwords, `hosts-extra-info`)
 
 # Reference
