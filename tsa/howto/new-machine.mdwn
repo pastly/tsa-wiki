@@ -113,26 +113,14 @@ All commands to be run as root unless otherwise noted.
 
         apt update && apt dist-upgrade && apt clean
 
- 11. get rid of unneeded network services (only needed if we did not
-     install this from a minbase but from somebody else's
-     install/image):
-
-        dpkg --purge portmap nfs-common exim4 exim4-base exim4-config exim4-daemon-light
-        userdel -r Debian-exim
-
-     TODO: remove the above once we figure out it's obsolete. It's not
-     necessary with the folowing procedures:
-
-     * [[new-machine-hetzner-robot]]
-
- 12. reboot to make sure *that* still works:
+ 11. reboot to make sure *that* still works:
 
         reboot
 
- 13. add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
+ 12. add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
      (TODO: puppetize, in [ticket #32901](https://trac.torproject.org/projects/tor/ticket/32901))
 
- 14. if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/)
+ 13. if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/)
      (password in tor-passwords, `hosts-extra-info`)
 
 # Reference
