@@ -59,18 +59,26 @@ TODO: remove the client from the Bacula catalog, see <https://trac.torproject.or
 ## Wiping disks
 
 To wipe disks on servers without a serial console or management
-interface, you need to be a little more creative. If there's a RAID
-array, first wipe one of the disks by taking it offline and writing
-garbage:
+interface, you need to be a little more creative. We do this with the
+`nwipe(1)` command, which should be installed before anything:
+
+    apt install nwipe
+
+If there's a RAID array, first wipe one of the disks by taking it
+offline and writing garbage:
 
     mdadm --fail /dev/md0 /dev/sdb1 &&
     mdadm --remove /dev/md0 /dev/sdb1 &&
     mdadm --fail /dev/md1 /dev/sdb3 &&
     mdadm --remove /dev/md1 /dev/sdb3 &&
     : etc, for the other RAID elements in /proc/mdstat &&
-    badblocks -w -s -v -p 2 /dev/sdb
+    nwipe --autonuke --method=random --verify=off /dev/sdb
 
-This will take a long time. When you return:
+This will take a long time. Note that it will start a GUI which is
+useful because it will give you timing estimates, which the
+commandline version [does not provide](https://github.com/martijnvanbrummelen/nwipe/issues/196).
+
+When you return:
 
  1. start a `screen` session with a static `busybox` as your `SHELL`
     that will survive disk wiping:
@@ -108,7 +116,7 @@ This will take a long time. When you return:
 
  7. wipe the remaining disk (note the dangerous `-f`) and shutdown:
 
-        badblocks -w -s -v -p 2 -f /dev/sda ; \
+        nwipe --autonuke --method=random --verify=off /dev/sda ; \
         echo "SHUTTING DOWN FOREVER IN ONE MINUTE" ; \
         sleep 60 ; \
         echo o > /proc/sysrq-trigger
