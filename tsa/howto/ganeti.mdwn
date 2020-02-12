@@ -94,6 +94,7 @@ log in with your token.  You will be required to change the root password immedi
 Pick something nice and document it in `tor-passwords`.
 
 Also set reverse DNS for both IPv4 and IPv6 in [hetzner's robot](https://robot.your-server.de/).
+(Chek under servers -> vSwitch -> IPs)
 
 Then follow [[new-machine]].
 
