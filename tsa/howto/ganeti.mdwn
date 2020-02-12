@@ -394,8 +394,8 @@ Import procedure:
 
  16. change IP address in the following locations:
 
-     * nagios
-     * LDAP
+     * nagios (don't forget to change the parent)
+     * LDAP (`ipHostNumber` field, but also change the `physicalHost` and `l` fields!)
      * Puppet (grep in tor-puppet source, run `puppet agent -t; ud-replicate` on pauli)
      * DNS (grep in tor-dns source, `puppet agent -t; ud-replicate` on nevii)
      * reverse DNS (upstream web UI, e.g. Hetzner Robot)
