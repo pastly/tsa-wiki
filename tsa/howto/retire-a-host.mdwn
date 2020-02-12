@@ -88,7 +88,7 @@ This will take a long time. When you return:
     the services one by one. Hint: multiple services can be passed on
     the same `stop` command, for example:
 
-        systemctl stop acpid atd bacula-df bind9 cron ntp postfix prometheus-node-exporter prometheus-bind-exporter
+        systemctl stop acpid atd bacula-fd bind9 cron dbus dbus.socket fail2ban haveged irqbalance libvirtd lvm2-lvmetad.service mdmonitor nagios-nrpe-server ntp openvswitch-switch postfix prometheus-bind-exporter prometheus-node-exporter smartd strongswan syslog-ng.service systemd-journald systemd-journald-audit.socket systemd-journald-dev-log.socket systemd-journald.socket systemd-logind.service systemd-udevd systemd-udevd systemd-udevd-control.socket systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-udevd-kernel.socket ulogd2 unbound virtlogd virtlogd.socket
 
  3. disable swap:
 
