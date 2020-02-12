@@ -2,16 +2,17 @@
 
  1. long before (weeks or months) the machine is decomissioned, make
     sure users are aware it will go away and of its replacement services
- 2. if applicable, stop the VM:
+ 2. remove the host from `tor-nagios/config/nagios-master.cfg`
+ 3. if applicable, stop the VM:
 
     * If the VM is on a KVM host: `virsh shutdown $host`, or at least stop the
     primary service on the machine
 
     * If the machine is on ganeti: `gnt-instance remove $host`
 
- 3. On KVM hosts, undefine the VM: `virsh undefine $host`
+ 4. On KVM hosts, undefine the VM: `virsh undefine $host`
 
- 4. wipe host data, possibly with a delay:
+ 5. wipe host data, possibly with a delay:
 
     * On some KVM hosts, remove the LVM logical volumes:
 
@@ -26,23 +27,12 @@
     * for a normal machine or a machine we do not own the parent host
       for, wipe the disks using the method described below
 
- 5. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any `sudo` passwords users might have configured for that host
- 6. if it has any associated records in `tor-dns/domains` or `auto-dns`, or upstream's reverse dns thing, remove it from there too
- 7. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
- 8. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up; also look for files with hostname in their name
- 9. clean host from `tor-passwords`
- 10. remove from the machine from this wiki (if present in
-     documentation), the [Nextcloud spreadsheet](https://nc.torproject.net/apps/onlyoffice/5395), and, if it's an
-     entire service, the [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services)
- 11. remove the host from `tor-nagios/config/nagios-master.cfg`
- 12. schedule a removal of the host's backup, on the backup server
-     (currently `bungei`):
-
-        cd  /srv/backups/bacula/
-        mv $host.torproject.org $host.torproject.org-OLD
-        echo rm -rf /srv/backups/bacula/$host.torproject.org.OLD/ | at now + 30 days
-
- 13. remove any certs and backup keys from letsencrypt-domains and
+ 6. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any `sudo` passwords users might have configured for that host
+ 7. if it has any associated records in `tor-dns/domains` or `auto-dns`, or upstream's reverse dns thing, remove it from there too
+ 8. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
+ 9. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up; also look for files with hostname in their name
+ 10. clean host from `tor-passwords`
+ 11. remove any certs and backup keys from letsencrypt-domains and
      letsencrypt-domains/backup-keys git repositories that are no
      longer relevant:
 
@@ -59,14 +49,23 @@
 
         ssh nevii rm -rf /srv/letsencrypt.torproject.org/var/certs/storm.torproject.org
         ssh nevii find /srv/letsencrypt.torproject.org/ -name 'storm.torproject.org.*' -delete
-
- 14. if it's a physical machine or a virtual host we don't control,
-     schedule removal from racks or hosts with upstream 
- 15. if the machine is handling mail, remove it from [dnswl.org](https://www.dnswl.org/)
+ 12. if the machine is handling mail, remove it from [dnswl.org](https://www.dnswl.org/)
      (password in tor-passwords, `hosts-extra-info`) - consider that
      it can take a long time (weeks? months?) to be able to "re-add"
      an IP address in that service, so if that IP can eventually be
      reused, it might be better to keep it there in the short term
+ 13. schedule a removal of the host's backup, on the backup server
+     (currently `bungei`):
+
+        cd  /srv/backups/bacula/
+        mv $host.torproject.org $host.torproject.org-OLD
+        echo rm -rf /srv/backups/bacula/$host.torproject.org.OLD/ | at now + 30 days
+
+ 14. remove from the machine from this wiki (if present in
+     documentation), the [Nextcloud spreadsheet](https://nc.torproject.net/apps/onlyoffice/5395), and, if it's an
+     entire service, the [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services)
+ 15. if it's a physical machine or a virtual host we don't control,
+     schedule removal from racks or hosts with upstream
 
 TODO: remove the client from the Bacula catalog, see <https://trac.torproject.org/projects/tor/ticket/30880>.
 
