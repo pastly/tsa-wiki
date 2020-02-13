@@ -70,17 +70,6 @@ All commands to be run as root unless otherwise noted.
 
  3. set new root password, and document it
 
- 4. swap and tmp
-
-        grep -q tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
-
-        ! grep -q swap /etc/fstab && \
-        dd if=/dev/zero bs=1024k count=1024 of=/swapfile && \
-        chmod 0 /swapfile && \
-        mkswap /swapfile && \
-        echo '/swapfile none swap sw 0 0' >> /etc/fstab && \
-        swapon -a
-
   5. add to ldap on `alberti` using:
 
         ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
