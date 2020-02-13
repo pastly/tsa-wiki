@@ -97,6 +97,9 @@ All commands to be run as root unless otherwise noted.
 
         sudo -u sshdist ud-generate && sudo -H ud-replicate && sudo puppet agent -t
 
+    This step is necessary to have Puppet open its firewall to the new
+    node.
+
  7. generate DNS entries, on nevii:
 
         sudo -H ud-replicate
