@@ -39,9 +39,31 @@ The following sites are not documented yet:
 Post-install configuration
 --------------------------
 
-All commands to be run as root unless otherwise noted.
+The post-install configuration takes care of bootstrapping Puppet,
+basically, and everything else follows from there.
 
- 1. set a hostname - pick an unused one from the [[doc/naming-scheme]]
+### Pre-requisites
+
+It assumes the following steps have already been taken by the above
+installer:
+
+ 1. a hostname has been set, picked from the [[doc/naming-scheme]]
+
+ 2. a public IP address has been set and the host is available over
+    SSH on that IP address
+
+ 3. the machine has a short hostname (e.g. `test`) which resolves to a
+    fully qualified domain name (e.g. `test.torproject.org`) in the
+    `torproject.org` domain (i.e. `/etc/hosts` is correctly configured)
+
+ 4. DNS works on the machine (i.e. `/etc/resolv.conf` is correctly
+    configured)
+
+ 5. the `tsa-misc` git repository is available on the machine
+
+### Main procedure
+
+All commands to be run as root unless otherwise noted.
 
  2. allocate and document the machine in the [Nextcloud
     spreadsheet](https://nc.torproject.net/apps/onlyoffice/5395), and the [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's a new service
