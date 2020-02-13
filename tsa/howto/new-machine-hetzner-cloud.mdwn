@@ -35,7 +35,7 @@ continue with:
  6. start a `screen` session
  7. clone `tsa-misc` to the new host: `git clone
     https://git.torproject.org/admin/tsa-misc`
- 8. run `./tsa-misc/tor-install-hetzner` (the ipv6 address prefix you find on the web interface.  Make it end in `::1`)
+ 8. run `./tsa-misc/installer/tor-install-hetzner` (the ipv6 address prefix you find on the web interface.  Make it end in `::1`)
  9. once done, note down all the info and reboot the VM: `reboot`
  10. `ssh -o FingerprintHash=sha1 root@<ipaddr>`  to unlock the host, (to compare ssh's base64 output to dropbear's b16, you can use `perl -MMIME::Base64 -e '$h = unpack("H*", decode_base64(<>)); $h =~ s/(..)(?=.)/\1:/g; print $h, "\n"'` to convert base64 to base16.
  11. `ssh root@<ipaddr>` to access it once booted
