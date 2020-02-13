@@ -104,6 +104,9 @@ All commands to be run as root unless otherwise noted.
 
         sudo -H ud-replicate
 
+    TODO: skip that step? `ud-replicate` runs every 5 minutes on
+    `nevii` anyways.
+
  8. bootstrap puppet:
 
     * on the Puppetmaster (currently `pauli`), run the
@@ -125,6 +128,8 @@ All commands to be run as root unless otherwise noted.
         ud-replicate
         puppet agent -t
         puppet agent -t
+
+     TODO: see if we can live without this step altogether.
 
  10. perform security upgrades:
 
