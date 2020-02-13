@@ -71,13 +71,16 @@ taken by the installer:
 All commands to be run as root unless otherwise noted.
 
  1. allocate and document the machine in the [Nextcloud
-    spreadsheet](https://nc.torproject.net/apps/onlyoffice/5395), and the [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's a new service
+    spreadsheet](https://nc.torproject.net/apps/onlyoffice/5395), and the [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's a new
+    service (TODO: replace with Puppet-based inventory system, see
+    [ticket #29816](https://trac.torproject.org/projects/tor/ticket/29816))
 
  2. clone the `tsa-misc` git repository on the machine:
  
         git clone https://git.torproject.org/admin/tsa-misc.git
 
- 3. set new root password, and document it
+ 3. set new root password, and document it (TODO: move to trocla?
+    [#33332](https://trac.torproject.org/projects/tor/ticket/33332))
 
  5. add to ldap on `alberti` using:
 
@@ -134,6 +137,9 @@ All commands to be run as root unless otherwise noted.
  10. perform security upgrades:
 
         apt update && apt dist-upgrade && apt clean
+
+     TODO: remove this step once upgrades are automated ([ticket
+     #31957](https://trac.torproject.org/projects/tor/ticket/31957))
 
  11. reboot to make sure *that* still works:
 
