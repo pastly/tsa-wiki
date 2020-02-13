@@ -44,11 +44,11 @@ All commands to be run as root unless otherwise noted.
  1. set a hostname - pick an unused one from the [[doc/naming-scheme]]
 
  2. allocate and document the machine in the [Nextcloud
-   spreadsheet](https://nc.torproject.net/apps/onlyoffice/5395), and the [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's a new service
+    spreadsheet](https://nc.torproject.net/apps/onlyoffice/5395), and the [services page](https://trac.torproject.org/projects/tor/wiki/org/operations/services), if it's a new service
 
  3. set new root password, and document it
 
- 3. swap and tmp
+ 4. swap and tmp
 
         grep -q tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
 
@@ -59,13 +59,7 @@ All commands to be run as root unless otherwise noted.
         echo '/swapfile none swap sw 0 0' >> /etc/fstab && \
         swapon -a
 
- 4. sanitize DNS configuration:
-
-        # grep torproject.org /etc/resolv.conf || echo 'domain torproject.org' >>  /etc/resolv.conf
-        grep torproject.org /etc/resolv.conf || ( echo 'domain torproject.org'; echo 'nameserver 8.8.8.8' ) > /etc/resolv.conf
-        vi /etc/hosts # make sure the local host is there with both FQDN and just hostname
-
- 5. add to ldap on `alberti` using:
+  5. add to ldap on `alberti` using:
 
         ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
 
