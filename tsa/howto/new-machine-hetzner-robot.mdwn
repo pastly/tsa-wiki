@@ -142,24 +142,8 @@ which we'll use below.
 
     If the backing device is *NOT* an SSD, remove the  `,discard` option.
 
- 9. mount the helper filesystems once more
-
-        for fs in dev proc run sys  ; do
-          mount -o bind /$fs "/target/$fs";
-        done
-
- 10. Do the same with the RAID configuration, probably with something like:
-
-        chroot /target sh -c "/usr/share/mdadm/mkconf > /etc/mdadm/mdadm.conf"
-
-     TODO: move to a deboostrap post hook.
-
- 11. install grub on any secondary disk, for instance
-
-        chroot /target grub-install /dev/nvme1n1
-
- 12. Review the network configuration, since it will end up in the
-     installed instance:
+ 7. Review the network configuration, since it will end up in the
+    installed instance:
 
          cat /target/etc/network/interfaces
 
