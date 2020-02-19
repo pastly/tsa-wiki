@@ -107,8 +107,6 @@ which we'll use below.
     opposed to the *partition* which is `$BOOT_DEVICE`.
 
         BOOT_DISK=/dev/nvme0n1 &&
-        ROOTPASSWORD=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) &&
-        echo "root password: $ROOTPASSWORD" &&
         mkdir -p /target/run && mount -t tmpfs tgt-run /target/run &&
         mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev &&
         apt-get install -y grml-debootstrap && \
@@ -120,7 +118,7 @@ which we'll use below.
             --mirror https://mirror.hetzner.de/debian/packages/ \
             --packages /root/tsa-misc/installer/packages \
             --post-scripts /root/tsa-misc/installer/post-scripts/ \
-            --password "$ROOTPASSWORD" \
+            --nopassword \
             --remove-configs \
             --defaultinterfaces &&
         umount /target/run/udev /target/run
