@@ -112,13 +112,17 @@ which we'll use below.
         mkdir -p /target/run && mount -t tmpfs tgt-run /target/run &&
         mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev &&
         apt-get install -y grml-debootstrap && \
-        grml-debootstrap --grub "$BOOT_DISK" --target /target \
-            --hostname `hostname` --release buster \
+        grml-debootstrap \
+            --grub "$BOOT_DISK" \
+            --target /target \
+            --hostname `hostname` \
+            --release buster \
             --mirror https://mirror.hetzner.de/debian/packages/ \
             --packages /root/tsa-misc/installer/packages \
             --post-scripts /root/tsa-misc/installer/post-scripts/ \
             --password "$ROOTPASSWORD" \
-            --remove-configs --defaultinterfaces &&
+            --remove-configs \
+            --defaultinterfaces &&
         umount /target/run/udev /target/run
 
  5. Once the bootstrapping is complete, you still need to make sure
