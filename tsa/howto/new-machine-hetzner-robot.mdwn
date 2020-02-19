@@ -86,7 +86,7 @@ which we'll use below.
 
             apt install fai-setup-storage
 
-            setup-storage -f "disk_config/gnt-fsn" -X
+            setup-storage -f "disk-config/gnt-fsn" -X
 
     TODO: convert the other existing `tor-install-format-disks-4HDDs`
     script into a `setup-storage` configuration.
