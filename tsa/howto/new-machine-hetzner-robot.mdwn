@@ -125,20 +125,6 @@ which we'll use below.
             --defaultinterfaces &&
         umount /target/run/udev /target/run
 
- 5. Once the bootstrapping is complete, you still need to make sure
-    the system can boot as, the above doesn't (unfortunately)
-    configure everything for you. First, make a reasonable etc/fstab:
-
-        sed -e 's/^[[:space:]]*//' > /target/etc/fstab << EOF
-        /dev/$vg/root / ext4 errors=remount-ro 0 1
-        /dev/md/boot /boot ext4 defaults 0 2
-
-        /dev/$vg/swap none swap sw 0 0
-        tmpfs /tmp tmpfs defaults,size=512m 0 0
-        EOF
-
-    TODO: take the `fstab` from FAI.
-
  7. setup dropbear-initramfs to unlock the filesystem on boot. this
     should already have been done by the `tor-install-luks-setup` hook
     deployed in the grml-debootstrap stage, but if not:
