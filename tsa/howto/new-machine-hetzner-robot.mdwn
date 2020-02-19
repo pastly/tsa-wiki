@@ -93,22 +93,22 @@ which we'll use below.
 
     And finally mount the filesystems:
 
-        . /tmp/fai/disk_var.sh
-
-        mkdir /target
-        mount "$ROOT_PARTITION" /target
-        mkdir /target/boot
-        mount "$BOOT_PARTITION" /target/boot
+            . /tmp/fai/disk_var.sh &&
+            mkdir /target &&
+            mount "$ROOT_PARTITION" /target &&
+            mkdir /target/boot &&
+            mount "$BOOT_DEVICE" /target/boot
 
  4. Install the system. This can be done with `grml-debootstrap` which
     will also configure grub, a root password and so on. This should
     get you started, assuming the formatted root disk is mounted on
     `/target` and that the boot device is defined by `$BOOT_DEVICE`
-    (populated above by FAI):
+    (populated above by FAI). Note that `BOOT_DISK` is the *disk* as
+    opposed to the *partition* which is `$BOOT_DEVICE`.
 
+        BOOT_DISK=/dev/nvme0n1 &&
         mkdir -p /target/run && mount -t tmpfs tgt-run /target/run &&
         mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev &&
-        bootdisk=/dev/nvme1n1 &&
         ROOTPASSWORD=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 30) &&
         apt-get install -y grml-debootstrap && \
         sed -e 's/postfix//;
@@ -128,7 +128,7 @@ which we'll use below.
                 ' /etc/debootstrap/packages > /root/grml-packages &&
         mkdir -p /etc/debootstrap/post-scripts/ &&
         cp /root/tsa-misc/installer/tor-install-luks-setup /etc/debootstrap/post-scripts/ &&
-        grml-debootstrap --grub "$BOOT_DEVICE" --target /target \
+        grml-debootstrap --grub "$BOOT_DISK" --target /target \
             --hostname `hostname` --release buster \
             --mirror https://mirror.hetzner.de/debian/packages/ \
             --packages /root/grml-packages \
