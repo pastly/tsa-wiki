@@ -44,7 +44,7 @@ which we'll use below.
  1. login to the server using the IP address and host key hash
     provided above:
 
-        ssh -o FingerprintHash=md5 -o UserKnownHostsFile=/dev/null root@159.69.63.226
+        ssh -o FingerprintHash=md5 -o UserKnownHostsFile=~/.ssh/authorized_keys.hetzner-rescue root@159.69.63.226
 
     Note: the `FingerprintHash` parameter above is to make sure we
     match the hashing algorithm used by Hetzner in their email, which
@@ -88,17 +88,6 @@ which we'll use below.
 
             setup-storage -f "disk_config/gnt-fsn" -X
 
-    TODO: include the `tmpfs` in the above config. For now, try:
-
-        grep -q tmpfs /etc/fstab || echo 'tmpfs /tmp tmpfs defaults 0 0' >> /etc/fstab
-
-        ! grep -q swap /etc/fstab && \
-        dd if=/dev/zero bs=1024k count=1024 of=/swapfile && \
-        chmod 0 /swapfile && \
-        mkswap /swapfile && \
-        echo '/swapfile none swap sw 0 0' >> /etc/fstab && \
-        swapon -a
-
     TODO: convert the other existing `tor-install-format-disks-4HDDs`
     script into a `setup-storage` configuration.
 
@@ -110,6 +99,32 @@ which we'll use below.
         mount "$ROOT_PARTITION" /target
         mkdir /target/boot
         mount "$BOOT_PARTITION" /target/boot
+
+ 4. Review the network configuration, since it will end up in the
+    installed instance:
+
+        cat /target/etc/network/interfaces
+
+    An example safe configuration is:
+
+        auto lo
+        iface lo inet loopback
+         
+        allow-hotplug eth0
+        iface eth0 inet dhcp
+
+    The latter two lines usually need to be added as they are missing
+    from Hetzner rescue shells:
+    
+        cat >> /etc/network/interfaces <<EOF
+        
+        allow-hotplug eth0
+        iface eth0 inet dhcp
+        EOF
+
+    TODO: fix this in a post-install debootstrap hook, or in
+    grml-debootstrap already, see also [upstream issue 105](https://github.com/grml/grml-debootstrap/issues/105) and
+    [issue 136](https://github.com/grml/grml-debootstrap/issues/136).
 
  4. Install the system. This can be done with `grml-debootstrap` which
     will also configure grub, a root password and so on. This should
@@ -137,11 +152,14 @@ which we'll use below.
                 $adbus
                 $acryptsetup-initramfs
                 ' /etc/debootstrap/packages > /root/grml-packages &&
+        mkdir -p /etc/debootstrap/post-scripts/ &&
+        cp /root/tsa-misc/installer/tor-install-luks-setup /etc/debootstrap/post-scripts/ &&
         grml-debootstrap --grub "$BOOT_DEVICE" --target /target \
             --hostname `hostname` --release buster \
             --mirror https://mirror.hetzner.de/debian/packages/ \
             --packages /root/grml-packages \
             --password "$ROOTPASSWORD" \
+            --sshcopyid \
             --remove-configs --defaultinterfaces &&
         umount /target/run/udev /target/run
 
@@ -159,17 +177,13 @@ which we'll use below.
 
     TODO: take the `fstab` from FAI.
 
- 6. Copy paste your key into the root's authorized keys, just to make
-    sure you can login:
-
-        mkdir -p /target/root/.ssh/ &&
-        cp /root/.ssh/authorized_keys /target/root/.ssh/authorized_keys
-
  7. setup dropbear-initramfs to unlock the filesystem on boot. this
-    can be done with the `tor-install-luks-setup` in the `tsa-misc`
-    repository.
+    should already have been done by the `tor-install-luks-setup` hook
+    deployed in the grml-debootstrap stage, but if not:
 
         /root/tsa-misc/installer/tor-install-luks-setup /target
+
+    TODO: improve the way that script is deployed.
 
     TODO: use the FAI keyfiles and set a LUKS passphrase for the first
     disk. For example:
@@ -181,11 +195,20 @@ which we'll use below.
         cryptsetup luksRemoveKey /dev/md2 --key-file=/tmp/fai/crypt_dev_md2
 
     ... although that doesn't correctly setup the second disk to use a
-    keyfile.
+    keyfile. 
+    
+    TODO: Those keyfiles are precious: they could be used to bootstrap
+    mandos configuration. Maybe we don't want to `luksRemoveKey` the
+    darn thing.
     
     TODO: in an install following the above procedure, a keyfile was
     left unprotected in `/etc`. Make sure we have strong mechanisms to
-    avoid that ever happening again.
+    avoid that ever happening again. For example:
+    
+        chmod 0 /etc/luks/
+    
+    TODO: in any case, move all of the above in the
+    `tor-install-luks-setup` hook.
 
  8. Review the crypto configuration:
 
@@ -203,20 +226,11 @@ which we'll use below.
 
         chroot /target sh -c "/usr/share/mdadm/mkconf > /etc/mdadm/mdadm.conf"
 
+     TODO: move to a deboostrap post hook.
+
  11. install grub on any secondary disk, for instance
 
         chroot /target grub-install /dev/nvme1n1
-
- 12. Review the network configuration:
-
-         cat /target/etc/network/interfaces
-
-     An example safe configuration is:
-
-         iface lo inet loopback
-         
-         allow-hotplug eth0
-         iface eth0 inet dhcp
 
  13. If any of those latter things changed, you need to regenerate the
     initramfs:
