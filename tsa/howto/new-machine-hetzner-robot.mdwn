@@ -112,27 +112,11 @@ which we'll use below.
         mkdir -p /target/run && mount -t tmpfs tgt-run /target/run &&
         mkdir /target/run/udev && mount -o bind /run/udev /target/run/udev &&
         apt-get install -y grml-debootstrap && \
-        sed -e 's/postfix//;
-                s/vlan//;
-                s/bridge-utils//;
-                s/ifenslave//;
-                s/resolvconf//;
-                s/zsh//;
-                s/strace//;
-                s/os-prober//;
-                s/bzip2//;
-                s/file//;
-                s/lsof//;
-                s/most//;
-                $adbus
-                $acryptsetup-initramfs
-                ' /etc/debootstrap/packages > /root/grml-packages &&
-        mkdir -p /etc/debootstrap/post-scripts/ &&
-        cp /root/tsa-misc/installer/tor-install-luks-setup /etc/debootstrap/post-scripts/ &&
         grml-debootstrap --grub "$BOOT_DISK" --target /target \
             --hostname `hostname` --release buster \
             --mirror https://mirror.hetzner.de/debian/packages/ \
-            --packages /root/grml-packages \
+            --packages /root/tsa-misc/installer/packages \
+            --post-scripts /root/tsa-misc/installer/post-scripts/ \
             --password "$ROOTPASSWORD" \
             --sshcopyid \
             --remove-configs --defaultinterfaces &&
