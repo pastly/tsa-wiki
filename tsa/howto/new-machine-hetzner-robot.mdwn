@@ -136,7 +136,7 @@ which we'll use below.
     TODO: the keyfiles deployed there can be used to bootstrap
     mandos. Document how to do this better.
 
- 8. Review the crypto configuration:
+ 6. Review the crypto configuration:
 
         cat /target/etc/crypttab
 
@@ -145,36 +145,36 @@ which we'll use below.
  7. Review the network configuration, since it will end up in the
     installed instance:
 
-         cat /target/etc/network/interfaces
+        cat /target/etc/network/interfaces
 
-     An example safe configuration is:
+    An example safe configuration is:
 
-         auto lo
-         iface lo inet loopback
-          
-         allow-hotplug eth0
-         iface eth0 inet dhcp
+        auto lo
+        iface lo inet loopback
+        
+        allow-hotplug eth0
+        iface eth0 inet dhcp
 
-     The latter two lines usually need to be added as they are missing
-     from Hetzner rescue shells:
+    The latter two lines usually need to be added as they are missing
+    from Hetzner rescue shells:
     
-         cat >> /etc/network/interfaces <<EOF
-         
-         allow-hotplug eth0
-         iface eth0 inet dhcp
-         EOF
+        cat >> /etc/network/interfaces <<EOF
+        
+        allow-hotplug eth0
+        iface eth0 inet dhcp
+        EOF
 
-     TODO: fix this in a post-install debootstrap hook, or in
-     grml-debootstrap already, see also [upstream issue 105](https://github.com/grml/grml-debootstrap/issues/105) and
-     [issue 136](https://github.com/grml/grml-debootstrap/issues/136).
+    TODO: fix this in a post-install debootstrap hook, or in
+    grml-debootstrap already, see also [upstream issue 105](https://github.com/grml/grml-debootstrap/issues/105) and
+    [issue 136](https://github.com/grml/grml-debootstrap/issues/136).
 
- 13. If any of those latter things changed, you need to regenerate the
+ 8. If any of those latter things changed, you need to regenerate the
     initramfs:
 
         chroot /target update-initramfs -u
         chroot /target update-grub
 
- 14. umount things:
+ 9. umount things:
  
         umount /target/run/udev || true &&
         for fs in dev proc run sys  ; do
@@ -183,15 +183,16 @@ which we'll use below.
         umount /target/boot &&
         cd / && umount /target
 
- 15. close things
+ 10. close things
 
         vgchange -a n
-        cryptsetup luksClose cpv_nvme
+        cryptsetup luksClose crypt_dev_md1
+        cryptsetup luksClose crypt_dev_md2
         mdadm --stop /dev/md*
 
- 16. Document the LUKS passphrase and root password in `tor-passwords`
+ 11. Document the LUKS passphrase and root password in `tor-passwords`
 
- 17. Cross fingers and reboot:
+ 12. Cross fingers and reboot:
 
         reboot
 
