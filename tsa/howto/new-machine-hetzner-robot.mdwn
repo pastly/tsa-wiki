@@ -118,7 +118,6 @@ which we'll use below.
             --packages /root/tsa-misc/installer/packages \
             --post-scripts /root/tsa-misc/installer/post-scripts/ \
             --password "$ROOTPASSWORD" \
-            --sshcopyid \
             --remove-configs --defaultinterfaces &&
         umount /target/run/udev /target/run
 
