@@ -133,16 +133,6 @@ All commands to be run as root unless otherwise noted.
     Note that those scripts are new and haven't been thoroughly
     tested, see [ticket #32914](https://trac.torproject.org/projects/tor/ticket/32914) for details
 
- 9. do more puppet runs, and run a ud-replicate to get ldap users,
-    then more puppet runs since we now have more users:
-
-        puppet agent -t
-        ud-replicate
-        puppet agent -t
-        puppet agent -t
-
-     TODO: see if we can live without this step altogether.
-
  10. perform security upgrades:
 
         apt update && apt dist-upgrade && apt clean
