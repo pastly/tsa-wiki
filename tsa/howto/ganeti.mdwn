@@ -652,8 +652,10 @@ catastrophic data loss bug in Ganeti or [[drbd]].
 
 - reboot again
 
-Then the node is ready to be added to the cluster, with:
+Then the node is ready to be added to the cluster, by running this on
+the master node:
 
+    puppet agent -t
     gnt-node add \
       --secondary-ip 172.30.135.2 \
       --no-ssh-key-check \
