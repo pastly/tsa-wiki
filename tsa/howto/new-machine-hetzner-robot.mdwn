@@ -104,9 +104,12 @@ which we'll use below.
             mount "$BOOT_DEVICE" /target/boot
 
     TODO: test if we can skip that test by passing `$ROOT_PARTITION`
-    as a `--target` to `grml-debootstrap`. Probably not, but in any
-    case, this could be all wrapper up in a single wrapper shell
-    script in tsa-misc instead of this long copy-paste.
+    as a `--target` to `grml-debootstrap`. Probably not.
+    
+    TODO: in any case, this could be all wrapper up in a single
+    wrapper shell script in tsa-misc instead of this long
+    copy-paste. Possibly merge with `tor-install-hetzner` from
+    [[new-machine-hetzner-cloud]].
 
  4. Install the system. This can be done with `grml-debootstrap` which
     will also configure grub, a root password and so on. This should
