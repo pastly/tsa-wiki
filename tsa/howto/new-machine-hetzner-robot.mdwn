@@ -195,6 +195,9 @@ which we'll use below.
     TODO: add the above as a post-hook. possibly merge with
     `tor-puppet/3rdparty/modules/ganeti/files/instance-debootstrap/hooks/gnt-debian-interfaces`
 
+    TODO: add IPv6 address configuration. look at how
+    `tor-install-generate-ldap` guesses as well.
+
  8. If any of those latter things changed, you need to regenerate the
     initramfs:
 
