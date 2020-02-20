@@ -618,9 +618,11 @@ catastrophic data loss bug in Ganeti or [[drbd]].
 
 [PX62-NVMe]: https://www.hetzner.com/dedicated-rootserver/px62-nvme?country=OTHER
 
+- follow the [[new-machine]] post-install configuration
+
 - Network setup:
 
-  1. Add the server to the two vSwitch in Hetzner Robot
+  1. Add the server to the two `vSwitch` systems in Hetzner Robot
 
   2. install openvswitch and allow modules to be loaded
 
