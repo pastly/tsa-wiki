@@ -92,7 +92,7 @@ All commands to be run as root unless otherwise noted.
  
         git clone https://git.torproject.org/admin/tsa-misc.git
 
- 5. add to ldap on `alberti` using:
+ 3. add to ldap on `alberti` using:
 
         ldapvi -ZZ --encoding=ASCII --ldap-conf -h db.torproject.org -D "uid=$USER,ou=users,dc=torproject,dc=org"
 
@@ -106,21 +106,21 @@ All commands to be run as root unless otherwise noted.
 
     See also the [ldapvi manual](http://www.lichteblau.com/ldapvi/manual/) for more information.
 
- 6. generate host snippets for the new node, on alberti:
+ 4. generate host snippets for the new node, on alberti:
 
         sudo -u sshdist ud-generate && sudo -H ud-replicate && sudo puppet agent -t
 
     This step is necessary to have Puppet open its firewall to the new
     node.
 
- 7. generate DNS entries, on nevii:
+ 5. generate DNS entries, on nevii:
 
         sudo -H ud-replicate
 
     TODO: skip that step? `ud-replicate` runs every 5 minutes on
     `nevii` anyways.
 
- 8. bootstrap puppet:
+ 6. bootstrap puppet:
 
     * on the Puppetmaster (currently `pauli`), run the
       `tpa-puppet-sign-client` script, which will stop to prompt you
@@ -134,14 +134,14 @@ All commands to be run as root unless otherwise noted.
     Note that those scripts are new and haven't been thoroughly
     tested, see [ticket #32914](https://trac.torproject.org/projects/tor/ticket/32914) for details
 
- 11. reboot to make sure *that* still works:
+ 7. reboot to make sure *that* still works:
 
         reboot
 
- 12. add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
+ 8. add to [[nagios]], in `tor-nagios/config/nagios-master.cfg`
      (TODO: puppetize, in [ticket #32901](https://trac.torproject.org/projects/tor/ticket/32901))
 
- 13. if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/)
+ 9. if the machine is handling mail, add it to [dnswl.org](https://www.dnswl.org/)
      (password in tor-passwords, `hosts-extra-info`)
 
 # Reference
