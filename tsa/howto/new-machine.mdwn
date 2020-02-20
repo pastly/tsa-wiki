@@ -76,6 +76,9 @@ taken by the installer:
  5. DNS works on the machine (i.e. `/etc/resolv.conf` is correctly
     configured)
 
+ 6. a root password has been set in the password manager (TODO: move
+    to trocla?  [#33332](https://trac.torproject.org/projects/tor/ticket/33332))
+
 ### Main procedure
 
 All commands to be run as root unless otherwise noted.
@@ -88,9 +91,6 @@ All commands to be run as root unless otherwise noted.
  2. clone the `tsa-misc` git repository on the machine:
  
         git clone https://git.torproject.org/admin/tsa-misc.git
-
- 3. set new root password, and document it (TODO: move to trocla?
-    [#33332](https://trac.torproject.org/projects/tor/ticket/33332))
 
  5. add to ldap on `alberti` using:
 
