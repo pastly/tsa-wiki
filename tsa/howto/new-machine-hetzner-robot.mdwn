@@ -183,7 +183,17 @@ which we'll use below.
     grml-debootstrap already, see also [upstream issue 105](https://github.com/grml/grml-debootstrap/issues/105) and
     [issue 136](https://github.com/grml/grml-debootstrap/issues/136).
     
-    TODO: remove this step. It worked fine on last install.
+    Add the hostname, IP address and domain to `/etc/hosts` and
+    `/etc/resolv.conf`:
+    
+        grep torproject.org /etc/resolv.conf || ( echo 'domain torproject.org'; echo 'nameserver 8.8.8.8' ) >> /etc/resolv.conf
+        if ! hostname -f 2>/dev/null || [ "$(hostname)" = "$(hostname -f)" ]; then
+            IPADDRESS=$(ip -br -color=never route get to 8.8.8.8 | head -1 | grep -v linkdown | sed 's/.*  *src  *\([^ ]*\)  *.*/\1/')
+            echo "$IPADDRESS $(hostname).torproject.org $(hostname)" >> /etc/hosts
+        fi
+
+    TODO: add the above as a post-hook. possibly merge with
+    `tor-puppet/3rdparty/modules/ganeti/files/instance-debootstrap/hooks/gnt-debian-interfaces`
 
  8. If any of those latter things changed, you need to regenerate the
     initramfs:
