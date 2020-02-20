@@ -60,6 +60,8 @@ which we'll use below.
  
         echo -n 'New hostname: ' && read hn && hostname "$hn" && exec bash
 
+    TODO: merge this with wrapper script below.
+
  3. Partition disks. This might vary wildly between hosts, but in
     general, we want:
 
@@ -88,6 +90,8 @@ which we'll use below.
 
             setup-storage -f "disk-config/gnt-fsn" -X
 
+    TODO: merge this with wrapper script below.
+
     TODO: convert the other existing `tor-install-format-disks-4HDDs`
     script into a `setup-storage` configuration.
 
@@ -98,6 +102,11 @@ which we'll use below.
             mount "$ROOT_PARTITION" /target &&
             mkdir /target/boot &&
             mount "$BOOT_DEVICE" /target/boot
+
+    TODO: test if we can skip that test by passing `$ROOT_PARTITION`
+    as a `--target` to `grml-debootstrap`. Probably not, but in any
+    case, this could be all wrapper up in a single wrapper shell
+    script in tsa-misc instead of this long copy-paste.
 
  4. Install the system. This can be done with `grml-debootstrap` which
     will also configure grub, a root password and so on. This should
@@ -140,7 +149,10 @@ which we'll use below.
 
         cat /target/etc/crypttab
 
-    If the backing device is *NOT* an SSD, remove the  `,discard` option.
+    If the backing device is *NOT* an SSD, remove the  `,discard`
+    option.
+    
+    TODO: remove this step, it is probably unnecessary.
 
  7. Review the network configuration, since it will end up in the
     installed instance:
@@ -167,12 +179,16 @@ which we'll use below.
     TODO: fix this in a post-install debootstrap hook, or in
     grml-debootstrap already, see also [upstream issue 105](https://github.com/grml/grml-debootstrap/issues/105) and
     [issue 136](https://github.com/grml/grml-debootstrap/issues/136).
+    
+    TODO: remove this step. It worked fine on last install.
 
  8. If any of those latter things changed, you need to regenerate the
     initramfs:
 
         chroot /target update-initramfs -u
         chroot /target update-grub
+
+    TODO: remove this step, if the above extra steps are removed.
 
  9. umount things:
  
@@ -183,12 +199,16 @@ which we'll use below.
         umount /target/boot &&
         cd / && umount /target
 
+    TODO: merge this with wrapper script.
+
  10. close things
 
         vgchange -a n
         cryptsetup luksClose crypt_dev_md1
         cryptsetup luksClose crypt_dev_md2
         mdadm --stop /dev/md*
+
+     TODO: merge this with wrapper script.
 
  11. Document the LUKS passphrase and root password in `tor-passwords`
 
