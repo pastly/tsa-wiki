@@ -61,7 +61,8 @@ taken by the installer:
  0. partitions have been correctly setup, including some (>=1GB) swap
     space (or at least a swap file) and a `tmpfs` in `/tmp`
 
- 1. a minimal Debian install has been booted
+ 1. a minimal Debian install with security updates has been booted
+    (see also [ticket #31957](https://trac.torproject.org/projects/tor/ticket/31957) for upgrade automation)
 
  2. a hostname has been set, picked from the [[doc/naming-scheme]]
 
@@ -132,13 +133,6 @@ All commands to be run as root unless otherwise noted.
 
     Note that those scripts are new and haven't been thoroughly
     tested, see [ticket #32914](https://trac.torproject.org/projects/tor/ticket/32914) for details
-
- 10. perform security upgrades:
-
-        apt update && apt dist-upgrade && apt clean
-
-     TODO: remove this step once upgrades are automated ([ticket
-     #31957](https://trac.torproject.org/projects/tor/ticket/31957))
 
  11. reboot to make sure *that* still works:
 
