@@ -44,14 +44,14 @@ vocabulary:
     gnt-instance add \
       -o debootstrap+buster \
       -t drbd --no-wait-for-sync \
+      --net 0:ip=pool,network=gnt-fsn \
+      --no-ip-check \
+      --no-name-check \
       --disk 0:size=10G \
       --disk 1:size=2G,name=swap \
       --disk 2:size=20G \
       --disk 3:size=800G,vg=vg_ganeti_hdd \
       --backend-parameters memory=8g,vcpus=2 \
-      --net 0:ip=pool,network=gnt-fsn \
-      --no-name-check \
-      --no-ip-check \
       static-master-fsn.torproject.org
 
 WARNING: there is a bug in `ganeti-instance-debootstrap` which
