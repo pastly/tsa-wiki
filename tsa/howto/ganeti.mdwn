@@ -69,7 +69,8 @@ This configures the following:
    `--node` then.
  * three partitions: one on the default VG (SSD), one on another (HDD)
    and a swap file on the default VG, if you don't specify a swap device,
-   a 512MB swapfile is created in `/swapfile`
+   a 512MB swapfile is created in `/swapfile`. TODO: configure disk 2
+   and 3 automatically in installer. (`/var` and `/srv`?)
  * 8GB of RAM with 2 virtual CPUs
  * an IP allocated from the public gnt-fsn pool:
    `gnt-instance add` will print the IPv4 address it picked to stdout.  The
