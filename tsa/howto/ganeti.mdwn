@@ -56,8 +56,9 @@ vocabulary:
 
 WARNING: there is a bug in `ganeti-instance-debootstrap` which
 misconfigures `ping` (among other things), see [bug #31781](https://bugs.torproject.org/31781). It's
-currently patched on the two known Ganeti nodes, but that patch might
-disappear if there's a spurious upgrade of the package.
+currently patched in our version of the Debian package, but that patch
+might disappear if Debian upgrade the package without [shipping our
+patch](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=944538).
 
 This configures the following:
 
