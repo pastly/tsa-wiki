@@ -52,7 +52,7 @@ vocabulary:
       --disk 2:size=20G \
       --disk 3:size=800G,vg=vg_ganeti_hdd \
       --backend-parameters memory=8g,vcpus=2 \
-      static-master-fsn.torproject.org
+      test-01.torproject.org
 
 WARNING: there is a bug in `ganeti-instance-debootstrap` which
 misconfigures `ping` (among other things), see [bug #31781](https://bugs.torproject.org/31781). It's
@@ -70,12 +70,12 @@ This configures the following:
  * three partitions: one on the default VG (SSD), one on another (HDD)
    and a swap file on the default VG, if you don't specify a swap device,
    a 512MB swapfile is created in `/swapfile`
- * 2GB of RAM with 2 virtual CPUs
+ * 8GB of RAM with 2 virtual CPUs
  * an IP allocated from the public gnt-fsn pool:
    `gnt-instance add` will print the IPv4 address it picked to stdout.  The
    IPv6 address can be found in `/var/log/ganeti/os/` on the primary node
    of the instance, see below.
- * with the `test01.torproject.org` hostname
+ * with the `test-01.torproject.org` hostname
 
 To find the root password, ssh host key fingerprints, and the IPv6
 address, run this **on the node where the instance was created**, for
