@@ -113,13 +113,6 @@ All commands to be run as root unless otherwise noted.
     This step is necessary to have Puppet open its firewall to the new
     node.
 
- 5. generate DNS entries, on nevii:
-
-        sudo -H ud-replicate
-
-    TODO: skip that step? `ud-replicate` runs every 5 minutes on
-    `nevii` anyways.
-
  6. bootstrap puppet:
 
     * on the Puppetmaster (currently `pauli`), run the
