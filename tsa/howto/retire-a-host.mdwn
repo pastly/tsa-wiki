@@ -28,7 +28,13 @@
       for, wipe the disks using the method described below
 
  6. remove it from ud-ldap: the host entry and any `@<host>` group memberships there might be as well as any `sudo` passwords users might have configured for that host
- 7. if it has any associated records in `tor-dns/domains` or `auto-dns`, or upstream's reverse dns thing, remove it from there too
+ 7. if it has any associated records in `tor-dns/domains` or
+    `auto-dns`, or upstream's reverse dns thing, remove it from there
+    too. e.g.
+    
+        grep -r -e build-x86-07 -e 78.47.38.230 -e 2a01:4f8:211:6e8:0:823:6:1
+    
+    ... and check upstream reverse DNS.
  8. on pauli: `read host ; puppet node clean $host.torproject.org && puppet node deactivate $host.torproject.org`
  9. grep the `tor-puppet` repo for the host (and maybe its IP addresses) and clean up; also look for files with hostname in their name
  10. clean host from `tor-passwords`
