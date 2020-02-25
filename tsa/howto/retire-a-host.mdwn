@@ -36,13 +36,13 @@
      letsencrypt-domains/backup-keys git repositories that are no
      longer relevant:
 
-        git -C letsencryt-domains grep -e $host -e storm.torproject.org
+        git -C letsencrypt-domains grep -e $host -e storm.torproject.org
         # remove entries found above
-        git -C letsencryt-domains commit
-        git -C letsencryt-domains push
-        find letsencryt-domains/backup-keys -name "$host.torproject.org" -o -name 'storm.torproject.org*' -delete
-        git -C letsencryt-domains/backup-keys commit
-        git -C letsencryt-domains/backup-keys push
+        git -C letsencrypt-domains commit
+        git -C letsencrypt-domains push
+        find letsencrypt-domains/backup-keys -name "$host.torproject.org" -o -name 'storm.torproject.org*' -delete
+        git -C letsencrypt-domains/backup-keys commit
+        git -C letsencrypt-domains/backup-keys push
 
      Also clean up the relevant files on the letsencrypt master
      (currently `nevii`), for example:
