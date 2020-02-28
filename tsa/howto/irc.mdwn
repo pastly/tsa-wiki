@@ -462,3 +462,133 @@ Click *Add* and ZNC will open a TLS listener on 2001.
   This config allows someone to access the web interface simply with
 http://somelongonionaddress.onion. It also allows them to use
 somelongonionaddress.onion:2000 in their IRC client like they might expect.
+
+# Adding a user
+
+The last time this section was updated (or that someone remembered to update
+the date her) is: **28 Feb 2020**.
+
+You need:
+
+- the user's desired **username** (e.g. `jacob`). for simplicity, make this the
+  same nick as their desired IRC nick even though this isn't technically
+required by ZNC.
+- the user's desired **ZNC password**, or a junk initial one for them (e.g.
+  `VTGdtSgsQYgJ`). This does not have to be the same as their nickserv password,
+and arguably should *not* be the same for security reasons.
+- the user's **nickserv password** (e.g. `upRcjFmf`) if registered with
+  nickserv. If you don't know if they are registered with nickserv, it's
+important to figure that out now.  If yes, it's important to get the password
+from the user.
+
+**IMPORTANT**: The user should **NOT** be logged in to IRC as this nick
+already. If they are, these instructions will not work out perfectly and
+*someone* is going to need to know a bit about IRC/nickserv/etc. to sort it
+out.
+
+Additional assumptions:
+
+- the user has not enabled fancy nickserv features such as certfp (identify
+  with a TLS cert instead of a password) or connections from specific IPs only.
+I believe the former is technically possible with ZNC, but I am not going to
+document it at this time.
+- the user wants to connect to OFTC
+- the correct host/port for IRC-over-TLS at OFTC is irc.oftc.net:6697. Verify
+  at <https://oftc.net>.
+
+Have a **ZNC admin** ...
+
+- log in to the web console, e.g. at `https://ircbouncer.torproject.org:2001`
+- visit *Manage Users* in the right column menu
+- click *Add* in the table
+- input the username and password into the boxes under *Authentication*
+- leave everything in *IRC Information* as it is: blank except *Realname* is
+  `ZNC - https://znc.in` and *Quit Message* is `%znc%`
+- leave *Modules* as they are: left column entirely unchecked except chansaver
+  and controlpanel
+- under *Channels* increase buffer size to a larger number such as 1000
+- leave *Queries* as they are: both boxes at 50
+- leave *Flags* as they are: *Auth Clear Chan Buffer*, *Multi Clients*,
+  *Prepend Timestamps*, and *Auto Clear Query Buffer* checked all other
+unchecked
+- leave everything in *ZNC Behavior* as it is
+- click *Create and continue*
+
+The admin should be taken to basically the same page, but now more boxes are
+filled in and--if they were to look elsewhere to confirm--the user is created.
+Also The *Networks* section is available now.
+
+The **ZNC admin** will ...
+
+- click *Add* in the *Networks* table on this user's page
+- for network name, input `oftc`. For
+- remove content from *Nickname*, *Alt. Nicname*, and *Ident*.
+- for *Servers on this IRC network*, click *Add*
+- input `irc.oftc.net` for hostname, `6697` for port, ensure `SSL` is checked,
+  and password is left blank
+- if the user has a nickserv password, under *Modules* check nickserv and type
+  the nickserv password into the box.
+- click *Add Network and return*
+
+The admin should be taken back to the user's page again. Under networks, OFTC
+should exist now. If the *Nick* column is blank, wait a few seconds, refresh,
+and repeat a few times until it is populated with the user's desired nick. If
+what appears is `guestXXXX` or is their desired nick and a slight modification
+that you didn't intend (i.e. `jacob-` instead of `jacob`) then there is a
+problem. It could be:
+
+- the user is already connected to IRC, when the instructions stated at the
+  beginning they **shouldn't be**.
+- someone other than the user is already using that nick
+- the user told you they do not have a nickserv account, but they actually do
+  and it's configured to prevent people from using their nick without
+identifying
+
+If there is no problem, the ZNC admin is done.
+
+# Using ZNC as a User
+
+The last time this section was updated (or that someone remembered to update
+the date her) is: **28 Feb 2020**. The current ZNC admin is pastly. Find him on
+IRC or at pastly@torproject.org if you need help.
+
+You need:
+
+- your ZNC username. e.g. `jacob`. For simplicity, the ZNC admin should have
+  made sure this is the same as your IRC nick
+- your existing ZNC password. e.g. `VTGdtSgsQYgJ`
+- a new password
+
+## Changing your ZNC password
+
+If you know your existing one, you can do this yourself without the ZNC admin.
+
+Given the assumptions baked into the rest of this document, the correct URL to
+visit in a browser is `https://ircbouncer.torproject.org:2001/`.
+
+- log in with your ZNC username and password
+- click *Your Settings* in the right column menu
+- enter your password in the two boxes at the top of the page labeled
+  *Password* and *Confirm Password*
+- scroll all the way down and click *Save*
+
+Done. You will now need to remember this new password instead of the old one.
+
+## Connecting to ZNC from an IRC client
+
+Every IRC client is a little different. This section is going to tell you the
+information you need to know as opposed to exactly what you need to do with it.
+
+- For a nick, use your desired nick. The assumption in this document is
+  `jacob`. Leave alternate nicks blank, or if you must, add an increasing
+number of underscores to your desired nick for them: `jacob_`, `jacob__` ...
+- For the server or hostname, the assumption in this document is
+  `ircbouncer.torproject.org`.
+- Server port is 2001 based on the assumption blah blah blah
+- Use SSL/TLS
+- For a server password or simply password (**not a nickserv password**: that's
+  different and unnecessary) use `jacob/oftc:VTGdtSgsQYgJ`.
+
+That should be everything you need to know. If you have trouble, ask your ZNC
+admin for help or find someone who knows IRC. The ZNC admin is probably the
+better first stop.
